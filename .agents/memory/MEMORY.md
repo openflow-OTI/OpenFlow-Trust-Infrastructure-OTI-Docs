@@ -1,0 +1,1 @@
+- [Railway Migration Gap](railway-migrations.md) — Railway deploy does NOT auto-run drizzle-kit push; every schema change needs Ahmad to manually run migration against prod DB.

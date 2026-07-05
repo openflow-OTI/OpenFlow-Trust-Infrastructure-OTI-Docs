@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 5, 2026
+> Last updated: July 5, 2026 (end-of-session update by Manager)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -32,12 +32,12 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
 | Frontend Builder | Active | Builds frontend, notifies Manager when work is done |
-| Backend Builder | **Account created July 4, 2026 — NOT YET ONBOARDED** | First task = Admin auth |
+| Backend Builder | Active | Tasks 3, 4, 5, (6 code done) complete — see Task 6 blocker below |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
 ---
 
-## Current State of Production (as of July 5, 2026 — updated by Manager)
+## Current State of Production (as of July 5, 2026 — end-of-session update by Manager)
 
 **Live and working:**
 - ✅ Backend on Railway: `https://workspaceapi-server-production-5c0c.up.railway.app`
@@ -53,12 +53,24 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ History endpoint now reads from `chain_scores` DB — persists across restarts (Task 4 — shipped)
 - ✅ Score response returns weighted signals `{ score, weighted, maxWeight }` per signal (Task 5 — shipped)
 
-**Open issues:**
-- 🟠 subscriptions table missing `updated_at` column — Task 6 in progress
+**Task 6 — CODE DEPLOYED, DB MIGRATION BLOCKED:**
+- ✅ Task 6 code is live on Railway (active deploy: "Add timestamp for when API keys...")
+- ❌ Railway production database does NOT have the `updated_at` column yet
+- ❌ `GET /api/admin/keys` currently returns 500 on Railway because it queries a column that doesn't exist in prod DB
+- ⚠️ Root cause confirmed: Railway deploy does NOT auto-run migrations. Builder ran `drizzle-kit push` against their local dev DB only. Railway's Postgres never received the migration.
+- 🔑 **Ahmad action required:** Run `drizzle-kit push` against the Railway production DATABASE_URL. See "Next 3 Things" below for exact steps.
+
+**ADMIN_SECRET status:**
+- The original ADMIN_SECRET set by the Backend Builder during Task 3 was never shared with Ahmad and cannot be retrieved.
+- Ahmad has set a NEW `ADMIN_SECRET` in Railway Variables and in this Replit's secrets. Both now match.
+- Admin auth is confirmed working — 401 without header, passes with correct header.
+
+**Other open issues:**
 - 🟡 Logo asset is blurry — component fix done, but the JPG image itself is low-res
 - 🟡 Results page UX needs professional redesign (Ahmad's explicit request)
 - 🟡 Bitcoin wallet age calculation bug
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
+- 🟡 Dead code: `recordHistory()` in `score.ts` still writes to `lib/history.ts` — nothing reads it anymore (flagged for future cleanup)
 
 ---
 
@@ -79,14 +91,26 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 
 ## Next 3 Things the Manager Must Do (In Order)
 
-### 1. Complete Task 6 — subscriptions updatedAt Migration (Backend Builder — IN PROGRESS)
-Task 6 has been assigned. Await Backend Builder PR, verify on Railway, then mark done.
+### 1. ⚠️ AHMAD ACTION — Fix Task 6 Railway DB Migration (Unblocks everything)
 
-### 2. Assign Task 7D — Bitcoin Wallet Age Fix (Backend Builder)
-After Task 6 is merged, assign Task 7D (Bitcoin timestamp parsing bug). Spec is in BACKEND_TASKS.md.
+Task 6 code is deployed but `GET /api/admin/keys` returns 500 because the Railway production database is missing the `updated_at` column. The builder cannot fix this — they have no access to the Railway DB. Ahmad must do this.
 
-### 3. Assign Task 7 — Frontend Signal Bars → Weighted Display (Frontend Builder)
-Task 5 (weighted API response) is now live on Railway. The Frontend Builder can start Task 7 now — they must run `pnpm codegen` first to regenerate types from the updated OpenAPI spec.
+**Option A — Railway Shell (easiest, no local setup needed):**
+1. Go to Railway → your backend service → click the "Shell" tab
+2. Run: `pnpm run push` (or `cd lib/db && pnpm run push` depending on workspace layout)
+3. This runs `drizzle-kit push` against the Railway Postgres — the column gets added
+
+**Option B — Local machine:**
+1. Get the Railway `DATABASE_URL` from Railway → Variables tab
+2. Run locally: `DATABASE_URL="<paste-railway-url>" pnpm run push`
+
+**After running:** Tell the new Manager to re-run the verification curl. Once `GET /api/admin/keys` returns 200 with key data (not 500), Task 6 is a full GO and the Backend Builder can be told to mark it done.
+
+### 2. After Task 6 Verified — Assign Task 7D (Bitcoin Wallet Age Fix) to Backend Builder
+Full spec is already written in BACKEND_TASKS.md. Just tell the Backend Builder: "Task 6 verified. Please mark it done. Next task is Task 7D — read the spec in BACKEND_TASKS.md and begin."
+
+### 3. Task 7 (Frontend Weighted Signal Bars) — Unblocked NOW
+Task 5 (weighted API response) is live on Railway. The Frontend Builder can start Task 7 immediately — they must run `pnpm codegen` first to regenerate types from the updated OpenAPI spec. Full spec is in TASKS.md.
 
 ---
 
@@ -145,6 +169,14 @@ Update the following before closing — no exceptions:
 5. Ahmad pushes everything via Replit's Git interface
 
 This is the lifeline between Manager accounts. 5 minutes of updating now saves hours of re-research later.
+
+---
+
+## ⚠️ Critical Infrastructure Note — Railway Migrations Do NOT Auto-Run
+
+Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && build && start`. It does **NOT** run `drizzle-kit push` or any DB migration step. This means every future schema change (new column, new table, index) that the Backend Builder adds will need Ahmad to manually run `drizzle-kit push` against the Railway production DATABASE_URL after deploying.
+
+**Recommended fix (optional follow-up task):** Add `drizzle-kit push` to `railway.json`'s `buildCommand` so migrations run automatically on every deploy. The builder flagged this. It's a one-line change to `railway.json` — NOT `nixpacks.toml` (which is sacred). Manager can assign this as a micro-task if Ahmad wants.
 
 ---
 

@@ -20,8 +20,8 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | Active | Submits PRs to GitHub |
-| Backend Builder | Active | Tasks 3, 4, 5 complete — working on Task 6 |
+| Frontend Builder | Active | Submits PRs to GitHub — Task 7 unblocked (Task 5 is live) |
+| Backend Builder | Active | Tasks 3, 4, 5 done — Task 6 code deployed, waiting on Ahmad to run Railway DB migration |
 
 ---
 
@@ -60,6 +60,12 @@
 **Phase:** 1 — Bug Fixes
 **Priority:** MEDIUM — needed before Admin UI shows "last modified"
 **Depends on:** Task 3
+
+**Status (July 5, 2026):** Code deployed to Railway ✅ — DB migration NOT yet run on Railway production ❌
+- `GET /api/admin/keys` returns 500 because Railway prod DB is missing the `updated_at` column
+- Builder confirmed: Railway deploy does NOT auto-run migrations. This is an Ahmad action item.
+- **Ahmad must run `drizzle-kit push` against Railway production DB** (via Railway Shell tab or local machine with Railway DATABASE_URL). See MANAGER_HANDOVER.md "Next 3 Things" for exact steps.
+- After Ahmad runs the migration: new Manager re-verifies with `curl -H "x-admin-secret: $ADMIN_SECRET" https://workspaceapi-server-production-5c0c.up.railway.app/api/admin/keys` — should return 200 with key list. Then tell Builder to mark done.
 
 **Full prompt for Backend Builder:**
 > Add an `updated_at` column to the `subscriptions` table via a Drizzle migration. The column should be `timestamp`, nullable, defaulting to null (so existing rows aren't affected). Update the `PATCH /api/admin/keys/:id` handler in `src/routes/admin.ts` to set `updated_at: new Date()` on every update. Update the Drizzle schema file for the `subscriptions` table to include the new column.
