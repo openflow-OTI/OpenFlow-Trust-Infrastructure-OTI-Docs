@@ -1,7 +1,8 @@
 # OTI — Master Task Queue
 > Last updated: July 5, 2026 | Maintained by: Development Manager
-> ⚠️ **This file is for the Manager only.** Builders use their dedicated files: `BACKEND_TASKS.md` (Backend Builder) and `FRONTEND_TASKS.md` (Frontend Builder).
-> Update this file every time a task status changes. Never let it go stale.
+> **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
+> **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
+> Never let this file go stale.
 
 ---
 

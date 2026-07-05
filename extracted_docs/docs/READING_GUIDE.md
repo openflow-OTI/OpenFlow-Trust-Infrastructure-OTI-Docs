@@ -49,7 +49,7 @@
 
 ## Which File Has What?
 
-**`TASKS.md`** — the Manager's master task list. Every task across both roles, all phases, full context. Managers read this. Builders do not.
+**`TASKS.md`** — the master task list. Every task across both roles, all phases, full context. The Manager adds new tasks here first. Builders also update this file — but only when the Manager explicitly tells them to (marking a task ✅ or adding a newly assigned task).
 
 **`BACKEND_TASKS.md`** — the Backend Builder's task list. Only backend tasks, in order, with the "why" explained. This is the Backend Builder's working document.
 
