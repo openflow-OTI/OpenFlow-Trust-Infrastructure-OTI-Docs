@@ -329,13 +329,26 @@ These are coming after the queue above is complete. You do not need to read thes
 
 ---
 
-## Rules Reminder
+## Keeping This File Updated
 
+This file is your working document. It must always reflect the real state of your work.
+
+**When you complete a task:**
+1. Move it to the ✅ Completed Tasks section at the top of this file
+2. Note what was built in one line
+3. Notify the Manager
+
+**When the Manager adds a new task:**
+- It will appear at the bottom of your Queue section in this file
+- Read it fully before starting — every task has a "Why" and a "Definition of done"
+- Do not start a task that has a ⚠️ dependency warning until the Manager confirms it is cleared
+
+**General rules:**
 - Never touch Git, never push, never open a PR — Ahmad handles all of that himself
 - Never touch `vercel.json` — ever
 - Never manually edit `src/api/schema.gen.ts` — run `pnpm codegen` instead
 - Ahmad loves the chain selector — do not touch it
 - All CSS goes in `src/index.css` — no new component libraries
 - Test on mobile (375px) — most users are on mobile
-- When a task is complete, mark it ✅ in this file and notify the Manager
 - If a task is blocked, tell the Manager immediately — do not sit on a blocker
+- Never let this file go stale — it is the single source of truth for your work

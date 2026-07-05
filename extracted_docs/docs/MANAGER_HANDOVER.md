@@ -142,7 +142,14 @@ Builders do not receive docs via email or file download. The `docs/` folder live
 7. Continue from "Next 3 Things" section above
 
 **Rule before ending ANY Manager session:**
-Update the "Current State of Production" section and "Next 3 Things" above. Then `git push`. This is the lifeline between Manager accounts. 5 minutes of updating now saves hours of re-research later.
+Update the following before closing — no exceptions:
+1. Mark completed tasks ✅ in `TASKS.md`
+2. Mark completed tasks ✅ in the relevant Builder's file (`BACKEND_TASKS.md` or `FRONTEND_TASKS.md`)
+3. Add any new tasks to `TASKS.md` AND to the relevant Builder's task file
+4. Update "Current State of Production" and "Next 3 Things" in this file
+5. Ahmad pushes everything via Replit's Git interface
+
+This is the lifeline between Manager accounts. 5 minutes of updating now saves hours of re-research later.
 
 ---
 
