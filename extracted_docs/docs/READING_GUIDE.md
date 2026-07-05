@@ -37,7 +37,9 @@
 | File | Updated by | When to update |
 |---|---|---|
 | `MANAGER_HANDOVER.md` | Manager | Before EVERY Manager session ends (especially before credits run out) |
-| `TASKS.md` | Manager | Every time a task status changes (assigned → in progress → blocked → done) |
+| `TASKS.md` | Manager | Every time a task status changes — this is the Manager's master record |
+| `BACKEND_TASKS.md` | Backend Builder (marks ✅) + Manager (adds new tasks) | When a backend task is completed or a new one is assigned |
+| `FRONTEND_TASKS.md` | Frontend Builder (marks ✅) + Manager (adds new tasks) | When a frontend task is completed or a new one is assigned |
 | `ROADMAP.md` | Manager | When major scope decisions change, new phases added, MVP criteria change |
 | `ARCHITECTURE.md` | Manager | When new infrastructure is added or a table/component's purpose changes |
 | `BUILDER_ONBOARDING.md` | Manager | Only when the team structure or process changes (rare) |
@@ -45,10 +47,12 @@
 
 ---
 
-## Which File Has the Full A-Z Build List?
+## Which File Has What?
 
-**`TASKS.md`** — this is the master task list. Every task has a task number, owner, phase, priority, dependencies, and a full prompt ready to give to a Builder.
+**`TASKS.md`** — the Manager's master task list. Every task across both roles, all phases, full context. Managers read this. Builders do not.
 
-**`ROADMAP.md`** — gives the strategic context (why, for whom, what comes after). Read this to understand the bigger picture.
+**`BACKEND_TASKS.md`** — the Backend Builder's task list. Only backend tasks, in order, with the "why" explained. This is the Backend Builder's working document.
 
-**The relationship:** ROADMAP.md is the map. TASKS.md is the turn-by-turn directions.
+**`FRONTEND_TASKS.md`** — the Frontend Builder's task list. Only frontend tasks, in order, with the "why" explained. This is the Frontend Builder's working document.
+
+**`ROADMAP.md`** — the strategic context (why we're building it, the phases, the business goals). The map. TASKS.md is the turn-by-turn directions.

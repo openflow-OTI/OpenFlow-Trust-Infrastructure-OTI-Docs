@@ -9,8 +9,9 @@
 This Replit workspace is the **Manager's workspace** — used for documentation, prompt writing, and roadmap management only. It does NOT contain OTI source code.
 
 The actual OTI source code lives in Ahmad's GitHub repositories:
-- **Backend repo:** [Ahmad to add GitHub link]
-- **Frontend repo:** [Ahmad to add GitHub link]
+- **Backend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI- — **PRIVATE**
+- **Frontend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-O-T-I-Frontend- — **PUBLIC**
+- **Docs repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI-Docs — **Manager's workspace repo**
 
 ---
 
@@ -89,8 +90,8 @@ Write a comprehensive onboarding prompt for the Backend Builder covering:
 Full prompt for Backend Builder:
 > "Add `ADMIN_SECRET` header verification to all `/api/admin/*` routes. Create `src/middlewares/adminAuth.ts` that reads `process.env.ADMIN_SECRET` and validates it against an `x-admin-secret` request header. Return 401 if missing or incorrect. Apply to the admin router. Ahmad will set `ADMIN_SECRET` in Railway environment variables. Update Swagger docs to document the header requirement."
 
-### 3. Assign Task 4 — Signal Scores → Weighted Response Shape
-After Task 3 is merged, assign the weighted signals backend change (see TASKS.md Task 4 for full spec).
+### 3. Assign Task 4 — History Endpoint → Database
+After Task 3 is merged, assign the history endpoint fix (see BACKEND_TASKS.md Task 4 for full spec). Then assign Task 5 (Signal Scores → Weighted Response Shape) immediately after.
 
 ---
 
@@ -107,10 +108,12 @@ When credits exhaust → push to GitHub → open new account → handover → co
 
 **The solution (implemented July 5, 2026):**
 All context now lives in the GitHub repository itself — not in AI chat memory:
+- `docs/MANAGER_HANDOVER.md` — this file
 - `docs/ARCHITECTURE.md` — what every piece of the codebase is
 - `docs/ROADMAP.md` — all planned features with status
-- `docs/TASKS.md` — active task queue
-- `docs/MANAGER_HANDOVER.md` — this file
+- `docs/TASKS.md` — Manager's master task list (all tasks, all roles)
+- `docs/BACKEND_TASKS.md` — Backend Builder's dedicated task list
+- `docs/FRONTEND_TASKS.md` — Frontend Builder's dedicated task list
 - `docs/BUILDER_ONBOARDING.md` — onboarding for each Builder role
 - `docs/READING_GUIDE.md` — who reads which file and when
 
@@ -121,7 +124,7 @@ All context now lives in the GitHub repository itself — not in AI chat memory:
 Builders do not receive docs via email or file download. The `docs/` folder lives inside the GitHub repos. When a Builder clones the repo to start work, the docs come with it automatically.
 
 **What Ahmad tells each Builder on day one:**
-> "Clone the repo. Open the `docs/` folder. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then look at `TASKS.md` for your assigned tasks only."
+> "Clone the repo. Open the `docs/` folder. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then open your dedicated task file — `BACKEND_TASKS.md` if you are the Backend Builder, `FRONTEND_TASKS.md` if you are the Frontend Builder."
 
 **GitHub visibility:**
 - **Frontend repo → PUBLIC** — React code has no secrets, making it public builds developer trust

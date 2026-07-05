@@ -1,15 +1,16 @@
-# OTI — Active Task Queue
+# OTI — Master Task Queue
 > Last updated: July 5, 2026 | Maintained by: Development Manager
-> **This is the A-Z build list for completing the MVP and reaching distribution launch.**
+> ⚠️ **This file is for the Manager only.** Builders use their dedicated files: `BACKEND_TASKS.md` (Backend Builder) and `FRONTEND_TASKS.md` (Frontend Builder).
 > Update this file every time a task status changes. Never let it go stale.
 
 ---
 
 ## How to Read This File
 
-- **TASKS.md = the master task list** (what exactly to build, in what order)
+- **TASKS.md = the Manager's master record** (all tasks, all roles, all phases — complete picture)
+- **BACKEND_TASKS.md / FRONTEND_TASKS.md** = what each Builder actually reads and works from
 - **ROADMAP.md = the strategic context** (why we're building it, the phases, the goals)
-- When something is done, mark it ✅ here AND update MANAGER_HANDOVER.md
+- When something is done: mark it ✅ here AND in the relevant Builder task file AND update MANAGER_HANDOVER.md
 
 ---
 

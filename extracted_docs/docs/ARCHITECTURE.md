@@ -9,8 +9,9 @@
 **This document describes the production OTI system deployed on Railway (backend) and Vercel (frontend).** The Manager's Replit workspace is used only for documentation, prompt writing, and roadmap management — it does NOT contain the OTI source code.
 
 The OTI source code lives in Ahmad's GitHub repositories:
-- **Backend repo:** [Ahmad to add GitHub link] — **PRIVATE** (contains scoring algorithm IP)
-- **Frontend repo:** [Ahmad to add GitHub link] — **PUBLIC** (clean React code, no secrets, builds developer trust)
+- **Backend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI- — **PRIVATE** (contains scoring algorithm IP)
+- **Frontend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-O-T-I-Frontend- — **PUBLIC** (clean React code, no secrets, builds developer trust)
+- **Docs repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI-Docs — **Manager's workspace repo**
 
 Builders work in their own Replit accounts against those GitHub repos. The Manager reads them for research but does not push to them.
 

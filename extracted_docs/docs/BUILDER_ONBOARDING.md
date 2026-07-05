@@ -32,7 +32,7 @@ You are an AI Builder. Ahmad has connected **his own GitHub account** to this Re
 
 ## How You Work
 
-1. Ahmad gives you a task prompt (written by the Manager in `docs/TASKS.md`)
+1. Ahmad gives you a task prompt (written by the Manager in your dedicated task file — `docs/BACKEND_TASKS.md` for the Backend Builder, `docs/FRONTEND_TASKS.md` for the Frontend Builder)
 2. You build it in this Replit workspace
 3. You push to a new branch: `git checkout -b task/N-short-description`
 4. You open a PR on GitHub: `gh pr create` or push the branch and Ahmad opens it
