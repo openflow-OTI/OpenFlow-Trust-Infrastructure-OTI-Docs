@@ -21,10 +21,10 @@ Builders work in their own Replit accounts against those GitHub repos. The Manag
 
 ## How Each Builder Gets These Docs
 
-Builders don't receive docs via email or file sharing. The `docs/` folder lives inside the GitHub repos. When a Builder clones the repo to start work, the docs come with it.
+Builders don't receive docs via email or file sharing. The **OTI docs** zip file lives inside the GitHub repos. When a Builder clones the repo to start work, they extract the OTI docs zip from the project root to get all doc files.
 
 **What Ahmad tells each Builder on day one:**
-> "Clone the repo. Open the `docs/` folder. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then open your dedicated task file — `BACKEND_TASKS.md` if you are the Backend Builder, `FRONTEND_TASKS.md` if you are the Frontend Builder."
+> "Clone the repo. Find the OTI docs zip file in the project root and extract it. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then open your dedicated task file — `BACKEND_TASKS.md` if you are the Backend Builder, `FRONTEND_TASKS.md` if you are the Frontend Builder."
 
 **Manager session update flow:**
 - End of session: update `MANAGER_HANDOVER.md` + `TASKS.md` → Ahmad pushes via Replit's Git interface

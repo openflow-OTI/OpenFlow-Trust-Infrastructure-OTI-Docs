@@ -120,6 +120,8 @@ The frontend uses auto-generated types from the backend's OpenAPI spec. If you c
 
 ## Your First Step
 
+If the `docs/` folder is not present in your environment, locate the **OTI docs** zip file in the project root, extract it, and you will find all the docs files inside.
+
 Read the task prompt from the Manager carefully. If anything is unclear, ask the Manager before writing code — it's much easier to clarify upfront than to rebuild after.
 
 Good luck.

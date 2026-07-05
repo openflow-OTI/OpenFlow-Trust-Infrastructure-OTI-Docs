@@ -121,10 +121,10 @@ All context now lives in the GitHub repository itself — not in AI chat memory:
 
 ## How Builders Get These Docs (No Manual File Sharing Needed)
 
-Builders do not receive docs via email or file download. The `docs/` folder lives inside the GitHub repos. When a Builder clones the repo to start work, the docs come with it automatically.
+Builders do not receive docs via email or file download. The **OTI docs** zip file lives inside the GitHub repos. When a Builder clones the repo to start work, they extract the OTI docs zip from the project root to get all doc files.
 
 **What Ahmad tells each Builder on day one:**
-> "Clone the repo. Open the `docs/` folder. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then open your dedicated task file — `BACKEND_TASKS.md` if you are the Backend Builder, `FRONTEND_TASKS.md` if you are the Frontend Builder."
+> "Clone the repo. Find the OTI docs zip file in the project root and extract it. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then open your dedicated task file — `BACKEND_TASKS.md` if you are the Backend Builder, `FRONTEND_TASKS.md` if you are the Frontend Builder."
 
 **GitHub visibility:**
 - **Frontend repo → PUBLIC** — React code has no secrets, making it public builds developer trust
