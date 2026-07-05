@@ -19,7 +19,7 @@
 |---|---|
 | `BUILDER_ONBOARDING.md` | First — how the team works, rules, sacred files |
 | `ARCHITECTURE.md` | Second — what everything is before touching anything |
-| `TASKS.md` | Then — only your assigned tasks (Frontend rows) |
+| `FRONTEND_TASKS.md` | Then — your dedicated task list with full prompts and context |
 | `ROADMAP.md` | Optional — useful context but not required before building |
 
 ### 🛠️ Backend Builder (reads on first day)
@@ -27,7 +27,7 @@
 |---|---|
 | `BUILDER_ONBOARDING.md` | First — how the team works, rules, sacred files |
 | `ARCHITECTURE.md` | Second — what everything is before touching anything |
-| `TASKS.md` | Then — only your assigned tasks (Backend rows) |
+| `BACKEND_TASKS.md` | Then — your dedicated task list with full prompts and context |
 | `ROADMAP.md` | Optional — useful context but not required before building |
 
 ---
