@@ -37,7 +37,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 
 ---
 
-## Current State of Production (as of July 5, 2026)
+## Current State of Production (as of July 5, 2026 — updated by Manager)
 
 **Live and working:**
 - ✅ Backend on Railway: `https://workspaceapi-server-production-5c0c.up.railway.app`
@@ -49,11 +49,12 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ PNG score card sharing
 - ✅ Logo component fix (Task 2 — shipped)
 - ✅ UI polish (Task 1 — shipped)
+- ✅ Admin endpoints secured with `x-admin-secret` header (Task 3 — shipped)
+- ✅ History endpoint now reads from `chain_scores` DB — persists across restarts (Task 4 — shipped)
+- ✅ Score response returns weighted signals `{ score, weighted, maxWeight }` per signal (Task 5 — shipped)
 
 **Open issues:**
-- 🚨 Admin endpoints have zero authentication — anyone can create/delete keys and flag wallets
-- 🟠 API response returns raw signal scores — should return weighted contributions (misleads developers and powers incorrect frontend display)
-- 🟠 History endpoint reads from in-memory store — resets on Railway restart (DB data is there, endpoint just not reading it)
+- 🟠 subscriptions table missing `updated_at` column — Task 6 in progress
 - 🟡 Logo asset is blurry — component fix done, but the JPG image itself is low-res
 - 🟡 Results page UX needs professional redesign (Ahmad's explicit request)
 - 🟡 Bitcoin wallet age calculation bug
@@ -78,20 +79,14 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 
 ## Next 3 Things the Manager Must Do (In Order)
 
-### 1. Onboard the Backend Builder
-Write a comprehensive onboarding prompt for the Backend Builder covering:
-- What OTI is and the tech stack
-- Sacred files (scoring.ts, nixpacks.toml)
-- How the work flow operates — Builder builds, notifies Manager, Ahmad handles all Git
-- Their first task (Task 3: Admin auth — see TASKS.md)
-- Link to this docs folder
+### 1. Complete Task 6 — subscriptions updatedAt Migration (Backend Builder — IN PROGRESS)
+Task 6 has been assigned. Await Backend Builder PR, verify on Railway, then mark done.
 
-### 2. Assign Task 3 — Admin Route Authentication
-Full prompt for Backend Builder:
-> "Add `ADMIN_SECRET` header verification to all `/api/admin/*` routes. Create `src/middlewares/adminAuth.ts` that reads `process.env.ADMIN_SECRET` and validates it against an `x-admin-secret` request header. Return 401 if missing or incorrect. Apply to the admin router. Ahmad will set `ADMIN_SECRET` in Railway environment variables. Update Swagger docs to document the header requirement."
+### 2. Assign Task 7D — Bitcoin Wallet Age Fix (Backend Builder)
+After Task 6 is merged, assign Task 7D (Bitcoin timestamp parsing bug). Spec is in BACKEND_TASKS.md.
 
-### 3. Assign Task 4 — History Endpoint → Database
-After Task 3 is merged, assign the history endpoint fix (see BACKEND_TASKS.md Task 4 for full spec). Then assign Task 5 (Signal Scores → Weighted Response Shape) immediately after.
+### 3. Assign Task 7 — Frontend Signal Bars → Weighted Display (Frontend Builder)
+Task 5 (weighted API response) is now live on Railway. The Frontend Builder can start Task 7 now — they must run `pnpm codegen` first to regenerate types from the updated OpenAPI spec.
 
 ---
 

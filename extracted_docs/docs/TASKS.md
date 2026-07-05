@@ -1,5 +1,5 @@
 # OTI — Master Task Queue
-> Last updated: July 5, 2026 | Maintained by: Development Manager
+> Last updated: July 5, 2026 (updated by Manager) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
@@ -21,74 +21,37 @@
 | Role | Status | Notes |
 |---|---|---|
 | Frontend Builder | Active | Submits PRs to GitHub |
-| Backend Builder | **Created, NOT YET ONBOARDED** | First task = Task 3 (Admin Auth) |
+| Backend Builder | Active | Tasks 3, 4, 5 complete — working on Task 6 |
 
 ---
 
 ## ✅ Completed Tasks
 
-### Task 1 — Frontend UI Polish
+### Task 1 — Frontend UI Polish ✅
 - Homepage title, back button style, chain icon sizing, dead CSS removed, `isKnownChain()` guard in `useScore.ts`
 
-### Task 2 — Logo Fix
+### Task 2 — Logo Fix ✅
 - `Logo.tsx` → `<img src="/logo.jpg">` replacing spiral SVG math
 - `generateScoreCard.ts` → uses `loadImage()` before canvas draw
+
+### Task 3 — Admin Route Authentication ✅
+- `adminAuth.ts` middleware applied to all `/api/admin/*` routes
+- Returns 401 on missing/wrong `x-admin-secret` header
+- Swagger updated; verified live on Railway
+
+### Task 4 — History Endpoint → Database ✅
+- `GET /api/score/:address/history` now queries `chain_scores` DB table
+- Optional `?chain=` filter with auto-detection; ordered by `scored_at` DESC, limited to 50
+- OpenAPI spec updated; verified live on Railway
+
+### Task 5 — Signal Scores → Weighted API Response ✅
+- `signalWeighting.ts` transformer added (scoring.ts untouched)
+- Score response now returns `{ score, weighted, maxWeight }` per signal
+- Both OpenAPI specs updated (served + frontend codegen); verified live on Railway
 
 ---
 
 ## 🔴 Queue — Not Started (Build In This Exact Order)
-
----
-
-### TASK 3 — Admin Route Authentication
-**Owner:** Backend Builder
-**Phase:** 0 — Security
-**Priority:** CRITICAL — nothing else ships until this is done
-**Depends on:** Nothing — this goes first
-
-**Full prompt for Backend Builder:**
-> Create `src/middlewares/adminAuth.ts`. It reads `process.env.ADMIN_SECRET` and checks it against the `x-admin-secret` request header. If the header is missing or doesn't match, return HTTP 401 `{"error": "Unauthorized"}`. Apply this middleware to the entire admin router in `src/routes/admin.ts`. Add `ADMIN_SECRET` to Railway environment variables (Ahmad sets the value). Update the Swagger/OpenAPI docs to show `x-admin-secret` as a required header on all `/api/admin/*` endpoints.
-
-**Definition of done:** Every `/api/admin/*` route returns 401 without the correct header. Swagger shows the requirement.
-
----
-
-### TASK 4 — History Endpoint → Database
-**Owner:** Backend Builder
-**Phase:** 1 — Bug Fixes
-**Priority:** HIGH — urgent because bots will generate query volume; losing history = losing business intelligence
-**Depends on:** Task 3 (must be merged first)
-
-**Full prompt for Backend Builder:**
-> Change `GET /api/score/:address/history` (currently in `src/routes/history.ts`) to query the `chain_scores` table from the database instead of reading from the in-memory store in `lib/history.ts`. The `chain_scores` table already has all historical data — it just isn't being served through the history endpoint. The query should filter by wallet address and optionally by chain (if `?chain=` param is provided), ordered by `created_at` descending, limited to the most recent 50 records. The in-memory `lib/history.ts` can remain as a file but should no longer be used by the history route. Update the OpenAPI spec to reflect the response shape (it now comes from the database).
-
-**Definition of done:** History endpoint returns database records that persist across Railway restarts. Test by scoring a wallet, restarting the server, and verifying history still appears.
-
----
-
-### TASK 5 — Signal Scores → Weighted API Response
-**Owner:** Backend Builder
-**Phase:** 1 — Bug Fixes
-**Priority:** HIGH — blocks frontend signal bar fix, blocks correct bot display, misleads all API integrators
-**Depends on:** Task 3 (must be merged first)
-
-**Full prompt for Backend Builder:**
-> Update the score response shape returned by `GET /api/score/:address`. Currently `signals` is a flat object of raw scores `{"walletAge": 100, "transactionCount": 20, ...}`. Change it to include weighted contribution data per signal.
->
-> New shape:
-> ```json
-> "signals": {
->   "walletAge":                { "score": 100, "weighted": 25.0,  "maxWeight": 25 },
->   "transactionCount":         { "score": 20,  "weighted": 4.0,   "maxWeight": 20 },
->   "tokenHoldingBehavior":     { "score": 22,  "weighted": 4.4,   "maxWeight": 20 },
->   "smartContractInteractions":{ "score": 25,  "weighted": 5.0,   "maxWeight": 20 },
->   "transactionTimingPatterns":{ "score": 70,  "weighted": 10.5,  "maxWeight": 15 }
-> }
-> ```
->
-> The weights are defined in `scoring.ts` — do NOT modify `scoring.ts`. Apply the weights in the response transformer layer only (the route handler or a separate formatter). `weighted = score × (maxWeight / 100)`. Update the OpenAPI spec to reflect the new signal object shape. The `score` field (0–100 overall) must remain unchanged.
-
-**Definition of done:** API response includes `score`, `weighted`, and `maxWeight` for each signal. Overall `score` field still equals the sum of all `weighted` values. Swagger updated.
 
 ---
 
@@ -704,8 +667,8 @@ Mustapha is the co-founder of OpenFlow and works alongside Ahmad in building the
 ## ⛔ PHASE 4 GATE — All items below depend on this being complete first
 
 Before any distribution channel (Tasks 12–15) is assigned, confirm ALL of the following are done:
-- [ ] Task 3 — Admin auth live on Railway
-- [ ] Task 5 — Weighted signal response in API
+- [x] Task 3 — Admin auth live on Railway ✅
+- [x] Task 5 — Weighted signal response in API ✅
 - [ ] Task 9 — Admin panel UI live on Vercel
 - [ ] Task 11A — Marketing homepage live at `/`, scoring tool at `/score`, Vercel project renamed to `oti`
 - [ ] Task 11 — Developer docs site live on Vercel
