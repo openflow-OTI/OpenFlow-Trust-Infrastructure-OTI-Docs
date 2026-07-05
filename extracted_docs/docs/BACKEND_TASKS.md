@@ -124,9 +124,12 @@ These are coming after the queue above is complete. You do not need to read thes
 This file is your working document. It must always reflect the real state of your work.
 
 **When you complete a task:**
-1. Move it to the ✅ Completed Tasks section at the top of this file
-2. Note what was built in one line
-3. Notify the Manager
+1. Notify the Manager — do not mark anything done yourself
+2. Wait for the Manager to review and confirm your work
+3. Only when the Manager explicitly tells you to mark it done:
+   - Move it to the ✅ Completed Tasks section in this file
+   - Mark it ✅ in `TASKS.md` as well
+4. Both files must always match
 
 **When the Manager assigns you a new task:**
 - The Manager will notify you and point you to the new task in `TASKS.md`
