@@ -331,11 +331,11 @@ These are coming after the queue above is complete. You do not need to read thes
 
 ## Rules Reminder
 
-- Never push directly to `main` — always a branch, always a PR
+- Never touch Git, never push, never open a PR — Ahmad handles all of that himself
 - Never touch `vercel.json` — ever
 - Never manually edit `src/api/schema.gen.ts` — run `pnpm codegen` instead
 - Ahmad loves the chain selector — do not touch it
 - All CSS goes in `src/index.css` — no new component libraries
 - Test on mobile (375px) — most users are on mobile
-- When a task is complete, mark it ✅ in this file and push
+- When a task is complete, mark it ✅ in this file and notify the Manager
 - If a task is blocked, tell the Manager immediately — do not sit on a blocker

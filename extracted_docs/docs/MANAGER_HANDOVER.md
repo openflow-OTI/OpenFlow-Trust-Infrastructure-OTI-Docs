@@ -102,7 +102,7 @@ Ahmad uses multiple Replit free-tier accounts to avoid hitting credit limits:
 - **Frontend Builder account** — builds frontend, submits PRs
 - **Backend Builder account** — builds backend, submits PRs
 
-When credits exhaust → push to GitHub → open new account → handover → continue.
+When credits exhaust → Ahmad pushes to GitHub via Replit's Git interface → open new account → handover → continue.
 
 **The problem:** Handover documents between Manager accounts were inconsistent, causing context loss and orphaned planned features appearing as "abandoned" code.
 

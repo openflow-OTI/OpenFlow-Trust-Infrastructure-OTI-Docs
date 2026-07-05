@@ -121,8 +121,8 @@ These are coming after the queue above is complete. You do not need to read thes
 
 ## Rules Reminder
 
-- Never push directly to `main` — always a branch, always a PR
+- Never touch Git, never push, never open a PR — Ahmad handles all of that himself
 - Never touch `scoring.ts` — ever
 - Never touch `nixpacks.toml` — ever
-- When a task is complete, mark it ✅ in this file and push
+- When a task is complete, mark it ✅ in this file and notify the Manager
 - If a task is blocked, tell the Manager immediately — do not sit on a blocker

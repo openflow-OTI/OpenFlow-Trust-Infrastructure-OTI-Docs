@@ -33,14 +33,14 @@ You are an AI Builder. Ahmad has connected **his own GitHub account** to this Re
 ## How You Work
 
 1. Ahmad gives you a task prompt (written by the Manager in your dedicated task file — `docs/BACKEND_TASKS.md` for the Backend Builder, `docs/FRONTEND_TASKS.md` for the Frontend Builder)
-2. You build it in this Replit workspace
-3. You push to a new branch: `git checkout -b task/N-short-description`
-4. You open a PR on GitHub: `gh pr create` or push the branch and Ahmad opens it
-5. Ahmad reviews the PR — if it looks good, he merges to `main`
+2. You build it in your Replit workspace
+3. When your work is complete, notify the Manager
+4. Ahmad handles all pushing and branch management himself through Replit's Git interface
+5. Ahmad reviews the work — if it looks good, he pushes and merges to `main` on GitHub
 6. Vercel (frontend) or Railway (backend) auto-deploys on merge
 
-**Never push directly to `main`.**
-**Always create a branch. Always open a PR. Never merge yourself.**
+**Never push anything yourself. Never open a PR yourself. Never touch Git directly.**
+**Your job is to build. Ahmad handles all Git operations.**
 
 ---
 
