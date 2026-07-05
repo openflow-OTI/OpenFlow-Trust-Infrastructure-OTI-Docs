@@ -121,7 +121,7 @@ These are coming after the queue above is complete. You do not need to read thes
 
 ## Keeping This File Updated
 
-This file is your working document. It must always reflect the real state of your work.
+You never update either file on your own initiative. Every update — whether marking a task done or adding a new one — happens only when the Manager explicitly tells you to.
 
 **When you complete a task:**
 1. Notify the Manager — do not mark anything done yourself
@@ -132,14 +132,14 @@ This file is your working document. It must always reflect the real state of you
 4. Both files must always match
 
 **When the Manager assigns you a new task:**
-- The Manager will notify you and point you to the new task in `TASKS.md`
-- You read it, then add it yourself to the bottom of your Queue section in this file
-- Read it fully before starting — every task has a "Why" and a "Definition of done"
-- Do not start a task that has a ⚠️ dependency warning until the Manager confirms it is cleared
+1. The Manager will explicitly tell you to add the new task to your file
+2. Only then: add it to the bottom of your Queue section in this file AND add it to `TASKS.md`
+3. Read it fully before starting — every task has a "Why" and a "Definition of done"
+4. Do not start a task that has a ⚠️ dependency warning until the Manager confirms it is cleared
 
 **General rules:**
 - Never touch Git, never push, never open a PR — Ahmad handles all of that himself
 - Never touch `scoring.ts` — ever
 - Never touch `nixpacks.toml` — ever
 - If a task is blocked, tell the Manager immediately — do not sit on a blocker
-- Never let this file go stale — it is the single source of truth for your work
+- Never update any file without the Manager's explicit instruction

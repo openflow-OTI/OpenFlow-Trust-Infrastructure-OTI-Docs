@@ -10,8 +10,8 @@
 - **TASKS.md = the Manager's master record** (all tasks, all roles, all phases — complete picture)
 - **BACKEND_TASKS.md / FRONTEND_TASKS.md** = what each Builder actually reads and works from
 - **ROADMAP.md = the strategic context** (why we're building it, the phases, the goals)
-- When something is done: the Manager confirms with the Builder, then the Builder marks it ✅ here AND in their own task file
-- When a new task is added: Manager adds it here, notifies the Builder — the Builder adds it to their own file themselves
+- When something is done: Manager confirms with the Builder → Manager explicitly tells Builder to mark it done → Builder marks it ✅ here AND in their own task file
+- When a new task is added: Manager adds it here → Manager explicitly tells Builder to add it to their file → Builder adds it to their own file AND to this file
 
 ---
 

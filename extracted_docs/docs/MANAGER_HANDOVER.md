@@ -143,10 +143,11 @@ Builders do not receive docs via email or file download. The `docs/` folder live
 
 **Rule before ending ANY Manager session:**
 Update the following before closing — no exceptions:
-1. If a task was confirmed done: tell the Builder to mark it ✅ in both `TASKS.md` and their own task file
-2. If a new task was added: add it to `TASKS.md` and notify the Builder — the Builder adds it to their own file themselves
-3. Update "Current State of Production" and "Next 3 Things" in this file
-4. Ahmad pushes everything via Replit's Git interface
+1. If a task was confirmed done: explicitly tell the Builder to mark it ✅ in both their own task file AND `TASKS.md`
+2. If a new task was added: add it to `TASKS.md` first, then explicitly tell the Builder to add it to their own file AND to `TASKS.md`
+3. Builders do not update any file on their own — they act only when the Manager explicitly tells them to, whether marking done or adding new tasks
+4. Update "Current State of Production" and "Next 3 Things" in this file
+5. Ahmad pushes everything via Replit's Git interface
 
 This is the lifeline between Manager accounts. 5 minutes of updating now saves hours of re-research later.
 

@@ -37,9 +37,9 @@
 | File | Updated by | When to update |
 |---|---|---|
 | `MANAGER_HANDOVER.md` | Manager | Before EVERY Manager session ends (especially before credits run out) |
-| `TASKS.md` | Manager | Every time a task status changes — this is the Manager's master record |
-| `BACKEND_TASKS.md` | Backend Builder | When Manager confirms a task is done (Builder marks ✅ here AND in TASKS.md) or when Manager assigns a new task (Builder adds it themselves) |
-| `FRONTEND_TASKS.md` | Frontend Builder | When Manager confirms a task is done (Builder marks ✅ here AND in TASKS.md) or when Manager assigns a new task (Builder adds it themselves) |
+| `TASKS.md` | Manager (adds new tasks) + Builder (marks ✅ or adds new task — only when Manager explicitly says so) | Every time a task status changes or a new task is assigned |
+| `BACKEND_TASKS.md` | Backend Builder — only when Manager explicitly tells them to | Marking a task done OR adding a new task — never without Manager instruction |
+| `FRONTEND_TASKS.md` | Frontend Builder — only when Manager explicitly tells them to | Marking a task done OR adding a new task — never without Manager instruction |
 | `ROADMAP.md` | Manager | When major scope decisions change, new phases added, MVP criteria change |
 | `ARCHITECTURE.md` | Manager | When new infrastructure is added or a table/component's purpose changes |
 | `BUILDER_ONBOARDING.md` | Manager | Only when the team structure or process changes (rare) |
