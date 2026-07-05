@@ -31,7 +31,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active | Submits PRs to GitHub |
+| Frontend Builder | Active | Builds frontend, notifies Manager when work is done |
 | Backend Builder | **Account created July 4, 2026 — NOT YET ONBOARDED** | First task = Admin auth |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
@@ -81,8 +81,8 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 ### 1. Onboard the Backend Builder
 Write a comprehensive onboarding prompt for the Backend Builder covering:
 - What OTI is and the tech stack
-- The GitHub repo structure and how to submit PRs
 - Sacred files (scoring.ts, nixpacks.toml)
+- How the work flow operates — Builder builds, notifies Manager, Ahmad handles all Git
 - Their first task (Task 3: Admin auth — see TASKS.md)
 - Link to this docs folder
 
@@ -99,8 +99,8 @@ After Task 3 is merged, assign the history endpoint fix (see BACKEND_TASKS.md Ta
 
 Ahmad uses multiple Replit free-tier accounts to avoid hitting credit limits:
 - **Manager account** — writes prompts, manages roadmap
-- **Frontend Builder account** — builds frontend, submits PRs
-- **Backend Builder account** — builds backend, submits PRs
+- **Frontend Builder account** — builds frontend, notifies Manager when work is done
+- **Backend Builder account** — builds backend, notifies Manager when work is done
 
 When credits exhaust → Ahmad pushes to GitHub via Replit's Git interface → open new account → handover → continue.
 

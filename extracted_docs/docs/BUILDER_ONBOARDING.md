@@ -21,7 +21,7 @@ Given a wallet address + chain, OTI returns a 0–100 trust score built from fiv
 
 | Role | Who | Responsibility |
 |---|---|---|
-| Ahmad (CEO) | Human — Ahmad Alhassan | Only person who merges PRs. Reviews everything. Sets env vars in Railway/Vercel. |
+| Ahmad (CEO) | Human — Ahmad Alhassan | Reviews all work. Handles all Git operations — pushes and merges to GitHub himself. Sets env vars in Railway/Vercel. |
 | Development Manager | AI agent | Writes your task prompts. Reviews your PRs. You report to them. |
 | Frontend Builder | AI agent | Builds the React + Vite frontend |
 | Backend Builder | AI agent | Builds the Express + TypeScript backend |
@@ -32,7 +32,7 @@ You are an AI Builder. Your job is to build. You do not touch Git, push code, or
 
 ## How You Work
 
-1. Ahmad gives you a task prompt (written by the Manager in your dedicated task file — `docs/BACKEND_TASKS.md` for the Backend Builder, `docs/FRONTEND_TASKS.md` for the Frontend Builder)
+1. The Manager gives you a task prompt from your dedicated task file — `docs/BACKEND_TASKS.md` for the Backend Builder, `docs/FRONTEND_TASKS.md` for the Frontend Builder
 2. You build it in your Replit workspace
 3. When your work is complete, notify the Manager
 4. Ahmad handles all pushing and branch management himself through Replit's Git interface
