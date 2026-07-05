@@ -24,7 +24,7 @@ Builders work in their own Replit accounts against those GitHub repos. The Manag
 Builders don't receive docs via email or file sharing. The `docs/` folder lives inside the GitHub repos. When a Builder clones the repo to start work, the docs come with it.
 
 **What Ahmad tells each Builder on day one:**
-> "Clone the repo. Open the `docs/` folder. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then look at `TASKS.md` for your tasks only."
+> "Clone the repo. Open the `docs/` folder. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then open your dedicated task file — `BACKEND_TASKS.md` if you are the Backend Builder, `FRONTEND_TASKS.md` if you are the Frontend Builder."
 
 **Manager session update flow:**
 - End of session: update `MANAGER_HANDOVER.md` + `TASKS.md` → push to GitHub
