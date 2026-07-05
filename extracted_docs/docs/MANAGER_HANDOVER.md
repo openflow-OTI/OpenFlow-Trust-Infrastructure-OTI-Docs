@@ -111,7 +111,7 @@ All context now lives in the GitHub repository itself — not in AI chat memory:
 - `docs/MANAGER_HANDOVER.md` — this file
 - `docs/ARCHITECTURE.md` — what every piece of the codebase is
 - `docs/ROADMAP.md` — all planned features with status
-- `docs/TASKS.md` — Manager's master task list (all tasks, all roles)
+- `docs/TASKS.md` — master task list (all tasks, all roles — Manager adds tasks, Builders update it only when Manager says so)
 - `docs/BACKEND_TASKS.md` — Backend Builder's dedicated task list
 - `docs/FRONTEND_TASKS.md` — Frontend Builder's dedicated task list
 - `docs/BUILDER_ONBOARDING.md` — onboarding for each Builder role

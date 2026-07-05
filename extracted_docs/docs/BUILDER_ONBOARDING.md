@@ -26,7 +26,7 @@ Given a wallet address + chain, OTI returns a 0–100 trust score built from fiv
 | Frontend Builder | AI agent | Builds the React + Vite frontend |
 | Backend Builder | AI agent | Builds the Express + TypeScript backend |
 
-You are an AI Builder. Ahmad has connected **his own GitHub account** to this Replit workspace. You push branches and open PRs through his credentials. You do not have a personal GitHub account — you don't need one.
+You are an AI Builder. Your job is to build. You do not touch Git, push code, or open PRs — Ahmad handles all of that himself through Replit's Git interface.
 
 ---
 

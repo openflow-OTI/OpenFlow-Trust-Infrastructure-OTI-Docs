@@ -27,7 +27,7 @@ Builders don't receive docs via email or file sharing. The `docs/` folder lives 
 > "Clone the repo. Open the `docs/` folder. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then open your dedicated task file — `BACKEND_TASKS.md` if you are the Backend Builder, `FRONTEND_TASKS.md` if you are the Frontend Builder."
 
 **Manager session update flow:**
-- End of session: update `MANAGER_HANDOVER.md` + `TASKS.md` → push to GitHub
+- End of session: update `MANAGER_HANDOVER.md` + `TASKS.md` → Ahmad pushes via Replit's Git interface
 - Start of new session: clone repo or `git pull` → read `MANAGER_HANDOVER.md` → continue
 
 ---
