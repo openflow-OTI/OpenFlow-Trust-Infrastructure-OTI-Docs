@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 5, 2026 (end-of-session update by Manager)
+> Last updated: July 6, 2026 (updated by Manager)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -37,7 +37,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 
 ---
 
-## Current State of Production (as of July 5, 2026 — end-of-session update by Manager)
+## Current State of Production (as of July 6, 2026)
 
 **Live and working:**
 - ✅ Backend on Railway: `https://workspaceapi-server-production-5c0c.up.railway.app`
@@ -52,13 +52,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ Admin endpoints secured with `x-admin-secret` header (Task 3 — shipped)
 - ✅ History endpoint now reads from `chain_scores` DB — persists across restarts (Task 4 — shipped)
 - ✅ Score response returns weighted signals `{ score, weighted, maxWeight }` per signal (Task 5 — shipped)
-
-**Task 6 — CODE DEPLOYED, DB MIGRATION BLOCKED:**
-- ✅ Task 6 code is live on Railway (active deploy: "Add timestamp for when API keys...")
-- ❌ Railway production database does NOT have the `updated_at` column yet
-- ❌ `GET /api/admin/keys` currently returns 500 on Railway because it queries a column that doesn't exist in prod DB
-- ⚠️ Root cause confirmed: Railway deploy does NOT auto-run migrations. Builder ran `drizzle-kit push` against their local dev DB only. Railway's Postgres never received the migration.
-- 🔑 **Ahmad action required:** Run `drizzle-kit push` against the Railway production DATABASE_URL. See "Next 3 Things" below for exact steps.
+- ✅ `updated_at` column added to `subscriptions` table — `GET /api/admin/keys` verified working (Task 6 — shipped)
 
 **ADMIN_SECRET status:**
 - The original ADMIN_SECRET set by the Backend Builder during Task 3 was never shared with Ahmad and cannot be retrieved.
@@ -91,26 +85,14 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 
 ## Next 3 Things the Manager Must Do (In Order)
 
-### 1. ⚠️ AHMAD ACTION — Fix Task 6 Railway DB Migration (Unblocks everything)
+### 1. Task 7D (Bitcoin Wallet Age Fix) — Backend Builder — IN PROGRESS
+Prompt has been sent to the Backend Builder. They are working on it. Full spec is in BACKEND_TASKS.md. Wait for them to notify completion, then verify and give GO to mark done.
 
-Task 6 code is deployed but `GET /api/admin/keys` returns 500 because the Railway production database is missing the `updated_at` column. The builder cannot fix this — they have no access to the Railway DB. Ahmad must do this.
+### 2. Task 7 (Frontend: Signal Bars → Weighted Display) — Assign to Frontend Builder
+Task 5 (weighted API response) is live on Railway — this is unblocked. Frontend Builder must run `pnpm codegen` first to regenerate types from the updated OpenAPI spec. Full spec is in FRONTEND_TASKS.md and TASKS.md.
 
-**Option A — Railway Shell (easiest, no local setup needed):**
-1. Go to Railway → your backend service → click the "Shell" tab
-2. Run: `pnpm run push` (or `cd lib/db && pnpm run push` depending on workspace layout)
-3. This runs `drizzle-kit push` against the Railway Postgres — the column gets added
-
-**Option B — Local machine:**
-1. Get the Railway `DATABASE_URL` from Railway → Variables tab
-2. Run locally: `DATABASE_URL="<paste-railway-url>" pnpm run push`
-
-**After running:** Tell the new Manager to re-run the verification curl. Once `GET /api/admin/keys` returns 200 with key data (not 500), Task 6 is a full GO and the Backend Builder can be told to mark it done.
-
-### 2. After Task 6 Verified — Assign Task 7D (Bitcoin Wallet Age Fix) to Backend Builder
-Full spec is already written in BACKEND_TASKS.md. Just tell the Backend Builder: "Task 6 verified. Please mark it done. Next task is Task 7D — read the spec in BACKEND_TASKS.md and begin."
-
-### 3. Task 7 (Frontend Weighted Signal Bars) — Unblocked NOW
-Task 5 (weighted API response) is live on Railway. The Frontend Builder can start Task 7 immediately — they must run `pnpm codegen` first to regenerate types from the updated OpenAPI spec. Full spec is in TASKS.md.
+### 3. Task 2B (Logo: Recreate as SVG) — Assign to Frontend Builder
+No dependencies — can run in parallel with Task 7. Full spec is in FRONTEND_TASKS.md and TASKS.md.
 
 ---
 

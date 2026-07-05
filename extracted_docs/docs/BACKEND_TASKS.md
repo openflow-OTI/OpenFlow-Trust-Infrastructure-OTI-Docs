@@ -1,5 +1,5 @@
 # OTI — Backend Builder Task List
-> Last updated: July 5, 2026 (updated by Manager) | Maintained by: Development Manager
+> Last updated: July 6, 2026 (updated by Manager) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Do not skip ahead.
 
@@ -27,33 +27,15 @@
 - Both OpenAPI specs updated (served + frontend codegen)
 - Verified live on Railway
 
+### TASK 6 — subscriptions updatedAt Migration ✅
+- `updated_at` column added to `subscriptions` table via Drizzle migration
+- `PATCH /api/admin/keys/:id` now sets `updated_at: new Date()` on every update
+- Railway production DB migration run manually via Railway Console on July 6, 2026
+- Verified: `GET /api/admin/keys` no longer returns 500
+
 ---
 
 ## 🔴 Your Task Queue — Build In This Exact Order
-
----
-
-### TASK 6 — subscriptions updatedAt Migration
-**Phase:** 1 — Bug Fixes
-**Priority:** MEDIUM
-**Depends on:** Task 3 must be merged first
-
-**Current status (July 5, 2026):** Your code is deployed to Railway ✅
-However, the Railway production database does not yet have the `updated_at` column.
-This is NOT your fault — Railway's deploy does not auto-run migrations.
-Ahmad must run `drizzle-kit push` against the Railway production DATABASE_URL (via the Railway Shell tab). 
-The Manager is handling this. Stand by — do NOT mark Task 6 done until the Manager gives you explicit GO.
-
-**Why you are doing this:**
-The Admin Panel (being built by the Frontend Builder in Task 9) will display a table of all API keys including a "last modified" column. That column needs a timestamp from the database. The `subscriptions` table currently has no `updated_at` column, so every edit to an API key has no timestamp recorded. This migration adds that column and wires it up so the Admin Panel has the data it needs when it ships.
-
-⚠️ **Coordination point — Frontend Builder:**
-The Frontend Builder's Task 9 (Admin Panel UI) depends on this migration being merged and deployed first. Once the Manager confirms Task 6 is verified on Railway, the Frontend Builder can proceed with Task 9.
-
-**What to build:**
-Add an `updated_at` column to the `subscriptions` table via a Drizzle migration. The column should be `timestamp`, nullable, defaulting to null (so existing rows aren't affected). Update the `PATCH /api/admin/keys/:id` handler in `src/routes/admin.ts` to set `updated_at: new Date()` on every update. Update the Drizzle schema file for the `subscriptions` table to include the new column.
-
-**Definition of done:** Migration runs cleanly. PATCH endpoint updates `updated_at`. Column visible in database.
 
 ---
 
