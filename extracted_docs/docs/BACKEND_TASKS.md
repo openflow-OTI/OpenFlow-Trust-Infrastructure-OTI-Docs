@@ -128,8 +128,9 @@ This file is your working document. It must always reflect the real state of you
 2. Note what was built in one line
 3. Notify the Manager
 
-**When the Manager adds a new task:**
-- It will appear at the bottom of your Queue section in this file
+**When the Manager assigns you a new task:**
+- The Manager will notify you and point you to the new task in `TASKS.md`
+- You read it, then add it yourself to the bottom of your Queue section in this file
 - Read it fully before starting — every task has a "Why" and a "Definition of done"
 - Do not start a task that has a ⚠️ dependency warning until the Manager confirms it is cleared
 

@@ -10,8 +10,8 @@
 - **TASKS.md = the Manager's master record** (all tasks, all roles, all phases — complete picture)
 - **BACKEND_TASKS.md / FRONTEND_TASKS.md** = what each Builder actually reads and works from
 - **ROADMAP.md = the strategic context** (why we're building it, the phases, the goals)
-- When something is done: mark it ✅ here AND in the relevant Builder task file (`BACKEND_TASKS.md` or `FRONTEND_TASKS.md`) AND update `MANAGER_HANDOVER.md`
-- When a new task is added: add it here AND in the relevant Builder task file — both files must always match
+- When something is done: mark it ✅ here AND update `MANAGER_HANDOVER.md`
+- When a new task is added: add it here, then notify the Builder — the Builder adds it to their own file themselves
 
 ---
 
