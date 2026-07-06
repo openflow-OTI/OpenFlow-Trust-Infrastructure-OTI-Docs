@@ -89,7 +89,7 @@
 **Owner:** Backend Builder
 **Phase:** 2 — Operational
 **Priority:** MEDIUM — blocks Task 7C (Frontend)
-**Status:** ⏸️ ON HOLD — confirmed by Backend Builder in BACKEND_TASKS.md, at Ahmad's explicit request, NOT a bug, NOT abandoned
+**Status:** ✅ RESOLVED / CLOSED (July 7, 2026, Ahmad's decision — see resolution below)
 **Depends on:** Nothing
 **Context:** Frontend Builder correctly flagged that `GET /admin/plan-configs` now requires `x-admin-secret` (Task 3), and sending that secret from public client-side code would expose it to every user in devtools. Do not do that. This task adds a safe public endpoint instead.
 
@@ -105,11 +105,7 @@
 4. Manager re-tested after the fix deployed — endpoint still returned `null` (fix may not have taken effect yet, or Railway hadn't finished redeploying, or the self-heal isn't matching the row — never fully confirmed either way, since Ahmad asked to pause before further debugging).
 5. **Ahmad's explicit instruction: leave the limit unlimited for now. Do not force it back to a number. Pause this task until he's done testing.**
 
-**What "on hold" means in practice:**
-- Do NOT continue debugging or redeploying anything for this task right now.
-- Do NOT let the self-heal logic silently override Ahmad's intentional `NULL` again without his awareness — this needs a design fix, not just a re-test (see below).
-- When Ahmad is ready to resume (after his own testing, before or alongside Task 9 Admin Panel), the Manager will re-open this task with a follow-up decision needed: **should the self-heal logic be removed or changed so it never overwrites an intentionally-set `NULL`, only fixing truly corrupted/missing rows?** That design question is unresolved — flag it, don't guess at it.
-- The public endpoint code itself (route, schema, auth exclusion) is NOT in question and does not need to change — only the self-heal side-effect on `daily_limit` values is in question.
+**Resolution (Ahmad's decision, July 7, 2026):** Closed. Ahmad will set the real `anonymous` `daily_limit` himself directly via the Admin Panel (Task 9) once it's live — that is now the intended, permanent way this value gets managed, not a temporary testing state. The self-heal fix in `seedPlanConfigs()` must be changed so it never overwrites an existing row's value (including an intentional `NULL`) — it should only seed a default when a plan row is missing entirely (e.g. first-ever boot / fresh database). This fix is folded into Task 9-BACKEND below. The public endpoint itself (route, schema, auth exclusion) does not need to change.
 
 ---
 
@@ -117,15 +113,15 @@
 **Owner:** Frontend Builder
 **Phase:** 2 — Operational
 **Priority:** MEDIUM
-**Status:** 🟠 ON HOLD — blocked on Task 7C-BACKEND, which is itself on hold at Ahmad's request (see above)
-**Depends on:** Task 7C-BACKEND (public endpoint)
+**Status:** 🟠 ON HOLD — waiting on Ahmad to set a real `daily_limit` via the Admin Panel (Task 9), not a code blocker
+**Depends on:** Task 9-BACKEND (admin routes) so Ahmad has a UI to set the limit
 
 **Frontend work already done (per Builder report, July 7, 2026):**
 - `src/hooks/useAnonymousLimit.ts` created — ready, just needs to point at the new endpoint once it exists
 - `src/pages/Home.tsx` updated — displays live limit on success, falls back to "Anonymous lookups are limited per day. Choose your wallet carefully." on failure
 - Correctly avoided sending the admin secret from the client
 
-**Why this is paused too:** The backend endpoint currently returns `null` for `daily_limit` (see Task 7C-BACKEND history) — this is intentional right now because Ahmad is running his own manual tests with the limit removed. There is nothing broken on the frontend side to fix. No further frontend action needed until Task 7C-BACKEND resumes.
+**Why this is paused too:** The backend endpoint currently returns `null` for `daily_limit` — intentional, since Ahmad plans to set the real value himself via the Admin Panel once it's live. There is nothing broken on the frontend side. No further frontend action needed until Ahmad sets a real limit.
 
 **Definition of done:** Homepage rate limit text reflects the live `anonymous` plan's daily_limit via the new public endpoint. Changing the value in the database updates what the homepage shows automatically.
 
@@ -193,6 +189,34 @@
 > All API calls must include the `x-admin-secret` header (read from sessionStorage). Style consistently with the existing black + mint design system. Plain HTML tables are fine — no table library required.
 
 **Definition of done:** `/admin` route works. Password gates all screens. All 4 screens render real data from the backend. Cache flush button works.
+
+**Frontend status (July 7, 2026):** Frontend Builder shipped this — password gate, all 4 screens, and secure auth design (backend is sole authority on the secret, no client-side comparison). Manager verified live: gate renders correctly on `otiscore.vercel.app/admin`, but `GET /admin/stats`, `/admin/keys`, `/admin/history`, `/admin/cache/flush` all return **404** on the live Railway backend — routes don't exist yet. Blocked on Task 9-BACKEND below.
+
+---
+
+### TASK 9-BACKEND — Backend: Admin Panel API Routes
+**Owner:** Backend Builder
+**Phase:** 2 — Operational
+**Priority:** HIGH — blocks Task 9 (Frontend), which is built and waiting
+**Depends on:** Task 3 (admin auth), Task 6 (updatedAt migration)
+**Context:** Frontend Builder already shipped the Admin Panel UI (Task 9) calling these exact routes, but none of them exist on the backend yet — all return 404 in production. This task makes them real.
+
+**Full prompt for Backend Builder:**
+> Add these 4 routes under the existing `/admin/*` route group (must stay behind `adminAuth` / `x-admin-secret` middleware from Task 3):
+>
+> 1. `GET /admin/stats` — returns `{ today_requests, week_requests, month_requests, total_keys, active_keys, cache_hit_rate, requests_by_plan: [{ plan, count }] }` (query from wherever request logs / api_keys currently live).
+> 2. `GET /admin/keys` — list all API keys: owner/email, plan, daily limit, usage today, last used, active/suspended status, created date, expires date, last4 of the key (never return the full raw key on list).
+>    `POST /admin/keys` — create a new key (body: email, plan, daily limit). Return the full raw key value ONCE in the response (frontend shows it once, never again).
+>    `PATCH /admin/keys/:id` — edit plan, daily limit, expires_at, active/suspended status.
+>    `DELETE /admin/keys/:id` — delete a key.
+> 3. `GET /admin/history` — recent wallet lookups: address, chain, score, timestamp. Paginate or cap at a reasonable recent window (e.g. last 500).
+> 4. `POST /admin/cache/flush` — flushes the score cache. Return `{ success: true, cleared: number }`.
+>
+> Also, while touching this code: fix the `seedPlanConfigs()` self-heal logic from Task 7C-BACKEND — it must only insert a default row when a plan is missing entirely from `plan_configs`. It must NEVER overwrite an existing row's `daily_limit`, including an existing `NULL` value — that's an intentional admin-set state now that the Admin Panel lets Ahmad manage it directly.
+>
+> Add all 4 routes to the OpenAPI spec.
+
+**Definition of done:** All 4 routes return real data with a valid `x-admin-secret` header and 401 without one. Manager verifies live by logging into `/admin` on `otiscore.vercel.app` with the real secret and confirming all 4 screens load data with no errors. `seedPlanConfigs()` no longer overwrites existing rows' `daily_limit`.
 
 ---
 

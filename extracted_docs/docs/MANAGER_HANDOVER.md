@@ -34,7 +34,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
 | Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B, 10 done — Task 7C ON HOLD (Ahmad's request), Task 9 next |
-| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
+| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — Task 9-BACKEND (admin routes) next |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
 ---
@@ -67,7 +67,8 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Admin auth confirmed working — 401 without header, passes with correct header
 
 **Known open issues:**
-- 🟠 Task 7C-BACKEND and Task 7C are ON HOLD at Ahmad's explicit request (not bugs, not abandoned). Ahmad intentionally set the `anonymous` plan's `daily_limit` to `NULL` (unlimited) in production for his own manual testing, and plans to set a real limit himself once the Admin Panel (Task 9) exists. The self-heal fix shipped for Task 7C-BACKEND is *designed* to force `NULL` back to a default on every server boot — which would silently undo Ahmad's intentional testing setup without telling him. This is an unresolved design conflict, not something either Builder should re-touch right now. Full history and next steps are documented in TASKS.md under Task 7C-BACKEND — read it before resuming either task.
+- ✅ Task 7C-BACKEND is RESOLVED/CLOSED (Ahmad's decision, July 7, 2026): Ahmad will set the real `anonymous` `daily_limit` himself via the Admin Panel once Task 9-BACKEND ships. The self-heal fix is being corrected as part of Task 9-BACKEND so it never overwrites an existing row's value again. Task 7C (frontend) stays ON HOLD until Ahmad sets a real limit — that's expected, not a bug.
+- 🔴 Task 9 (Admin Panel) frontend is BUILT but blocked: all 4 admin routes (`/admin/stats`, `/admin/keys`, `/admin/history`, `/admin/cache/flush`) return 404 on the live backend. Task 9-BACKEND opened to build them — see TASKS.md.
 - 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C will fix)
 - 🟡 Satoshi genesis wallet still shows 51 days age despite Task 7D (may be stale cache — flush cache and retest before assuming it's still broken)
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
