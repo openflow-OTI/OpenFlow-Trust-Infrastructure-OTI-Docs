@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 6, 2026 (updated by Manager)
+> Last updated: July 7, 2026 (updated by outgoing Manager — credit limit reached)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -23,6 +23,8 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - He is not a software engineer — explain things clearly but don't be condescending
 - He has strong product vision — trust it, build around it
 - He uses the Replit multi-account system (see bottom of this file)
+- He works primarily from his phone
+- One task at a time per Builder — Ahmad's explicit preference
 
 ---
 
@@ -31,43 +33,43 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active | Builds frontend, notifies Manager when work is done |
-| Backend Builder | Active | Tasks 3, 4, 5, (6 code done) complete — see Task 6 blocker below |
+| Frontend Builder | Active | Tasks 1, 2, 2B, 7 done — Task 7B is next |
+| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
 ---
 
-## Current State of Production (as of July 6, 2026)
+## Current State of Production (as of July 7, 2026)
 
 **Live and working:**
 - ✅ Backend on Railway: `https://workspaceapi-server-production-5c0c.up.railway.app`
 - ✅ Frontend on Vercel: `https://otiscore.vercel.app`
-- ✅ 12 chains scoring (10 EVM + TON, Solana, Sui, Bitcoin, Tron = 15 total; 3 intentionally 503)
+- ✅ 15 chains scoring (10 EVM + TON, Solana, Sui, Bitcoin, Tron; BSC/Base/Optimism intentionally 503)
 - ✅ API key + daily quota system (dynamic, DB-driven)
 - ✅ Score caching
 - ✅ Compromised wallet denylist + red banner UI
 - ✅ PNG score card sharing
-- ✅ Logo component fix (Task 2 — shipped)
-- ✅ SVG logo live — crisp at all sizes, zero blur on Retina (Task 2B — shipped)
-- ✅ Signal bars show weighted values `weighted/maxWeight` — black screen crash resolved (Task 7 — shipped)
-- ✅ Frontend Builder files updated — Task 7 marked done in FRONTEND_TASKS.md and TASKS.md
 - ✅ UI polish (Task 1 — shipped)
+- ✅ Logo component fix (Task 2 — shipped)
+- ✅ SVG logo — crisp at all sizes, zero Retina blur (Task 2B — shipped)
 - ✅ Admin endpoints secured with `x-admin-secret` header (Task 3 — shipped)
-- ✅ History endpoint now reads from `chain_scores` DB — persists across restarts (Task 4 — shipped)
+- ✅ History endpoint reads from `chain_scores` DB (Task 4 — shipped)
 - ✅ Score response returns weighted signals `{ score, weighted, maxWeight }` per signal (Task 5 — shipped)
-- ✅ `updated_at` column added to `subscriptions` table — `GET /api/admin/keys` verified working (Task 6 — shipped)
-- ✅ Bitcoin wallet age pagination fix — `walletAgedays` now returns correct values (Task 7D — shipped, verified on Railway)
+- ✅ `updated_at` column on `subscriptions` table (Task 6 — shipped, manual Railway migration run)
+- ✅ Bitcoin wallet age pagination fix — paginates through mempool.space history, 40-page cap (Task 7D — shipped)
+- ✅ Signal bars show `weighted/maxWeight` — black screen crash resolved (Task 7 — shipped)
 
 **ADMIN_SECRET status:**
-- The original ADMIN_SECRET set by the Backend Builder during Task 3 was never shared with Ahmad and cannot be retrieved.
-- Ahmad has set a NEW `ADMIN_SECRET` in Railway Variables and in this Replit's secrets. Both now match.
-- Admin auth is confirmed working — 401 without header, passes with correct header.
+- Original secret set by Backend Builder during Task 3 was never shared — cannot be retrieved
+- Ahmad set a NEW `ADMIN_SECRET` in Railway Variables. Both Railway and this Replit's secrets match.
+- Admin auth confirmed working — 401 without header, passes with correct header
 
-**Other open issues:**
-- 🟡 Results page UX needs professional redesign (Ahmad's explicit request)
-- ~~🟡 Bitcoin wallet age calculation bug~~ — fixed in Task 7D ✅
+**Known open issues:**
+- 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C will fix)
+- 🟡 Satoshi genesis wallet still shows 51 days age despite Task 7D (may be stale cache — flush cache and retest before assuming it's still broken)
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
-- 🟡 Dead code: `recordHistory()` in `score.ts` still writes to `lib/history.ts` — nothing reads it anymore (flagged for future cleanup)
+- 🟡 Results page UX needs professional redesign — Task 8 will fix this
+- 🟡 Dead code: `recordHistory()` in `score.ts` still writes to `lib/history.ts` — nothing reads it (flagged for future cleanup)
 
 ---
 
@@ -81,21 +83,55 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | CORS is fully open | Intentional — OTI is a public developer API |
 | BSC/Base/Optimism are 503 | Waiting for Etherscan Lite decision |
 | Admin page is URL-only (no nav link) | Ahmad's decision |
-| Non-EVM scoring heuristics are unchanged | Ahmad confirmed acceptable |
 | WOR reports are automated (no admin review) | Ahmad's decision |
+| One task at a time per Builder | Ahmad's explicit preference |
+
+---
+
+## ⚠️ Task Numbering — Read This
+
+There is a numbering note to be aware of:
+- **Task 11C** = Backend Signal Accuracy Audit (Pre-Distribution, Phase 4) — added July 6, 2026
+- **Task 12** = Telegram Bot (Phase 5, Distribution) — pre-existing
+- **Task 13** = Chrome Extension (Phase 5)
+- **Task 14** = Embeddable Widget (Phase 5)
+- **Task 15** = Firefox Extension (Phase 5)
+
+The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renamed to Task 11C to avoid collision. The Backend Builder has been notified and has added it to BACKEND_TASKS.md as Task 11C.
 
 ---
 
 ## Next 3 Things the Manager Must Do (In Order)
 
-### 1. Task 7B (Frontend: txCount Cap Indicator) — Assign to Frontend Builder next
-Quick cosmetic win. Full spec in TASKS.md and FRONTEND_TASKS.md.
+### 1. Assign Task 7B to the Frontend Builder — do this immediately
+**Prompt ready to send:**
+```
+Task 7B — txCount Cap Indicator
 
-### 2. Task 7B → 7C → 10 → 9 → 8 → 11A → 11B — queue in that order
-All queued for Frontend Builder. One task at a time.
+In the results page, the signal bar subtitle for Transaction Count shows
+the raw txCount from the API metadata. When metadata.txCount >= 1000,
+display "1,000+ transactions" instead of "1000 transactions". This tells
+users that Etherscan's free tier caps the count and the real volume may
+be higher.
 
-### 3. Task 12 (Backend: Signal Accuracy Audit) — queued for AFTER distribution prep
-Non-EVM chains (Bitcoin, Solana, TON, Tron, Sui) are being scored with EVM-specific signals (token holding, smart contract interactions, internal transactions). This produces wrong scores. Satoshi genesis wallet showing 51 days age (should be ~5,700+) confirmed this is still broken despite Task 7D. Schedule Task 12 after Task 11B. Full spec in TASKS.md.
+Definition of done: A wallet with txCount=1000 shows "1,000+ transactions"
+in the Transaction Count signal subtitle.
+
+Test against a real high-volume wallet on the live Vercel deployment.
+Notify the Manager when ready for review. Do not mark done until Manager confirms.
+```
+
+### 2. Frontend queue after Task 7B (in this exact order, one at a time)
+- Task 7C — Dynamic Rate Limit Display
+- Task 10 — API Health Status Indicator (navbar dot)
+- Task 9 — Admin Panel UI
+- Task 8 — Professional Results Page Redesign
+- Task 11A — Marketing Homepage + Move scoring to /score
+- Task 11B — Whitepaper Page
+
+### 3. Backend queue after all Phase 4 Frontend tasks complete
+- Task 11C — Signal Accuracy Audit & Cross-Chain Fix (CRITICAL — must ship before distribution)
+- Tasks 12–15 — Distribution channels (Telegram Bot, Chrome Extension, Widget, Firefox Extension)
 
 ---
 
@@ -106,75 +142,72 @@ Ahmad uses multiple Replit free-tier accounts to avoid hitting credit limits:
 - **Frontend Builder account** — builds frontend, notifies Manager when work is done
 - **Backend Builder account** — builds backend, notifies Manager when work is done
 
-When credits exhaust → Ahmad pushes to GitHub via Replit's Git interface → open new account → handover → continue.
-
-**The problem:** Handover documents between Manager accounts were inconsistent, causing context loss and orphaned planned features appearing as "abandoned" code.
+When credits exhaust → Ahmad pushes to GitHub via Replit's Git interface → opens new account → handover → continue.
 
 **The solution (implemented July 5, 2026):**
-All context now lives in the GitHub repository itself — not in AI chat memory:
+All context lives in the GitHub repository — not in AI chat memory:
 - `docs/MANAGER_HANDOVER.md` — this file
 - `docs/ARCHITECTURE.md` — what every piece of the codebase is
 - `docs/ROADMAP.md` — all planned features with status
-- `docs/TASKS.md` — master task list (all tasks, all roles — Manager adds tasks, Builders update it only when Manager says so)
-- `docs/BACKEND_TASKS.md` — Backend Builder's dedicated task list
-- `docs/FRONTEND_TASKS.md` — Frontend Builder's dedicated task list
+- `docs/TASKS.md` — master task list (Manager adds tasks, Builders update only when Manager says so)
+- `docs/BACKEND_TASKS.md` — Backend Builder's dedicated task file
+- `docs/FRONTEND_TASKS.md` — Frontend Builder's dedicated task file
 - `docs/BUILDER_ONBOARDING.md` — onboarding for each Builder role
 - `docs/READING_GUIDE.md` — who reads which file and when
 
 ---
 
-## How Builders Get These Docs (No Manual File Sharing Needed)
+## How Builders Get These Docs
 
-Builders do not receive docs via email or file download. The **OTI docs** zip file lives inside the GitHub repos. When a Builder clones the repo to start work, they extract the OTI docs zip from the project root to get all doc files.
+Builders do not receive docs via email or file download. The **OTI docs zip file** lives inside the GitHub repos. When a Builder clones the repo, they extract the zip to get all doc files.
 
 **What Ahmad tells each Builder on day one:**
-> "Clone the repo. Find the OTI docs zip file in the project root and extract it. Read `BUILDER_ONBOARDING.md` first, then `ARCHITECTURE.md`, then open your dedicated task file — `BACKEND_TASKS.md` if you are the Backend Builder, `FRONTEND_TASKS.md` if you are the Frontend Builder."
+> "Clone the repo. Find the OTI docs zip file in the project root and extract it. Read BUILDER_ONBOARDING.md first, then ARCHITECTURE.md, then open your dedicated task file."
 
 **GitHub visibility:**
-- **Frontend repo → PUBLIC** — React code has no secrets, making it public builds developer trust
-- **Backend repo → PRIVATE** — scoring algorithm IP, admin routes, API key logic stays private
+- **Frontend repo → PUBLIC** — React code has no secrets
+- **Backend repo → PRIVATE** — scoring algorithm IP, admin routes, API key logic
 
 ---
 
-## New Manager Startup Procedure (5 minutes, not 5 hours)
-1. Clone the repo (or `git pull` if already cloned)
-2. Read `docs/MANAGER_HANDOVER.md` (this file)
-3. Read `docs/ARCHITECTURE.md`
-4. Read `docs/ROADMAP.md`
-5. Read `docs/TASKS.md`
-6. Check GitHub for open PRs awaiting review
-7. Continue from "Next 3 Things" section above
+## New Manager Startup Procedure (5 minutes)
+
+1. Read `docs/MANAGER_HANDOVER.md` (this file)
+2. Read `docs/ARCHITECTURE.md`
+3. Read `docs/ROADMAP.md`
+4. Read `docs/TASKS.md`
+5. Check GitHub for open PRs awaiting review
+6. Jump straight to "Next 3 Things" above — Task 7B prompt is ready to send
 
 **Rule before ending ANY Manager session:**
-Update the following before closing — no exceptions:
-1. If a task was confirmed done: explicitly tell the Builder to mark it ✅ in both their own task file AND `TASKS.md`
-2. If a new task was added: add it to `TASKS.md` first, then explicitly tell the Builder to add it to their own file AND to `TASKS.md`
-3. Builders do not update any file on their own — they act only when the Manager explicitly tells them to, whether marking done or adding new tasks
-4. Update "Current State of Production" and "Next 3 Things" in this file
+1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md
+2. If a new task was added: add to TASKS.md first, then tell Builder to add to their own file AND TASKS.md
+3. Builders never update files on their own initiative — only when Manager explicitly instructs
+4. Update "Current State of Production" and "Next 3 Things" in this file before closing
 5. Ahmad pushes everything via Replit's Git interface
-
-This is the lifeline between Manager accounts. 5 minutes of updating now saves hours of re-research later.
 
 ---
 
 ## ⚠️ Critical Infrastructure Note — Railway Migrations Do NOT Auto-Run
 
-Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && build && start`. It does **NOT** run `drizzle-kit push` or any DB migration step. This means every future schema change (new column, new table, index) that the Backend Builder adds will need Ahmad to manually run `drizzle-kit push` against the Railway production DATABASE_URL after deploying.
+Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && build && start`. It does **NOT** run `drizzle-kit push`. Every future schema change needs Ahmad to manually run `drizzle-kit push` against the Railway production DATABASE_URL after deploying.
 
-**Recommended fix (optional follow-up task):** Add `drizzle-kit push` to `railway.json`'s `buildCommand` so migrations run automatically on every deploy. The builder flagged this. It's a one-line change to `railway.json` — NOT `nixpacks.toml` (which is sacred). Manager can assign this as a micro-task if Ahmad wants.
+**Optional fix:** Add `drizzle-kit push` to `railway.json`'s `buildCommand` — one-line change, NOT `nixpacks.toml` (sacred). Manager can assign as a micro-task if Ahmad wants.
 
 ---
 
 ## Critical Context That Must Never Be Lost
 
-1. **Wallet Ownership Registry (WOR)** is Ahmad's flagship new feature. Off-chain signing + passkey pre-registration. Users can self-report wallet compromise even when attacker also has keys (passkey is the differentiator). No blockchain. No admin review. Fully automated. See ROADMAP.md Phase 4.
+1. **Wallet Ownership Registry (WOR)** is Ahmad's flagship feature. Off-chain signing + passkey pre-registration. Users can self-report wallet compromise even when attacker has keys (passkey is the differentiator). No blockchain. No admin review. Fully automated. See ROADMAP.md Phase 4.
 
-2. **`wallet_links` table** was built in anticipation of WOR + portfolio. It is NOT abandoned — it needs WOR to exist first.
+2. **`wallet_links` table** was built in anticipation of WOR + portfolio. NOT abandoned — needs WOR to exist first.
 
 3. **`scores` table** is a lightweight fast-lookup cache alongside the full `chain_scores` historical table. NOT redundant — serves a different read pattern.
 
-4. **`useHealth` hook** was designed for a navbar API status indicator dot. NOT unused by mistake — just needs a component connected to it.
+4. **`useHealth` hook** was designed for the navbar API status dot. NOT unused — just needs Task 10 to connect a component to it.
 
-5. **History endpoint** reads from memory as temporary scaffolding — the permanent fix is to read `chain_scores` from DB. Data is there.
+5. **The 3 unavailable chains** (BSC, Base, Optimism) return 503 intentionally — need Etherscan Lite ($49/mo). Ahmad is aware and has not yet decided.
 
-6. **The 3 unavailable chains** (BSC, Base, Optimism) return 503 intentionally — they need Etherscan Lite subscription. Ahmad is aware.
+6. **Task 11C numbering** — the Signal Accuracy Audit is Task 11C, not Task 12. Task 12 is the Telegram Bot (Phase 5). Do not confuse them.
+
+7. **Non-EVM signal accuracy is a known critical bug** — every non-EVM wallet is currently scored with EVM-specific logic. Bitcoin wallets get 0/20 for token holding (no ERC-20 tokens exist on Bitcoin), fabricated smart contract interaction data, and wrong timing subtitles. This is Task 11C and must be fixed before any distribution channel launches.

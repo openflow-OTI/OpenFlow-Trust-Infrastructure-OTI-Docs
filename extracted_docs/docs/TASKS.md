@@ -696,7 +696,7 @@ See ROADMAP.md Phase 5, Channel 2 for full technical spec.
 
 ---
 
-### TASK 12 — Backend: Signal Accuracy Audit & Cross-Chain Fix
+### TASK 11C — Backend: Signal Accuracy Audit & Cross-Chain Fix
 **Owner:** Backend Builder
 **Phase:** Pre-Distribution (must be done before Phase 5 launches)
 **Priority:** CRITICAL — signals are the core product; wrong data destroys trust
