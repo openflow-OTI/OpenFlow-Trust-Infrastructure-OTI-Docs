@@ -85,16 +85,33 @@
 
 ---
 
+### TASK 7C-BACKEND — Backend: Public Anonymous Rate Limit Endpoint
+**Owner:** Backend Builder
+**Phase:** 2 — Operational
+**Priority:** MEDIUM — blocks Task 7C (Frontend)
+**Depends on:** Nothing
+**Context:** Frontend Builder correctly flagged that `GET /admin/plan-configs` now requires `x-admin-secret` (Task 3), and sending that secret from public client-side code would expose it to every user in devtools. Do not do that. This task adds a safe public endpoint instead.
+
+**Full prompt for Backend Builder:**
+> Add a new public endpoint `GET /api/config/anonymous-limit` that returns `{ "daily_limit": number }` — the `daily_limit` value for the `anonymous` row in the `plan_configs` table. No authentication required (this is not sensitive data — it's the same "3 per day" text already shown publicly on the homepage). Do not add this to the `/api/admin/*` route group — it must stay outside `adminAuth` middleware since the frontend calls it with no secret. Add it to the OpenAPI spec.
+
+**Definition of done:** `curl https://workspaceapi-server-production-5c0c.up.railway.app/api/config/anonymous-limit` returns `{ "daily_limit": 3 }` (or current value) with no headers required, no 401.
+
+---
+
 ### TASK 7C — Frontend: Dynamic Rate Limit Display
 **Owner:** Frontend Builder
 **Phase:** 2 — Operational
 **Priority:** MEDIUM
-**Depends on:** Nothing (reads from existing API)
+**Status:** 🟡 BLOCKED — waiting on Task 7C-BACKEND
+**Depends on:** Task 7C-BACKEND (public endpoint)
 
-**Full prompt for Frontend Builder:**
-> The homepage currently has hardcoded text: "Anonymous lookups are limited to 3 per day." This value should come from the API instead. Call `GET /api/healthz` or a suitable endpoint to fetch the anonymous plan's `daily_limit` from the backend and display it dynamically. If the fetch fails, fall back to showing "limited per day" without a number. This ensures the text stays accurate when the `plan_configs` table is updated without needing a frontend redeploy.
+**Frontend work already done (per Builder report, July 7, 2026):**
+- `src/hooks/useAnonymousLimit.ts` created — ready, just needs to point at the new endpoint once it exists
+- `src/pages/Home.tsx` updated — displays live limit on success, falls back to "Anonymous lookups are limited per day. Choose your wallet carefully." on failure
+- Correctly avoided sending the admin secret from the client
 
-**Definition of done:** Homepage rate limit text reflects the live `anonymous` plan's daily_limit. Changing the value in the database updates what the homepage shows automatically.
+**Definition of done:** Homepage rate limit text reflects the live `anonymous` plan's daily_limit via the new public endpoint. Changing the value in the database updates what the homepage shows automatically.
 
 ---
 
