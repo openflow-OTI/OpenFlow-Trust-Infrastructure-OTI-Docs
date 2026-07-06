@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "YSAb18h-yi3gp9g6-xxG6"
+uri = "file://logo_generated.svg"
+type = "image"
+title = "OTI Logo — Generated SVG"
