@@ -89,7 +89,7 @@
 **Owner:** Backend Builder
 **Phase:** 2 — Operational
 **Priority:** MEDIUM — blocks Task 7C (Frontend)
-**Status:** 🟠 ON HOLD — at Ahmad's explicit request, NOT a bug, NOT abandoned
+**Status:** ⏸️ ON HOLD — confirmed by Backend Builder in BACKEND_TASKS.md, at Ahmad's explicit request, NOT a bug, NOT abandoned
 **Depends on:** Nothing
 **Context:** Frontend Builder correctly flagged that `GET /admin/plan-configs` now requires `x-admin-secret` (Task 3), and sending that secret from public client-side code would expose it to every user in devtools. Do not do that. This task adds a safe public endpoint instead.
 
