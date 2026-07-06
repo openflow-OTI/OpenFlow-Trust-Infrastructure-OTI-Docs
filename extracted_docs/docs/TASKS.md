@@ -21,7 +21,7 @@
 | Role | Status | Notes |
 |---|---|---|
 | Frontend Builder | Active | Tasks 1, 2 done — Task 7 and Task 2B up next |
-| Backend Builder | Active | Tasks 3, 4, 5, 6 done — Task 7D in progress |
+| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
 
 ---
 
@@ -48,6 +48,11 @@
 - `signalWeighting.ts` transformer added (scoring.ts untouched)
 - Score response now returns `{ score, weighted, maxWeight }` per signal
 - Both OpenAPI specs updated (served + frontend codegen); verified live on Railway
+
+### Task 7D — Bitcoin Wallet Age Fix ✅
+- Pagination bug fixed in `bitcoin.ts` — `getBitcoinTxs()` now paginates backwards through mempool.space history
+- Safety cap of 40 pages added to bound latency for hyperactive wallets
+- Verified on Railway: old wallets returning walletAgedays 4,896 and 5,002 (previously returning ~5)
 
 ### Task 6 — subscriptions updatedAt Migration ✅
 - `updated_at` column added to `subscriptions` table via Drizzle migration

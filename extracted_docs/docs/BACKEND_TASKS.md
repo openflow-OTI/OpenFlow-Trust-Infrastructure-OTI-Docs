@@ -33,24 +33,17 @@
 - Railway production DB migration run manually via Railway Console on July 6, 2026
 - Verified: `GET /api/admin/keys` no longer returns 500
 
+### TASK 7D — Bitcoin Wallet Age Fix ✅
+- Root cause: `getBitcoinTxs()` was fetching only the most recent ~50 txs (single page) — not full history
+- Fix: now paginates backwards through mempool.space `/address/:address/txs/chain/:last_seen_txid` until true wallet history start
+- Safety cap of 40 pages added to bound latency for hyperactive wallets
+- Verified on Railway: old wallets returning walletAgedays 4,896 and 5,002 (previously ~5)
+
 ---
 
 ## 🔴 Your Task Queue — Build In This Exact Order
 
----
-
-### TASK 7D — Bitcoin Wallet Age Fix
-**Phase:** 1 — Bug Fixes
-**Priority:** MEDIUM
-**Depends on:** Task 3 must be merged first
-
-**Why you are doing this:**
-Bitcoin is one of the 5 non-EVM chains OTI supports. Wallet Age carries 25% of the total trust score — the single highest weight of any signal. A Bitcoin wallet created in 2020 should score near 100 on wallet age, giving it 25 points toward the overall score. Instead, a bug in the timestamp parsing returns `walletAgedays: 5`, making every Bitcoin wallet appear brand new regardless of its actual age. This means every Bitcoin score is wrong. The fix is isolated to the Bitcoin chain handler and does not touch `scoring.ts`.
-
-**What to build:**
-There is a timestamp parsing bug in the Bitcoin chain handler (`bitcoin.ts` or equivalent). When computing `walletAgedays`, the calculation returns `5` for wallets that are years old (e.g., a wallet created in 2022 returns only 5 days). Investigate the timestamp format returned by the Bitcoin API (likely milliseconds vs seconds confusion, or epoch vs block height conversion error). Fix the calculation so `walletAgedays` correctly reflects the number of days since the wallet's first transaction. Verify with a known old Bitcoin wallet address.
-
-**Definition of done:** A Bitcoin wallet with first activity in 2020 returns a `walletAgedays` value greater than 1,000 days.
+Queue is currently empty. Standing by for Manager to assign next task.
 
 ---
 

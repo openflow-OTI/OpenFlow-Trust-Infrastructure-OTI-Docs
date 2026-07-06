@@ -53,6 +53,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ History endpoint now reads from `chain_scores` DB — persists across restarts (Task 4 — shipped)
 - ✅ Score response returns weighted signals `{ score, weighted, maxWeight }` per signal (Task 5 — shipped)
 - ✅ `updated_at` column added to `subscriptions` table — `GET /api/admin/keys` verified working (Task 6 — shipped)
+- ✅ Bitcoin wallet age pagination fix — `walletAgedays` now returns correct values (Task 7D — shipped, verified on Railway)
 
 **ADMIN_SECRET status:**
 - The original ADMIN_SECRET set by the Backend Builder during Task 3 was never shared with Ahmad and cannot be retrieved.
@@ -62,7 +63,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 **Other open issues:**
 - 🟡 Logo asset is blurry — component fix done, but the JPG image itself is low-res
 - 🟡 Results page UX needs professional redesign (Ahmad's explicit request)
-- 🟡 Bitcoin wallet age calculation bug
+- ~~🟡 Bitcoin wallet age calculation bug~~ — fixed in Task 7D ✅
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
 - 🟡 Dead code: `recordHistory()` in `score.ts` still writes to `lib/history.ts` — nothing reads it anymore (flagged for future cleanup)
 
@@ -85,14 +86,14 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 
 ## Next 3 Things the Manager Must Do (In Order)
 
-### 1. Task 7D (Bitcoin Wallet Age Fix) — Backend Builder — IN PROGRESS
-Prompt has been sent to the Backend Builder. They are working on it. Full spec is in BACKEND_TASKS.md. Wait for them to notify completion, then verify and give GO to mark done.
-
-### 2. Task 7 (Frontend: Signal Bars → Weighted Display) — Assign to Frontend Builder
+### 1. Task 7 (Frontend: Signal Bars → Weighted Display) — Assign to Frontend Builder
 Task 5 (weighted API response) is live on Railway — this is unblocked. Frontend Builder must run `pnpm codegen` first to regenerate types from the updated OpenAPI spec. Full spec is in FRONTEND_TASKS.md and TASKS.md.
 
-### 3. Task 2B (Logo: Recreate as SVG) — Assign to Frontend Builder
-No dependencies — can run in parallel with Task 7. Full spec is in FRONTEND_TASKS.md and TASKS.md.
+### 2. Task 2B (Logo: Recreate as SVG) — Assign to Frontend Builder
+No dependencies — can run alongside Task 7. Full spec is in FRONTEND_TASKS.md and TASKS.md.
+
+### 3. Backend queue is now empty — no Backend Builder tasks until Frontend unblocks Task 9
+Task 9 (Admin Panel UI) depends on Task 6 (done) — Frontend Builder can now start Task 9 after Task 7 and 2B are complete.
 
 ---
 
