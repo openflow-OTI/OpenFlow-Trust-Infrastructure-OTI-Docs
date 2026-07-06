@@ -89,6 +89,7 @@
 **Owner:** Backend Builder
 **Phase:** 2 — Operational
 **Priority:** MEDIUM — blocks Task 7C (Frontend)
+**Status:** 🟡 IN PROGRESS — deployed to Railway but returning wrong data, sent back to Backend Builder for a fix
 **Depends on:** Nothing
 **Context:** Frontend Builder correctly flagged that `GET /admin/plan-configs` now requires `x-admin-secret` (Task 3), and sending that secret from public client-side code would expose it to every user in devtools. Do not do that. This task adds a safe public endpoint instead.
 
@@ -96,6 +97,8 @@
 > Add a new public endpoint `GET /api/config/anonymous-limit` that returns `{ "daily_limit": number }` — the `daily_limit` value for the `anonymous` row in the `plan_configs` table. No authentication required (this is not sensitive data — it's the same "3 per day" text already shown publicly on the homepage). Do not add this to the `/api/admin/*` route group — it must stay outside `adminAuth` middleware since the frontend calls it with no secret. Add it to the OpenAPI spec.
 
 **Definition of done:** `curl https://workspaceapi-server-production-5c0c.up.railway.app/api/config/anonymous-limit` returns `{ "daily_limit": 3 }` (or current value) with no headers required, no 401.
+
+**Manager test on Railway (July 7, 2026):** Endpoint is live, no auth required, regression check on `/api/admin/plan-configs` still 401 (clean). **But response is `{ "daily_limit": null }` instead of the real value** — production query is not correctly reading the `anonymous` row from `plan_configs`. Likely cause: the row lookup key/value doesn't match production data, or production's `plan_configs` table wasn't seeded the same way as the Builder's local Replit DB. Sent back to Backend Builder to fix and redeploy.
 
 ---
 
