@@ -218,6 +218,24 @@
 
 **Definition of done:** All 4 routes return real data with a valid `x-admin-secret` header and 401 without one. Manager verifies live by logging into `/admin` on `otiscore.vercel.app` with the real secret and confirming all 4 screens load data with no errors. `seedPlanConfigs()` no longer overwrites existing rows' `daily_limit`.
 
+**Status: ✅ DONE — verified live by Manager, July 7, 2026.** All 5 routes (`stats`, `keys`, `history`, `cache/flush`, plus pre-existing `usage`/`plan-configs`) confirmed live in production at `https://workspaceapi-server-production-5c0c.up.railway.app/api/admin/*` — 401 without `x-admin-secret`, consistent with the rest of the API's `/api/*` prefix convention. `seedPlanConfigs()` self-heal fix confirmed via code report (no longer overwrites existing rows).
+
+**Follow-up bug found during verification:** The Frontend Builder's Task 9 code calls `/admin/*` (missing the `/api` prefix) — that's why it returned 404 during initial review. This is a frontend-only fix, tracked separately below as Task 9-FRONTEND-FIX.
+
+---
+
+### TASK 9-FRONTEND-FIX — Frontend: Fix Admin API Base Path
+**Owner:** Frontend Builder
+**Phase:** 2 — Operational
+**Priority:** HIGH — blocks Task 9 from working at all
+**Depends on:** Task 9-BACKEND (done)
+**Context:** Backend admin routes are live and correct at `/api/admin/*` (consistent with `/api/score`, `/api/healthz`, etc.). The Task 9 admin panel frontend code calls `/admin/*` — missing the `/api` prefix — which is why every screen 404'd during Manager review.
+
+**Full prompt for Frontend Builder:**
+> In `src/lib/adminClient.ts` (and anywhere else admin routes are called), change the base path so all admin requests go to `/api/admin/*` instead of `/admin/*`. Confirm `/admin/stats`, `/admin/keys`, `/admin/history`, `/admin/cache/flush`, `/admin/usage`, and `/admin/plan-configs` (if referenced) all use the `/api/admin/` prefix.
+
+**Definition of done:** Logging into `/admin` on `otiscore.vercel.app` with the real secret loads real data on all 4 screens with no errors.
+
 ---
 
 ### TASK 10 — Frontend: API Health Status Indicator
