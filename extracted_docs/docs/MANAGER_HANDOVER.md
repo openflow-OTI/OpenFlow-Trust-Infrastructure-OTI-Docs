@@ -33,7 +33,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B done — Task 7C is next |
+| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B done — Task 7C ON HOLD (Ahmad's request), Task 10 next |
 | Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
@@ -66,7 +66,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Admin auth confirmed working — 401 without header, passes with correct header
 
 **Known open issues:**
-- 🟡 Anonymous rate limit was intentionally set to unlimited by Ahmad for his own testing (`daily_limit = NULL` on the `anonymous` row — not an exploit, not a bug). `apiKeyAuth.ts` treats `null` as "unlimited." Ahmad plans to set it back to a real limit once the Admin Panel (Task 9) exists. **Note:** Task 7C-BACKEND's self-heal fix in `seedPlanConfigs()` resets `daily_limit` to 3 on every boot ONLY if it's currently `NULL` — it will never overwrite a real number, so once Ahmad sets any limit (any value), it persists across restarts. If Ahmad wants to keep testing with unlimited a while longer, don't touch the row and it'll stay `NULL`/unlimited.
+- 🟠 Task 7C-BACKEND and Task 7C are ON HOLD at Ahmad's explicit request (not bugs, not abandoned). Ahmad intentionally set the `anonymous` plan's `daily_limit` to `NULL` (unlimited) in production for his own manual testing, and plans to set a real limit himself once the Admin Panel (Task 9) exists. The self-heal fix shipped for Task 7C-BACKEND is *designed* to force `NULL` back to a default on every server boot — which would silently undo Ahmad's intentional testing setup without telling him. This is an unresolved design conflict, not something either Builder should re-touch right now. Full history and next steps are documented in TASKS.md under Task 7C-BACKEND — read it before resuming either task.
 - 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C will fix)
 - 🟡 Satoshi genesis wallet still shows 51 days age despite Task 7D (may be stale cache — flush cache and retest before assuming it's still broken)
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
@@ -105,32 +105,35 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next 3 Things the Manager Must Do (In Order)
 
-### 1. Assign Task 7C to the Frontend Builder — do this immediately
-**Prompt ready to send:**
+### 1. Task 7C and 7C-BACKEND are ON HOLD — assign Task 10 to Frontend Builder instead
+Task 7C (frontend) and Task 7C-BACKEND (backend) are paused at Ahmad's explicit request — not bugs, not abandoned. Full explanation is in TASKS.md. Do not resume either without Ahmad's go-ahead. Skip to Task 10 for the Frontend Builder in the meantime.
+
+**Prompt ready to send (Task 10):**
 ```
-Task 7C — Dynamic Rate Limit Display
+Task 10 — API Health Status Indicator
 
-The homepage currently has hardcoded text: "Anonymous lookups are limited to
-3 per day." This value should come from the API instead. Call GET /api/healthz
-or a suitable endpoint to fetch the anonymous plan's daily_limit from the
-backend and display it dynamically. If the fetch fails, fall back to showing
-"limited per day" without a number. This ensures the text stays accurate when
-the plan_configs table is updated without needing a frontend redeploy.
+The src/hooks/useHealth.ts hook already exists and pings GET /api/healthz.
+Connect it to a small status indicator in the Navbar (src/components/Navbar.tsx).
 
-Definition of done: Homepage rate limit text reflects the live anonymous
-plan's daily_limit. Changing the value in the database updates what the
-homepage shows automatically.
+Display: a small colored dot (6-8px circle) in the top-right of the navbar.
+- Green dot = API is responding (status: "ok")
+- Red dot = API is unreachable (error state)
+- No dot / pulsing = loading
 
-Test on the live Vercel deployment. Notify the Manager when ready for
-review. Do not mark done until Manager confirms.
+Tooltip on hover: "API online" or "API offline". Keep it subtle.
+
+Definition of done: Navbar shows a green dot when Railway API is up, red
+when it's down. Verify on the live Vercel deployment.
+
+Notify the Manager when ready for review. Do not mark done until Manager confirms.
 ```
 
-### 2. Frontend queue after Task 7C (in this exact order, one at a time)
-- Task 10 — API Health Status Indicator (navbar dot)
+### 2. Frontend queue after Task 10 (in this exact order, one at a time)
 - Task 9 — Admin Panel UI
 - Task 8 — Professional Results Page Redesign
 - Task 11A — Marketing Homepage + Move scoring to /score
 - Task 11B — Whitepaper Page
+- (Task 7C resumes whenever Ahmad gives the go-ahead — see TASKS.md for the design question that needs resolving first)
 
 ### 3. Backend queue after all Phase 4 Frontend tasks complete
 - Task 11C — Signal Accuracy Audit & Cross-Chain Fix (CRITICAL — must ship before distribution)

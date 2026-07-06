@@ -89,7 +89,7 @@
 **Owner:** Backend Builder
 **Phase:** 2 — Operational
 **Priority:** MEDIUM — blocks Task 7C (Frontend)
-**Status:** 🟡 IN PROGRESS — deployed to Railway but returning wrong data, sent back to Backend Builder for a fix
+**Status:** 🟠 ON HOLD — at Ahmad's explicit request, NOT a bug, NOT abandoned
 **Depends on:** Nothing
 **Context:** Frontend Builder correctly flagged that `GET /admin/plan-configs` now requires `x-admin-secret` (Task 3), and sending that secret from public client-side code would expose it to every user in devtools. Do not do that. This task adds a safe public endpoint instead.
 
@@ -98,7 +98,18 @@
 
 **Definition of done:** `curl https://workspaceapi-server-production-5c0c.up.railway.app/api/config/anonymous-limit` returns `{ "daily_limit": 3 }` (or current value) with no headers required, no 401.
 
-**Manager test on Railway (July 7, 2026):** Endpoint is live, no auth required, regression check on `/api/admin/plan-configs` still 401 (clean). **But response is `{ "daily_limit": null }` instead of the real value** — production query is not correctly reading the `anonymous` row from `plan_configs`. Likely cause: the row lookup key/value doesn't match production data, or production's `plan_configs` table wasn't seeded the same way as the Builder's local Replit DB. Sent back to Backend Builder to fix and redeploy.
+**Full history — read this before touching the code again:**
+1. First deploy: endpoint returned `{ "daily_limit": null }` in production. Investigated — root cause was that the `anonymous` row's `daily_limit` in the **production** `plan_configs` table was `NULL`. Backend Builder assumed this was accidental corruption (e.g. an unauthenticated write before Task 3/admin-auth shipped) and shipped a "self-heal" fix in `seedPlanConfigs()`: on every server boot, if `daily_limit` is `NULL` for anonymous/free/pro, it resets it to a default (3 for anonymous). Enterprise is excluded since `NULL` is its intended "unlimited" meaning.
+2. **Ahmad then clarified: the `NULL` value was intentional.** He set it himself, deliberately, to remove the anonymous limit while he does his own manual testing of the live site (unlimited lookups, no 3/day cap getting in his way). He plans to set a real limit himself once the Admin Panel (Task 9) exists.
+3. This creates a genuine conflict with the self-heal fix: the fix is *designed* to force `NULL` back to `3` on every boot — which would silently undo Ahmad's intentional testing setup every time Railway restarts, without telling him.
+4. Manager re-tested after the fix deployed — endpoint still returned `null` (fix may not have taken effect yet, or Railway hadn't finished redeploying, or the self-heal isn't matching the row — never fully confirmed either way, since Ahmad asked to pause before further debugging).
+5. **Ahmad's explicit instruction: leave the limit unlimited for now. Do not force it back to a number. Pause this task until he's done testing.**
+
+**What "on hold" means in practice:**
+- Do NOT continue debugging or redeploying anything for this task right now.
+- Do NOT let the self-heal logic silently override Ahmad's intentional `NULL` again without his awareness — this needs a design fix, not just a re-test (see below).
+- When Ahmad is ready to resume (after his own testing, before or alongside Task 9 Admin Panel), the Manager will re-open this task with a follow-up decision needed: **should the self-heal logic be removed or changed so it never overwrites an intentionally-set `NULL`, only fixing truly corrupted/missing rows?** That design question is unresolved — flag it, don't guess at it.
+- The public endpoint code itself (route, schema, auth exclusion) is NOT in question and does not need to change — only the self-heal side-effect on `daily_limit` values is in question.
 
 ---
 
@@ -106,13 +117,15 @@
 **Owner:** Frontend Builder
 **Phase:** 2 — Operational
 **Priority:** MEDIUM
-**Status:** 🟡 BLOCKED — waiting on Task 7C-BACKEND
+**Status:** 🟠 ON HOLD — blocked on Task 7C-BACKEND, which is itself on hold at Ahmad's request (see above)
 **Depends on:** Task 7C-BACKEND (public endpoint)
 
 **Frontend work already done (per Builder report, July 7, 2026):**
 - `src/hooks/useAnonymousLimit.ts` created — ready, just needs to point at the new endpoint once it exists
 - `src/pages/Home.tsx` updated — displays live limit on success, falls back to "Anonymous lookups are limited per day. Choose your wallet carefully." on failure
 - Correctly avoided sending the admin secret from the client
+
+**Why this is paused too:** The backend endpoint currently returns `null` for `daily_limit` (see Task 7C-BACKEND history) — this is intentional right now because Ahmad is running his own manual tests with the limit removed. There is nothing broken on the frontend side to fix. No further frontend action needed until Task 7C-BACKEND resumes.
 
 **Definition of done:** Homepage rate limit text reflects the live `anonymous` plan's daily_limit via the new public endpoint. Changing the value in the database updates what the homepage shows automatically.
 
