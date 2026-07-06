@@ -50,6 +50,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ Logo component fix (Task 2 — shipped)
 - ✅ SVG logo live — crisp at all sizes, zero blur on Retina (Task 2B — shipped)
 - ✅ Signal bars show weighted values `weighted/maxWeight` — black screen crash resolved (Task 7 — shipped)
+- ✅ Frontend Builder files updated — Task 7 marked done in FRONTEND_TASKS.md and TASKS.md
 - ✅ UI polish (Task 1 — shipped)
 - ✅ Admin endpoints secured with `x-admin-secret` header (Task 3 — shipped)
 - ✅ History endpoint now reads from `chain_scores` DB — persists across restarts (Task 4 — shipped)
