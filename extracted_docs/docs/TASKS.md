@@ -20,7 +20,7 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | Active | Tasks 1, 2, 2B done — Task 7 up next |
+| Frontend Builder | Active | Tasks 1, 2, 2B, 7 done — Task 7B up next |
 | Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
 
 ---
@@ -51,8 +51,17 @@
 
 ### Task 2B — Logo: SVG Replace ✅
 - Original SVG logo file used directly as `public/logo.svg` — no reconstruction needed
-- Crisp at 34px on Retcel/high-DPI screens, zero blur
+- Crisp at 34px on Retina/high-DPI screens, zero blur
 - `generateScoreCard.ts` already pointed to `/logo.svg`
+
+### Task 7 — Frontend: Signal Bars → Weighted Display ✅
+- `pnpm codegen` run — `src/api/schema.gen.ts` regenerated from live backend OpenAPI spec
+- `SignalBar.tsx` updated: bar fill = `(weighted / maxWeight) × 100%`, label = "weighted/maxWeight" e.g. "25/25"
+- Color logic updated to use `weighted / maxWeight` ratio
+- `Home.tsx` updated to pass full signal object to SignalBar
+- `generateScoreCard.ts` updated — score card PNG shows weighted labels and correct fills
+- Verified live against real wallet on Vercel — all 5 bars show weighted values
+- Also resolved black screen crash caused by Task 5 API shape mismatch
 
 ### Task 7D — Bitcoin Wallet Age Fix ✅
 - Pagination bug fixed in `bitcoin.ts` — `getBitcoinTxs()` now paginates backwards through mempool.space history
@@ -68,24 +77,6 @@
 ---
 
 ## 🔴 Queue — Not Started (Build In This Exact Order)
-
----
-
-### TASK 7 — Frontend: Signal Bars → Weighted Display
-**Owner:** Frontend Builder
-**Phase:** 1 — Bug Fixes
-**Priority:** HIGH
-**Depends on:** Task 5 (backend weighted response) must be merged and deployed to Railway first
-
-**Full prompt for Frontend Builder:**
-> Run `pnpm codegen` first to regenerate `src/api/schema.gen.ts` from the updated backend OpenAPI spec (the signal shape has changed).
->
-> Update the signal bar component in the results page (`src/pages/Home.tsx` or wherever the signal bars are rendered):
-> - Bar fill width = `(weighted / maxWeight) × 100%` — not `score / 100`
-> - Score label displayed on the right = `weighted/maxWeight` formatted as a number, e.g. "25/25", "4/20", "10.5/15" (round to 1 decimal)
-> - The color logic (green/red/amber) should be based on `weighted / maxWeight` ratio, same threshold as before
-
-**Definition of done:** Signal bars show weighted contribution. A wallet with walletAge=100 shows "25/25" and full bar. A wallet with transactionCount=20 shows "4/20" and a short bar (20% fill).
 
 ---
 
@@ -702,6 +693,52 @@ See ROADMAP.md Phase 5, Channel 1 for full technical spec, file structure, deplo
 **Depends on:** Phase 4 Gate fully complete. Can be built in parallel with Task 12 if Backend Builder capacity allows — both are standalone processes and do not conflict with each other.
 
 See ROADMAP.md Phase 5, Channel 2 for full technical spec.
+
+---
+
+### TASK 12 — Backend: Signal Accuracy Audit & Cross-Chain Fix
+**Owner:** Backend Builder
+**Phase:** Pre-Distribution (must be done before Phase 5 launches)
+**Priority:** CRITICAL — signals are the core product; wrong data destroys trust
+**Depends on:** Task 11B (do this last in pre-distribution, signals must be accurate before bots drive traffic)
+
+**Context:**
+The 5 scoring signals were designed with EVM chains in mind. Bitcoin, Solana, TON, Tron, and Sui have fundamentally different data models — no ERC-20 tokens, no internal transactions, no smart contracts in the EVM sense. Currently these non-EVM chains are being scored using EVM-specific logic, producing wrong and misleading results. The Satoshi genesis wallet (1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa) scored 51 days wallet age when the correct answer is ~5,700+ days. Smart contract interactions showing "1 smart-contract tx" on a Bitcoin wallet that has never touched a smart contract. Token holding showing 0/20 for Bitcoin wallets because ERC-20 tokens don't exist on Bitcoin. These are not edge cases — they affect every single non-EVM wallet scored by OTI.
+
+**What to audit and fix — per signal:**
+
+**Signal 1 — Wallet Age (25%)**
+- EVM: first transaction timestamp from Etherscan — correct
+- Bitcoin: first tx timestamp from mempool.space — Task 7D attempted a fix but the Satoshi genesis wallet still shows 51 days (CACHED — may be a stale cache). Re-verify Task 7D's fix against the genesis wallet after cache flush. If still wrong, re-investigate.
+- Solana: verify first tx timestamp is being pulled correctly
+- TON, Tron, Sui: verify each one individually
+
+**Signal 2 — Transaction Count (20%)**
+- EVM: Etherscan tx count, capped at 1,000 — acceptable
+- Non-EVM: verify each chain is returning real tx count, not a placeholder or default
+
+**Signal 3 — Token Holding Behavior (20%)**
+- EVM: ERC-20 token diversity — correct
+- Bitcoin: has NO tokens — currently returning 0/20 which unfairly penalises BTC wallets. Fix: if chain is Bitcoin, skip this signal and redistribute its weight proportionally across the other 4 signals, OR score it as neutral (50/100) to avoid penalising wallets for a chain limitation.
+- Solana: has SPL tokens — ensure SPL token diversity is being scored, not defaulting to 0
+- TON, Tron, Sui: verify token data source and scoring for each
+
+**Signal 4 — Smart Contract Interactions (20%)**
+- EVM: internal tx count from Etherscan — correct
+- Bitcoin: has NO smart contracts — currently returning fabricated data ("1 smart-contract tx"). Fix: same approach as Token Holding — redistribute weight or score neutral.
+- Solana: program interactions are the equivalent of contract interactions — verify this is being scored correctly
+- TON, Tron, Sui: verify each
+
+**Signal 5 — Transaction Timing Patterns (15%)**
+- EVM: uses internal transaction timestamps — subtitle shows "0 internal transactions" for non-EVM chains
+- Non-EVM: use actual transaction timestamps for timing analysis. Do not default to 0 or use internal tx counts as a proxy.
+
+**Definition of done:**
+- The Satoshi genesis wallet scores wallet age > 5,000 days
+- No signal shows fabricated data for chains where that data type doesn't exist
+- Non-applicable signals are either redistributed or scored neutral — never 0 by default
+- All 15 supported chains tested with at least one known wallet
+- Results documented in a short test log committed to the repo
 
 ---
 

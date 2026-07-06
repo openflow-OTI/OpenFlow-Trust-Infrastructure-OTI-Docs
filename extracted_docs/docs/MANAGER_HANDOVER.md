@@ -49,6 +49,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ PNG score card sharing
 - ✅ Logo component fix (Task 2 — shipped)
 - ✅ SVG logo live — crisp at all sizes, zero blur on Retina (Task 2B — shipped)
+- ✅ Signal bars show weighted values `weighted/maxWeight` — black screen crash resolved (Task 7 — shipped)
 - ✅ UI polish (Task 1 — shipped)
 - ✅ Admin endpoints secured with `x-admin-secret` header (Task 3 — shipped)
 - ✅ History endpoint now reads from `chain_scores` DB — persists across restarts (Task 4 — shipped)
@@ -86,14 +87,14 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 
 ## Next 3 Things the Manager Must Do (In Order)
 
-### 1. Task 7 (Frontend: Signal Bars → Weighted Display) — Assign to Frontend Builder
-Task 5 (weighted API response) is live on Railway — this is unblocked. Frontend Builder must run `pnpm codegen` first to regenerate types from the updated OpenAPI spec. Full spec is in FRONTEND_TASKS.md and TASKS.md.
+### 1. Task 7B (Frontend: txCount Cap Indicator) — Assign to Frontend Builder next
+Quick cosmetic win. Full spec in TASKS.md and FRONTEND_TASKS.md.
 
-### 2. Task 7B → 7C → 10 → 9 → 8 → 11A → 11B — queue in that order after Task 7
+### 2. Task 7B → 7C → 10 → 9 → 8 → 11A → 11B — queue in that order
 All queued for Frontend Builder. One task at a time.
 
-### 3. Backend queue is still empty — no Backend Builder tasks until Frontend unblocks Task 9
-Task 9 (Admin Panel UI) depends on Task 6 (done) — Frontend Builder can start Task 9 after Tasks 7 and 7B/7C.
+### 3. Task 12 (Backend: Signal Accuracy Audit) — queued for AFTER distribution prep
+Non-EVM chains (Bitcoin, Solana, TON, Tron, Sui) are being scored with EVM-specific signals (token holding, smart contract interactions, internal transactions). This produces wrong scores. Satoshi genesis wallet showing 51 days age (should be ~5,700+) confirmed this is still broken despite Task 7D. Schedule Task 12 after Task 11B. Full spec in TASKS.md.
 
 ---
 
