@@ -43,7 +43,12 @@
 
 ## 🔴 Your Task Queue — Build In This Exact Order
 
-Queue is currently empty. Standing by for Manager to assign next task.
+### TASK — Fix GET /admin/stats 500 error (root cause of Admin Panel login failure)
+**Priority:** CRITICAL — this is the actual root cause of "Access denied — wrong secret", not an auth bug
+**Context:** Full investigation trail: Ahmad reported the Admin Panel rejecting his correct password. adminAuth middleware was confirmed correct (curl with the real secret passes auth). CORS was confirmed clean (preflight allows `x-admin-secret`). The actual root cause: the frontend's login probe calls `GET /api/admin/stats` with the entered secret and only unlocks if it gets back exactly HTTP 200. Since `/admin/stats` crashes with a 500 even with the correct secret, the frontend treats that 500 identically to a wrong password and shows "Access denied — wrong secret" — a misleading error message for what is actually a server crash.
+**Fix needed:** Investigate and fix why `/admin/stats` returns 500 (likely a DB query or connectivity issue inside the stats handler itself — auth passes fine before it).
+
+**Definition of done:** `GET /api/admin/stats` returns 200 with valid stats data given a correct `x-admin-secret`. Once fixed, the Admin Panel login will work immediately with no frontend changes — confirm this live with Ahmad's real secret via curl AND via `otiscore.vercel.app/admin` before marking done.
 
 ---
 
