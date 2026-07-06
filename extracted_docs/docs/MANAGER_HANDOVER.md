@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 7, 2026 (updated by outgoing Manager — credit limit reached)
+> Last updated: July 7, 2026 (Task 7B confirmed done and verified live by Manager)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -33,7 +33,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active | Tasks 1, 2, 2B, 7 done — Task 7B is next |
+| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B done — Task 7C is next |
 | Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
@@ -58,6 +58,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ `updated_at` column on `subscriptions` table (Task 6 — shipped, manual Railway migration run)
 - ✅ Bitcoin wallet age pagination fix — paginates through mempool.space history, 40-page cap (Task 7D — shipped)
 - ✅ Signal bars show `weighted/maxWeight` — black screen crash resolved (Task 7 — shipped)
+- ✅ txCount cap indicator — "1,000+ transactions" shown when metadata.txCount >= 1000, in both UI and score card PNG (Task 7B — shipped, verified live July 7, 2026)
 
 **ADMIN_SECRET status:**
 - Original secret set by Backend Builder during Task 3 was never shared — cannot be retrieved
@@ -103,26 +104,27 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next 3 Things the Manager Must Do (In Order)
 
-### 1. Assign Task 7B to the Frontend Builder — do this immediately
+### 1. Assign Task 7C to the Frontend Builder — do this immediately
 **Prompt ready to send:**
 ```
-Task 7B — txCount Cap Indicator
+Task 7C — Dynamic Rate Limit Display
 
-In the results page, the signal bar subtitle for Transaction Count shows
-the raw txCount from the API metadata. When metadata.txCount >= 1000,
-display "1,000+ transactions" instead of "1000 transactions". This tells
-users that Etherscan's free tier caps the count and the real volume may
-be higher.
+The homepage currently has hardcoded text: "Anonymous lookups are limited to
+3 per day." This value should come from the API instead. Call GET /api/healthz
+or a suitable endpoint to fetch the anonymous plan's daily_limit from the
+backend and display it dynamically. If the fetch fails, fall back to showing
+"limited per day" without a number. This ensures the text stays accurate when
+the plan_configs table is updated without needing a frontend redeploy.
 
-Definition of done: A wallet with txCount=1000 shows "1,000+ transactions"
-in the Transaction Count signal subtitle.
+Definition of done: Homepage rate limit text reflects the live anonymous
+plan's daily_limit. Changing the value in the database updates what the
+homepage shows automatically.
 
-Test against a real high-volume wallet on the live Vercel deployment.
-Notify the Manager when ready for review. Do not mark done until Manager confirms.
+Test on the live Vercel deployment. Notify the Manager when ready for
+review. Do not mark done until Manager confirms.
 ```
 
-### 2. Frontend queue after Task 7B (in this exact order, one at a time)
-- Task 7C — Dynamic Rate Limit Display
+### 2. Frontend queue after Task 7C (in this exact order, one at a time)
 - Task 10 — API Health Status Indicator (navbar dot)
 - Task 9 — Admin Panel UI
 - Task 8 — Professional Results Page Redesign

@@ -20,7 +20,7 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | Active | Tasks 1, 2, 2B, 7 done — Task 7B up next |
+| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B done — Task 7C up next |
 | Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
 
 ---
@@ -74,22 +74,14 @@
 - Railway production DB migration run manually via Railway Console on July 6, 2026
 - `GET /api/admin/keys` verified returning 401 (auth working) — no longer 500
 
+### Task 7B — Frontend: txCount Cap Indicator ✅
+- `src/lib/formatMetadata.ts` — signal bar subtitle shows "1,000+ transactions" when `metadata.txCount >= 1000`
+- `src/lib/generateScoreCard.ts` — same logic applied so the shareable PNG score card stays consistent
+- Verified live on Vercel by Manager: Ethereum Foundation wallet `0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe` returns `txCount: 1000` from the Railway API, and the deployed JS bundle on `otiscore.vercel.app` contains the "1,000+ transactions" string
+
 ---
 
 ## 🔴 Queue — Not Started (Build In This Exact Order)
-
----
-
-### TASK 7B — Frontend: txCount Cap Indicator
-**Owner:** Frontend Builder
-**Phase:** 1 — Bug Fixes
-**Priority:** LOW — cosmetic, no data dependency
-**Depends on:** Nothing (can be done any time after Task 7)
-
-**Full prompt for Frontend Builder:**
-> In the results page, the signal bar subtitle for Transaction Count shows the raw `txCount` from the API `metadata`. When `metadata.txCount >= 1000`, display `"1,000+ transactions"` instead of `"1000 transactions"`. This communicates to users that Etherscan's free tier caps the count and the actual volume may be higher.
-
-**Definition of done:** A wallet with txCount=1000 shows "1,000+ transactions" in the Transaction Count signal subtitle.
 
 ---
 
