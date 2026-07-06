@@ -66,6 +66,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Admin auth confirmed working — 401 without header, passes with correct header
 
 **Known open issues:**
+- 🟡 Anonymous rate limiting silently disabled in production — production `plan_configs` "anonymous" row had `daily_limit = NULL`, and `apiKeyAuth.ts` treats `null` as "unlimited, skip quota enforcement." Likely caused by an unauthenticated write before Task 3 (admin auth) shipped. Task 7C-BACKEND's self-heal fix (in `seedPlanConfigs()`) resets this to 3 on every boot, but flagging here in case Ahmad wants a dedicated audit of whether this was exploited while open.
 - 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C will fix)
 - 🟡 Satoshi genesis wallet still shows 51 days age despite Task 7D (may be stale cache — flush cache and retest before assuming it's still broken)
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
