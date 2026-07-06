@@ -20,7 +20,7 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | Active | Tasks 1, 2 done — Task 7 and Task 2B up next |
+| Frontend Builder | Active | Tasks 1, 2, 2B done — Task 7 up next |
 | Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
 
 ---
@@ -48,6 +48,11 @@
 - `signalWeighting.ts` transformer added (scoring.ts untouched)
 - Score response now returns `{ score, weighted, maxWeight }` per signal
 - Both OpenAPI specs updated (served + frontend codegen); verified live on Railway
+
+### Task 2B — Logo: SVG Replace ✅
+- Original SVG logo file used directly as `public/logo.svg` — no reconstruction needed
+- Crisp at 34px on Retcel/high-DPI screens, zero blur
+- `generateScoreCard.ts` already pointed to `/logo.svg`
 
 ### Task 7D — Bitcoin Wallet Age Fix ✅
 - Pagination bug fixed in `bitcoin.ts` — `getBitcoinTxs()` now paginates backwards through mempool.space history
@@ -123,7 +128,7 @@
 
 ---
 
-### TASK 2B — Logo: Recreate as SVG (Replace the JPG)
+### ~~TASK 2B — Logo: Recreate as SVG (Replace the JPG)~~ ✅ DONE — see Completed section above
 **Owner:** Frontend Builder
 **Phase:** 1 — Bug Fixes (followup to Task 2)
 **Priority:** HIGH — the JPG is blurry on Retina/high-DPI screens; SVG is required for crisp rendering at any size

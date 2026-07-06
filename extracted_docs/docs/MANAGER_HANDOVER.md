@@ -48,6 +48,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ Compromised wallet denylist + red banner UI
 - ✅ PNG score card sharing
 - ✅ Logo component fix (Task 2 — shipped)
+- ✅ SVG logo live — crisp at all sizes, zero blur on Retina (Task 2B — shipped)
 - ✅ UI polish (Task 1 — shipped)
 - ✅ Admin endpoints secured with `x-admin-secret` header (Task 3 — shipped)
 - ✅ History endpoint now reads from `chain_scores` DB — persists across restarts (Task 4 — shipped)
@@ -61,7 +62,6 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Admin auth is confirmed working — 401 without header, passes with correct header.
 
 **Other open issues:**
-- 🟡 Logo asset is blurry — component fix done, but the JPG image itself is low-res
 - 🟡 Results page UX needs professional redesign (Ahmad's explicit request)
 - ~~🟡 Bitcoin wallet age calculation bug~~ — fixed in Task 7D ✅
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
@@ -89,11 +89,11 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 ### 1. Task 7 (Frontend: Signal Bars → Weighted Display) — Assign to Frontend Builder
 Task 5 (weighted API response) is live on Railway — this is unblocked. Frontend Builder must run `pnpm codegen` first to regenerate types from the updated OpenAPI spec. Full spec is in FRONTEND_TASKS.md and TASKS.md.
 
-### 2. Task 2B (Logo: Recreate as SVG) — Assign to Frontend Builder
-No dependencies — can run alongside Task 7. Full spec is in FRONTEND_TASKS.md and TASKS.md.
+### 2. Task 7B → 7C → 10 → 9 → 8 → 11A → 11B — queue in that order after Task 7
+All queued for Frontend Builder. One task at a time.
 
-### 3. Backend queue is now empty — no Backend Builder tasks until Frontend unblocks Task 9
-Task 9 (Admin Panel UI) depends on Task 6 (done) — Frontend Builder can now start Task 9 after Task 7 and 2B are complete.
+### 3. Backend queue is still empty — no Backend Builder tasks until Frontend unblocks Task 9
+Task 9 (Admin Panel UI) depends on Task 6 (done) — Frontend Builder can start Task 9 after Tasks 7 and 7B/7C.
 
 ---
 
