@@ -1,5 +1,5 @@
 # OTI — Backend Builder Task List
-> Last updated: July 6, 2026 (updated by Manager) | Maintained by: Development Manager
+> Last updated: July 7, 2026 (updated by Manager) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Do not skip ahead.
 
@@ -51,7 +51,8 @@ Queue is currently empty. Standing by for Manager to assign next task.
 
 These are coming after the queue above is complete. You do not need to read these in detail now — they are listed so you know what is ahead.
 
-- **Phase 5:** Telegram bot, Discord bot, embeddable widget (`/bots/` directory in this repo)
+- **Phase 4 (Pre-Distribution) — Task 11C:** Signal Accuracy Audit & Cross-Chain Fix. CRITICAL. Non-EVM chains (Bitcoin, Solana, TON, Tron, Sui) are being scored with EVM-specific logic. Must be fixed before any distribution channel launches. Full spec will be provided by the Manager when assigned.
+- **Phase 5:** Telegram bot (Task 12), Chrome Extension (Task 13), Embeddable Widget (Task 14), Firefox Extension (Task 15)
 - **Phase 6:** Wallet Ownership Registry (WOR) — Ahmad's flagship feature. Off-chain EIP-191 signing + passkey. New DB tables, new routes.
 - **Phase 7:** Monetization — self-serve developer portal, paid plan tiers, BSC/Base/Optimism unlock
 

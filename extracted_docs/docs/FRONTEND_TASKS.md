@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 5, 2026 | Maintained by: Development Manager
+> Last updated: July 7, 2026 | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
@@ -7,12 +7,26 @@
 
 ## ✅ Your Completed Tasks
 
-### Task 1 — UI Polish
+### Task 1 — UI Polish ✅
 - Homepage title, back button style, chain icon sizing, dead CSS removed, `isKnownChain()` guard in `useScore.ts`
 
-### Task 2 — Logo Fix
+### Task 2 — Logo Fix ✅
 - `Logo.tsx` → `<img src="/logo.jpg">` replacing spiral SVG math
 - `generateScoreCard.ts` → uses `loadImage()` before canvas draw
+
+### Task 2B — Logo: SVG Replace ✅
+- Original SVG logo file used directly as `public/logo.svg` — no reconstruction needed
+- Crisp at 34px on Retina/high-DPI screens, zero blur
+- `generateScoreCard.ts` already pointed to `/logo.svg`
+
+### Task 7 — Signal Bars → Weighted Display ✅
+- `pnpm codegen` run — `src/api/schema.gen.ts` regenerated from live backend OpenAPI spec
+- `SignalBar.tsx` updated: bar fill = `(weighted / maxWeight) × 100%`, label = "weighted/maxWeight" e.g. "25/25"
+- Color logic updated to use `weighted / maxWeight` ratio
+- `Home.tsx` updated to pass full signal object to SignalBar
+- `generateScoreCard.ts` updated — score card PNG shows weighted labels and correct fills
+- Verified live against real wallet on Vercel — all 5 bars show weighted values
+- Also resolved black screen crash caused by Task 5 API shape mismatch
 
 ---
 
@@ -20,38 +34,10 @@
 
 ---
 
-### TASK 2B — Logo: Recreate as SVG (Replace the JPG)
-**Phase:** 1 — Bug Fixes (followup to Task 2)
-**Priority:** HIGH
-**Depends on:** Nothing — start this now
-
-**Why you are doing this:**
-Task 2 fixed the logo component correctly — but the asset itself (logo.jpg) is a low-resolution JPG. On any Retina or high-DPI screen (MacBook, modern iPhone, modern Android), that JPG renders blurry at 34px because JPGs cannot scale. Every user on a modern device sees a blurry logo in the navbar and on their generated score card. SVG is resolution-independent — it looks sharp at any size, on any screen, forever. This also unblocks Task 8 (results redesign) and Task 11A (marketing homepage), both of which require a crisp logo.
-
-**What to build:**
-Task 2 replaced the spiral SVG with `<img src="/logo.jpg">`. The JPG is blurry at 34px on high-DPI screens because JPGs cannot scale. The original SVG approach was architecturally correct — we need to recreate the logo as a proper SVG.
-
-**The logo design:**
-- A double Archimedean spiral — two full loops, opening counter-clockwise from center to a clean rounded tip at the upper right
-- Mint-to-aqua gradient: inner center is `#2BD9A4`, outer tip is `#3EFFC1`
-- Subtle 3D/depth effect: the inner loop has a faint inner shadow (`filter: drop-shadow`) suggesting the spiral has slight elevation
-- Black/transparent background (the outer black circle is just the app's background, not part of the SVG)
-- The spiral's stroke is uniform width (~8% of total SVG viewBox), rounded linecaps
-
-**Steps:**
-1. Create `public/logo.svg` — an SVG file containing the spiral path with a linearGradient or radialGradient from `#2BD9A4` to `#3EFFC1`
-2. Update `src/components/Logo.tsx` to use `<img src="/logo.svg" width={34} height={34} alt="OTI" />` — or even better, import the SVG as a React component for full control
-3. Update `src/lib/generateScoreCard.ts` to load `logo.svg` instead of `logo.jpg` (the `loadImage()` call is already there — just change the path)
-4. Test at 34px (navbar), 80px (potential hero size), and in the generated score card PNG
-
-**Definition of done:** The spiral logo is crisp and sharp on a MacBook Retina screen at all sizes. No blur visible. The logo in the score card PNG matches the logo in the app navbar.
-
----
-
 ### TASK 7B — txCount Cap Indicator
 **Phase:** 1 — Bug Fixes
 **Priority:** LOW
-**Depends on:** Nothing — can be done alongside Task 2B
+**Depends on:** Nothing
 
 **Why you are doing this:**
 Etherscan's free API tier caps transaction counts at 1,000. So when a wallet has 5,000 transactions, the API returns 1,000 — and OTI currently displays "1000 transactions" as if that's the real number. This misleads users into thinking the wallet is less active than it really is. Displaying "1,000+ transactions" is an honest signal that the wallet has at minimum that many transactions, and the actual number may be higher.
@@ -60,27 +46,6 @@ Etherscan's free API tier caps transaction counts at 1,000. So when a wallet has
 In the results page, the signal bar subtitle for Transaction Count shows the raw `txCount` from the API `metadata`. When `metadata.txCount >= 1000`, display `"1,000+ transactions"` instead of `"1000 transactions"`. This communicates to users that Etherscan's free tier caps the count and the actual volume may be higher.
 
 **Definition of done:** A wallet with txCount=1000 shows "1,000+ transactions" in the Transaction Count signal subtitle.
-
----
-
-### TASK 7 — Signal Bars → Weighted Display
-**Phase:** 1 — Bug Fixes
-**Priority:** HIGH
-**Depends on:** ⚠️ Backend Task 5 must be merged AND deployed to Railway first — do not start until the Manager confirms this
-
-**Why you are doing this:**
-The signal bars currently show raw scores (0–100) as if they are all equal. But they are not — Wallet Age carries 25% of the total score, while Transaction Timing only carries 15%. A wallet with Wallet Age = 100 contributes 25 points, not 100. The bars are visually misleading right now. This fix makes the bars show the real contribution each signal makes to the final score, which is what users and developers actually care about. This requires the Backend Builder to have already shipped the new weighted response shape (Task 5) — that's why this task is sequenced after it.
-
-⚠️ **Coordination point — Backend Builder:**
-Before starting this task, run `pnpm codegen` to regenerate `src/api/schema.gen.ts` from the updated backend OpenAPI spec. The signal shape has changed — the auto-generated types must reflect the new shape before you write any component code.
-
-**What to build:**
-Update the signal bar component in the results page (`src/pages/Home.tsx` or wherever the signal bars are rendered):
-- Bar fill width = `(weighted / maxWeight) × 100%` — not `score / 100`
-- Score label displayed on the right = `weighted/maxWeight` formatted as a number, e.g. "25/25", "4/20", "10.5/15" (round to 1 decimal)
-- The color logic (green/red/amber) should be based on `weighted / maxWeight` ratio, same threshold as before
-
-**Definition of done:** Signal bars show weighted contribution. A wallet with walletAge=100 shows "25/25" and full bar. A wallet with transactionCount=20 shows "4/20" and a short bar (20% fill).
 
 ---
 
@@ -147,7 +112,7 @@ All API calls must include the `x-admin-secret` header (read from sessionStorage
 ### TASK 8 — Professional Results Page Redesign
 **Phase:** 3 — Redesign
 **Priority:** HIGH — MVP requirement, Ahmad's explicit request
-**Depends on:** Task 7 (signal bars must be correct first) AND Task 2B (SVG logo must be done first)
+**Depends on:** Task 7 ✅ done AND Task 2B ✅ done — this task is now unblocked
 
 **Why you are doing this:**
 The results page is the first thing a potential enterprise partner, developer, or investor sees after they score a wallet. Right now it doesn't look professional enough to represent OTI as the infrastructure business it is. Ahmad has explicitly flagged this as an MVP requirement — the product must be presentable before any distribution channel launches or any business conversation happens. This redesign does not change any logic — only the visual presentation and layout.
