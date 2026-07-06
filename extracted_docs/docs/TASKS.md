@@ -20,7 +20,7 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B done — Task 7C up next |
+| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B, 10 done — Task 7C on hold, Task 9 up next |
 | Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
 
 ---
@@ -165,6 +165,13 @@
 > Keep all CSS in `src/index.css`. Do not add a new component library. Follow existing class naming conventions.
 
 **Definition of done:** Results page looks professional on both mobile (375px) and desktop. Wallet address is truncated. Score tier label is visible. Signal bars show weighted values. Share button is prominent. Footer exists. "Report this wallet" link is present.
+
+---
+
+### TASK 10 — Frontend: API Health Status Indicator ✅
+- `src/components/Navbar.tsx` — connected `useHealth` hook, renders 7px status dot (green/red/none) top-right of navbar, with `title` tooltip, `role="status"`, `aria-live="polite"`, sr-only label
+- `src/index.css` — navbar flex layout + `.navbar-status-dot` classes (mint green online, red offline, transparent loading) + `.sr-only` utility
+- Verified live on Vercel by Manager: green dot visible via screenshot on `otiscore.vercel.app`; deployed JS bundle confirmed to contain "API online"/"API offline" tooltip strings and `navbar-status-dot` classes
 
 ---
 

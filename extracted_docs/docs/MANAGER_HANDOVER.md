@@ -33,7 +33,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B done — Task 7C ON HOLD (Ahmad's request), Task 10 next |
+| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B, 10 done — Task 7C ON HOLD (Ahmad's request), Task 9 next |
 | Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
@@ -59,6 +59,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ Bitcoin wallet age pagination fix — paginates through mempool.space history, 40-page cap (Task 7D — shipped)
 - ✅ Signal bars show `weighted/maxWeight` — black screen crash resolved (Task 7 — shipped)
 - ✅ txCount cap indicator — "1,000+ transactions" shown when metadata.txCount >= 1000, in both UI and score card PNG (Task 7B — shipped, verified live July 7, 2026)
+- ✅ Navbar API health status dot — green/red dot connected to `useHealth` hook (Task 10 — shipped, verified live July 7, 2026)
 
 **ADMIN_SECRET status:**
 - Original secret set by Backend Builder during Task 3 was never shared — cannot be retrieved
@@ -105,31 +106,10 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next 3 Things the Manager Must Do (In Order)
 
-### 1. Task 7C and 7C-BACKEND are ON HOLD — assign Task 10 to Frontend Builder instead
-Task 7C (frontend) and Task 7C-BACKEND (backend) are paused at Ahmad's explicit request — not bugs, not abandoned. Full explanation is in TASKS.md. Do not resume either without Ahmad's go-ahead. Skip to Task 10 for the Frontend Builder in the meantime.
+### 1. Task 10 is done — send Task 9 to the Frontend Builder next
+Task 7C (frontend) and Task 7C-BACKEND (backend) remain paused at Ahmad's explicit request. Do not resume either without Ahmad's go-ahead.
 
-**Prompt ready to send (Task 10):**
-```
-Task 10 — API Health Status Indicator
-
-The src/hooks/useHealth.ts hook already exists and pings GET /api/healthz.
-Connect it to a small status indicator in the Navbar (src/components/Navbar.tsx).
-
-Display: a small colored dot (6-8px circle) in the top-right of the navbar.
-- Green dot = API is responding (status: "ok")
-- Red dot = API is unreachable (error state)
-- No dot / pulsing = loading
-
-Tooltip on hover: "API online" or "API offline". Keep it subtle.
-
-Definition of done: Navbar shows a green dot when Railway API is up, red
-when it's down. Verify on the live Vercel deployment.
-
-Notify the Manager when ready for review. Do not mark done until Manager confirms.
-```
-
-### 2. Frontend queue after Task 10 (in this exact order, one at a time)
-- Task 9 — Admin Panel UI
+### 2. Frontend queue after Task 9 (in this exact order, one at a time)
 - Task 8 — Professional Results Page Redesign
 - Task 11A — Marketing Homepage + Move scoring to /score
 - Task 11B — Whitepaper Page
