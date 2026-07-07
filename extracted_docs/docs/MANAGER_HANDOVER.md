@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 7, 2026 (updated by Manager — Admin Panel fully working, Plan Configs done, next is Task 8)
+> Last updated: July 7, 2026 (end-of-session update — API Keys fully working, Task 9C in progress with new Backend Builder, Task 8 on hold until 9C done)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -34,13 +34,13 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active (new account) | Tasks 1, 2, 2B, 7, 7B, 9, 10, 9-FRONTEND-FIX, Plan Configs tab, desktop layout fix, anonymous limit hook fix all done — Task 8 is next |
-| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D, 9-BACKEND, stats-500-fix, plan-configs-PATCH-fix all done — queue empty, standing by |
+| Frontend Builder | Active (new account) | All tasks through API Keys UI resilience fix done — Task 8 (Results Page Redesign) is next, ON HOLD until Task 9C done |
+| Backend Builder | New account (July 7, 2026) | Previous account hit credit limit mid-fix. Task 9C in progress — code review done, awaiting live 429 test |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
 ---
 
-## Current State of Production (as of July 7, 2026)
+## Current State of Production (as of July 7, 2026 — end of session)
 
 **Live and working:**
 - ✅ Backend on Railway: `https://workspaceapi-server-production-5c0c.up.railway.app`
@@ -50,36 +50,47 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ Score caching
 - ✅ Compromised wallet denylist + red banner UI
 - ✅ PNG score card sharing
-- ✅ UI polish (Task 1 — shipped)
-- ✅ Logo component fix (Task 2 — shipped)
-- ✅ SVG logo — crisp at all sizes, zero Retina blur (Task 2B — shipped)
-- ✅ Admin endpoints secured with `x-admin-secret` header (Task 3 — shipped)
-- ✅ History endpoint reads from `chain_scores` DB (Task 4 — shipped)
-- ✅ Score response returns weighted signals `{ score, weighted, maxWeight }` per signal (Task 5 — shipped)
-- ✅ `updated_at` column on `subscriptions` table (Task 6 — shipped, manual Railway migration run)
-- ✅ Bitcoin wallet age pagination fix — paginates through mempool.space history, 40-page cap (Task 7D — shipped)
-- ✅ Signal bars show `weighted/maxWeight` — black screen crash resolved (Task 7 — shipped)
-- ✅ txCount cap indicator — "1,000+ transactions" shown when metadata.txCount >= 1000 (Task 7B — shipped)
-- ✅ Navbar API health status dot — green/red dot connected to `useHealth` hook (Task 10 — shipped)
-- ✅ Admin Panel fully working — login, Dashboard, API Keys, Query History, Cache, Plan Configs (Tasks 9, 9-BACKEND — shipped, verified July 7, 2026)
-- ✅ Admin Panel desktop layout — full-width sidebar + content, no cramped layout (shipped July 7, 2026)
-- ✅ Plan Configs tab — Ahmad can set daily_limit per plan via Admin Panel UI (shipped July 7, 2026)
-- ✅ PATCH /api/admin/plan-configs/:id — accepts both UUID and plan name, writes to DB correctly (shipped July 7, 2026)
-- ✅ GET /api/config/anonymous-limit — returns live DB value immediately after PATCH (verified July 7, 2026)
-- ✅ Homepage anonymous limit display — useAnonymousLimit hook calls correct public endpoint, shows live value (shipped July 7, 2026)
+- ✅ UI polish, Logo fix, SVG logo (Tasks 1, 2, 2B)
+- ✅ Admin endpoints secured with `x-admin-secret` header (Task 3)
+- ✅ History endpoint reads from `chain_scores` DB (Task 4)
+- ✅ Score response returns weighted signals `{ score, weighted, maxWeight }` per signal (Task 5)
+- ✅ `updated_at` column on `subscriptions` table (Task 6 — manual Railway migration run)
+- ✅ Bitcoin wallet age pagination fix — 40-page cap (Task 7D)
+- ✅ Signal bars show `weighted/maxWeight` (Task 7)
+- ✅ txCount cap indicator — "1,000+ transactions" (Task 7B)
+- ✅ Homepage shows live anonymous daily_limit from DB — confirmed showing "20 per day" (Task 7C)
+- ✅ Navbar API health status dot (Task 10)
+- ✅ Admin Panel fully working — login, Dashboard, API Keys (create/list/edit/delete), Query History, Cache, Plan Configs (Tasks 9, 9-BACKEND)
+- ✅ Admin Panel desktop layout — full-width, no cramped layout
+- ✅ API Keys create/list/edit/delete confirmed working — Ahmad created enterprise, pro, free keys at 14:15 July 7, 2026
+- ✅ PATCH /api/admin/plan-configs/:id — accepts UUID and plan name
+- ✅ GET /api/config/anonymous-limit — returns live DB value
 
 **ADMIN_SECRET status:**
-- Ahmad set the `ADMIN_SECRET` in Railway Variables
-- Admin auth confirmed working — 401 without header, 200 with correct header
+- Ahmad set `ADMIN_SECRET` in Railway Variables
 - Admin Panel login at `otiscore.vercel.app/admin` confirmed working
 
+**Critical infrastructure note — Railway subscriptions table real schema:**
+The Drizzle schema in the repo does NOT match Railway's actual DB. Real columns confirmed July 7, 2026:
+```
+id            uuid       NOT NULL
+api_key       text       NOT NULL
+plan          text       NOT NULL
+owner_address text       NOT NULL
+created_at    timestampz NOT NULL
+expires_at    timestampz nullable
+updated_at    timestampz nullable
+```
+**There is NO `status` column and NO `email` column.** All backend handlers use raw SQL or column-name fallback mappers to accommodate this. This mismatch is the root cause of all admin/keys bugs fixed today.
+
 **Known open issues:**
-- 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C will fix — CRITICAL before distribution)
-- 🟡 Satoshi genesis wallet still shows 51 days age despite Task 7D (may be stale cache — flush cache and retest before assuming it's still broken)
+- 🔴 Task 9C in progress — Backend Builder doing live 429 enforcement test. Free plan key available (ending ...f648). See Task 9C below.
+- 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C — CRITICAL before distribution)
+- 🟡 Satoshi genesis wallet still shows 51 days age despite Task 7D (may be stale cache — flush and retest)
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
-- 🟡 Results page UX needs professional redesign — Task 8 will fix this (NEXT TASK for Frontend Builder)
-- 🟡 Dead code: `recordHistory()` in `score.ts` still writes to `lib/history.ts` — nothing reads it (flagged for future cleanup)
-- 🟡 /admin/keys handler has inner api_usage try/catch but outer catch returns 200 [] — functional but logs DB errors silently. Low priority.
+- 🟡 Results page UX needs professional redesign — Task 8 (Frontend Builder, ON HOLD until Task 9C done)
+- 🟡 Dead code: `recordHistory()` in `score.ts` writes to `lib/history.ts` — nothing reads it (future cleanup)
+- 🟡 Anonymous row in plan_configs: if missing, API treats anonymous users as unlimited — confirm the row exists in production
 
 ---
 
@@ -113,15 +124,24 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. Send Task 8 to the Frontend Builder — Results Page Redesign
-This is the next task. Task 8 prompt is fully written in TASKS.md and FRONTEND_TASKS.md. No dependencies are unmet (Task 7 ✅, Task 2B ✅).
+### 1. Finish Task 9C — Backend: Plan Limit Enforcement Live Test (IN PROGRESS)
+New Backend Builder has completed the code review step. Awaiting live 429 test.
+- Give Backend Builder a free-plan API key (Ahmad has one ending in ...f648 — get full key from Admin Panel → API Keys)
+- Tell him to: set free plan daily_limit to 2 via Admin Panel → make 3 requests with that key → confirm 3rd = 429 → restore limit → report per-plan results
+- Once confirmed, mark Task 9C done in TASKS.md and BACKEND_TASKS.md
+- Tell Backend Builder to also mark it in both files
 
-### 2. Frontend queue after Task 8 (in this exact order, one at a time)
+### 2. Send Task 8 to the Frontend Builder — Results Page Redesign
+Task 8 is ON HOLD until Task 9C is confirmed done. Once 9C is done:
+- Task 8 full prompt is in FRONTEND_TASKS.md (next item in queue)
+- No dependencies unmet (Task 7 ✅, Task 2B ✅)
+- Tell Frontend Builder to start Task 8
+
+### 3. Frontend queue after Task 8 (in this exact order, one at a time)
 - Task 11A — Marketing Homepage + Move scoring to /score
 - Task 11B — Whitepaper Page
-- Task 7C — Dynamic rate limit display (ON HOLD — unblock once Ahmad confirms the limit is set to a real value via Admin Panel. The frontend hook is already built and working. No code change needed — just confirm it's showing the right number.)
 
-### 3. Backend queue (standing by — nothing assigned)
+### 4. Backend queue after Task 9C (in this exact order, one at a time)
 - Task 11C — Signal Accuracy Audit & Cross-Chain Fix (CRITICAL — must ship before distribution)
 - Tasks 12–15 — Distribution channels (Telegram Bot, Chrome Extension, Widget, Firefox Extension)
 
@@ -164,11 +184,16 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 
 ## New Manager Startup Procedure (5 minutes)
 
-1. Read `docs/MANAGER_HANDOVER.md` (this file)
-2. Read `docs/ARCHITECTURE.md`
-3. Read `docs/ROADMAP.md`
-4. Read `docs/TASKS.md`
-5. Jump straight to "Next Things the Manager Must Do" above — the active bug investigation is CLOSED, Admin Panel is fully working. Next task is Task 8 for the Frontend Builder.
+1. Read `docs/MANAGER_HANDOVER.md` (this file) — full picture
+2. Read `docs/ARCHITECTURE.md` — system structure
+3. Read `docs/ROADMAP.md` — strategic context
+4. Read `docs/TASKS.md` — every task ever, full history
+5. Jump straight to "Next Things the Manager Must Do" above and start from step 1
+
+**What is happening right now:**
+- Task 9C is IN PROGRESS with the new Backend Builder. Code review step is done. Awaiting live 429 enforcement test. Give the Backend Builder a free API key (get it from Admin Panel → API Keys — the one ending in ...f648) and tell him to run the test.
+- Task 8 (Frontend Results Page Redesign) is ON HOLD. Do not send it to the Frontend Builder until Task 9C is confirmed done and marked.
+- Both Builders are waiting. Be precise — one task at a time per Builder, no exceptions.
 
 **Rule before ending ANY Manager session:**
 1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md
@@ -176,6 +201,7 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 3. Builders never update files on their own initiative — only when Manager explicitly instructs
 4. Update "Current State of Production" and "Next Things" in this file before closing
 5. Ahmad pushes everything via Replit's Git interface
+6. One task at a time per Builder — Ahmad's hard rule, never break it
 
 ---
 

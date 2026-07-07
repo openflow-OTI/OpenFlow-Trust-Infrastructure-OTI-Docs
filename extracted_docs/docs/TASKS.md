@@ -1,5 +1,5 @@
 # OTI — Master Task Queue
-> Last updated: July 7, 2026 (updated by Manager — Admin Panel + Plan Configs fully done, Task 8 next) | Maintained by: Development Manager
+> Last updated: July 7, 2026 (end-of-session — API Keys fully working, Task 9C in progress, Task 8 on hold) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
@@ -20,8 +20,8 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | Active (new account) | Tasks 1, 2, 2B, 7, 7B, 9, 10, Plan Configs tab, desktop layout fix, anonymous limit hook fix all done — Task 8 is next |
-| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D, 9-BACKEND, stats-500-fix, plan-configs-PATCH-fix all done — queue empty, standing by |
+| Frontend Builder | Active (new account) | All tasks through API Keys UI resilience done — Task 8 next (ON HOLD until Task 9C done) |
+| Backend Builder | New account (July 7, 2026) | Task 9C in progress — code review done, awaiting live 429 test |
 
 ---
 

@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 7, 2026 (updated by Manager — Plan Configs + layout + hook fixes all done, Task 8 is next) | Maintained by: Development Manager
+> Last updated: July 7, 2026 (updated by Manager — all fixes done through Task 9C-adjacent work, Task 8 is next) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
@@ -30,106 +30,48 @@
 
 ---
 
-## ✅ Additional Completed Tasks (July 7, 2026)
+### Task 7B — txCount Cap Indicator ✅
+- `src/lib/formatMetadata.ts` — shows "1,000+ transactions" when txCount >= 1000
+- `src/lib/generateScoreCard.ts` — same logic in score card PNG
+- Verified live on Vercel by Manager
 
-### Plan Configs Tab — Admin Panel ✅
-- New "Plan Configs" tab in admin panel — table of all 4 plans, inline edit form per row
-- PATCH sends `daily_limit` (snake_case) to backend correctly
-- After save, invalidates public anonymous-limit query so homepage updates immediately
-- Verified live by Manager
+### Task 7C — Dynamic Rate Limit Display ✅
+- `src/hooks/useAnonymousLimit.ts` calls public `GET /api/config/anonymous-limit`
+- Homepage shows live daily_limit value from DB — confirmed showing "20 per day" (July 7, 2026)
+- Falls back gracefully when API returns null
+
+### Task 10 — Navbar API Health Status Dot ✅
+- `src/components/Navbar.tsx` — green/red dot connected to `useHealth` hook
+- Verified live on Vercel by Manager
+
+### Task 9 — Admin Panel UI ✅
+- `/admin` route with password gate, Dashboard, API Keys, Query History, Cache, Plan Configs tabs
+- All API calls use `x-admin-secret` from sessionStorage
+- Verified login working July 7, 2026
+
+### Plan Configs Tab ✅
+- New tab in admin panel — table of all 4 plans, inline edit per row
+- PATCH sends `daily_limit` (snake_case) correctly
+- Invalidates anonymous-limit query on save so homepage updates immediately
 
 ### Admin Panel Desktop Layout Fix ✅
-- CSS `:has()` selector removes `max-width: 720px` constraint when admin shell is present
-- Sidebar + content fills full browser width on desktop; mobile unchanged
+- CSS `:has()` selector removes `max-width: 720px` when admin shell is present
 
 ### useAnonymousLimit Hook Fix ✅
-- Hook now calls correct public endpoint `GET /api/config/anonymous-limit`
-- Fallback to 3 when API returns null
-- Homepage shows live daily_limit value from DB
+- Hook now calls correct public endpoint instead of admin-protected route
+- Fallback to 3 when null returned
 
 ### Homepage Scrollbar + Layout Fix ✅
-- html/body/root use `min-height` instead of `height`; app-shell no longer clips with `overflow:hidden`
-- Navbar is sticky; browser scrollbar now at far right edge as expected
-- Content + rate limit note positioned correctly on desktop and mobile
+- html/body/root use `min-height`; browser scrollbar at far right edge
+
+### API Keys Tab — UI Resilience Fix ✅
+- "+ New Key" button always visible even when keys list fails to load
+- Error shows inline with Retry button; table guarded behind isSuccess
+- Verified working July 7, 2026
 
 ---
 
 ## 🔴 Your Task Queue — Build In This Exact Order
-
----
-
-### TASK 7B — txCount Cap Indicator
-**Phase:** 1 — Bug Fixes
-**Priority:** LOW
-**Depends on:** Nothing
-
-**Why you are doing this:**
-Etherscan's free API tier caps transaction counts at 1,000. So when a wallet has 5,000 transactions, the API returns 1,000 — and OTI currently displays "1000 transactions" as if that's the real number. This misleads users into thinking the wallet is less active than it really is. Displaying "1,000+ transactions" is an honest signal that the wallet has at minimum that many transactions, and the actual number may be higher.
-
-**What to build:**
-In the results page, the signal bar subtitle for Transaction Count shows the raw `txCount` from the API `metadata`. When `metadata.txCount >= 1000`, display `"1,000+ transactions"` instead of `"1000 transactions"`. This communicates to users that Etherscan's free tier caps the count and the actual volume may be higher.
-
-**Definition of done:** A wallet with txCount=1000 shows "1,000+ transactions" in the Transaction Count signal subtitle.
-
----
-
-### TASK 7C — Dynamic Rate Limit Display
-**Phase:** 2 — Operational
-**Priority:** MEDIUM
-**Depends on:** Nothing — reads from existing API
-
-**Why you are doing this:**
-The homepage currently hardcodes the text "Anonymous lookups are limited to 3 per day." That number is stored in the `plan_configs` database table and Ahmad can change it at any time — for example, to run a promotion with higher limits, or to tighten limits as traffic grows. Every time the limit changes, someone would have to manually update the frontend and redeploy just to change one number. This fix makes the frontend read the live value from the API so it always reflects the real current limit automatically.
-
-**What to build:**
-Call `GET /api/healthz` or a suitable endpoint to fetch the anonymous plan's `daily_limit` from the backend and display it dynamically. If the fetch fails, fall back to showing "limited per day" without a number. This ensures the text stays accurate when the `plan_configs` table is updated without needing a frontend redeploy.
-
-**Definition of done:** Homepage rate limit text reflects the live `anonymous` plan's daily_limit. Changing the value in the database updates what the homepage shows automatically.
-
----
-
-### TASK 10 — API Health Status Indicator
-**Phase:** 2 — Operational
-**Priority:** LOW
-**Depends on:** Nothing — the hook already exists
-
-**Why you are doing this:**
-When Railway has an outage or the backend is restarting after a deploy, users currently just see a confusing error when they try to score a wallet — with no indication of whether the problem is on their end or OTI's. A small status dot in the navbar tells users instantly whether the API is up, so they know to wait rather than keep trying. The hook that checks the API health (`useHealth.ts`) is already fully built — it just isn't connected to any component yet. This task is a quick win.
-
-**What to build:**
-The `src/hooks/useHealth.ts` hook already exists and pings `GET /api/healthz`. Connect it to a small status indicator in the Navbar (`src/components/Navbar.tsx`).
-
-Display: a small colored dot (6–8px circle) in the top-right of the navbar.
-- Green dot = API is responding (`status: "ok"`)
-- Red dot = API is unreachable (error state)
-- No dot / pulsing = loading
-
-Tooltip on hover: "API online" or "API offline". Keep it subtle — it should not distract from the main content.
-
-**Definition of done:** Navbar shows a green dot when Railway API is up, red when it's down. Verified by checking the deployed frontend.
-
----
-
-### TASK 9 — Admin Panel UI
-**Phase:** 2 — Operational
-**Priority:** HIGH
-**Depends on:** ⚠️ Backend Task 3 (admin auth) AND Backend Task 6 (updatedAt migration) must both be merged and deployed first — do not start until the Manager confirms both are done
-
-**Why you are doing this:**
-Once bots launch (Phase 5), OTI will start getting real traffic — developers signing up for API keys, wallets being scored at volume, cache needing management. Ahmad needs a control panel to manage all of this without touching the database directly. The admin panel is the operational nerve center. It must be ready before bots launch. It depends on Task 3 because every admin API call requires the `x-admin-secret` header — without auth, there is no admin panel worth building. It depends on Task 6 because the API Keys screen shows a "last modified" column that requires the `updated_at` database column to exist.
-
-**What to build:**
-Add a `/admin` route to the React app. It is URL-only — no navigation link anywhere in the app. On load, it shows a simple password prompt (reads `VITE_ADMIN_SECRET` from Vercel environment variables, stored in sessionStorage after entry). Wrong password = locked view.
-
-Screens to build:
-1. **Dashboard** — total queries today/week/month, active keys count, cache hit rate (from `GET /admin/stats`)
-2. **API Keys** — table of all keys with plan, usage today, last used, active/suspended status. Actions: create new key (form: email, plan, daily limit), edit (change plan/limit/status), delete. (`GET /admin/keys`, `POST /admin/keys`, `PATCH /admin/keys/:id`, `DELETE /admin/keys/:id`)
-3. **Query History** — recent wallet lookups: address, chain, score, timestamp (`GET /admin/history`)
-4. **Cache** — a single "Flush Cache" button (`POST /admin/cache/flush`)
-
-All API calls must include the `x-admin-secret` header (read from sessionStorage). Style consistently with the existing black + mint design system. Plain HTML tables are fine — no table library required.
-
-**Definition of done:** `/admin` route works. Password gates all screens. All 4 screens render real data from the backend. Cache flush button works.
 
 ---
 

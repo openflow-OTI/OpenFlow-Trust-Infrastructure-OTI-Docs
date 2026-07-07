@@ -1,5 +1,5 @@
 # OTI — Backend Builder Task List
-> Last updated: July 7, 2026 (updated by Manager — all fixes confirmed done, queue empty) | Maintained by: Development Manager
+> Last updated: July 7, 2026 (updated by Manager — API Keys fully working, Task 9C in progress) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Do not skip ahead.
 
@@ -50,6 +50,14 @@
 - Fix: dual lookup — UUID param → WHERE id, name string param → WHERE plan_name
 - Both UUID and plan name strings now accepted
 - Verified live by Manager: both lookup methods return HTTP 200 and update DB correctly
+
+### Fix: GET /admin/keys + POST /admin/keys — Full Resolution ✅ (July 7, 2026)
+- Root cause: Railway subscriptions table predates the Drizzle schema in the repo
+- Real columns confirmed via information_schema: id, api_key, plan, owner_address, created_at, expires_at, updated_at (NO status column, NO email column, NO daily_limit column)
+- GET fixed: raw SQL SELECT * with column-name fallback mapper; no WHERE filter on status
+- POST fixed: INSERT (api_key, plan, owner_address) only — no status, no missing columns
+- Stats active_keys fixed: removed WHERE status = 'active' (column does not exist); counts all rows
+- Verified live: Ahmad created enterprise, pro, and free keys at 14:15 July 7, 2026 — Edit and Delete buttons confirmed working
 
 ---
 
