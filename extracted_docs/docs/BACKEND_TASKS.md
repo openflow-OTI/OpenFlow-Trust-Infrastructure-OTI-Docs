@@ -55,7 +55,30 @@
 
 ## 🔴 Your Task Queue — Build In This Exact Order
 
-Queue is empty. Stand by for Task 11C (Signal Accuracy Audit) — the Manager will assign it when the Frontend Builder completes Task 8.
+### TASK 9C — Verify & Harden Plan Limit Enforcement (All Plans)
+**Priority:** HIGH
+**Depends on:** Nothing — Plan Configs admin UI is live
+
+**Why:** The Admin Panel now lets Ahmad set daily_limit for any plan.
+We confirmed anonymous enforcement works. Free, pro, and enterprise
+have never been tested. If apiKeyAuth.ts has a bug, Ahmad could set
+a limit that silently does nothing.
+
+**What to do:**
+1. Read `src/middlewares/apiKeyAuth.ts` — confirm it reads daily_limit
+   from plan_configs dynamically per request (not hardcoded, not cached).
+2. Test each plan:
+   - Set free plan daily_limit to 2 via Admin Panel → make 3 requests
+     with a free API key → 3rd must be rate-limited (429).
+   - Restore the limit after testing.
+   - Confirm enterprise (daily_limit = null) = unlimited (no 429 ever).
+3. Fix anything broken. Do not touch scoring.ts.
+
+**Definition of done:**
+- apiKeyAuth.ts reads daily_limit dynamically confirmed.
+- Free/pro limits enforced immediately after Admin Panel change.
+- Enterprise null = unlimited confirmed.
+- Report back with results per plan.
 
 ---
 

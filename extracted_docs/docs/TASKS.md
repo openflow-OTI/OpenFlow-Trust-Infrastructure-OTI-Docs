@@ -172,6 +172,33 @@
 
 ---
 
+### TASK 9C — Backend: Verify & Harden Plan Limit Enforcement (All Plans)
+**Owner:** Backend Builder
+**Phase:** 2 — Operational
+**Priority:** HIGH — Admin Panel is live; Ahmad can now set limits for all plans. We must confirm the API actually enforces whatever is set — not just for anonymous but for free, pro, and enterprise keys too.
+**Depends on:** Task 9-BACKEND (done), Plan Configs tab (done)
+**Status:** 🔴 Not started — assigned July 7, 2026
+
+**Why this exists:**
+The anonymous plan limit was fixed and verified end-to-end. But free, pro, and enterprise API key limits have never been tested. The Admin Panel lets Ahmad set any daily_limit for any plan. If `apiKeyAuth.ts` has a bug (hardcoded values, wrong table column, stale cache), Ahmad could set a limit and it would silently not be enforced. This must be confirmed before distribution.
+
+**What to verify and fix:**
+1. Read `src/middlewares/apiKeyAuth.ts` — confirm it reads `daily_limit` from the `plan_configs` table dynamically on every request (not hardcoded, not cached in memory).
+2. Test enforcement for each plan type:
+   - Set free plan `daily_limit` to a low number (e.g. 2) via Admin Panel → make 3 requests with a free API key → third request must be rate-limited (429 or equivalent).
+   - Restore free plan limit after testing.
+   - Confirm enterprise plan with `daily_limit = null` is treated as unlimited (no rate limiting).
+3. If any plan's limit is not enforced correctly — fix it. The fix must not touch `scoring.ts`.
+4. Add the fix to the OpenAPI spec if any error response shape changes.
+
+**Definition of done:**
+- `apiKeyAuth.ts` confirmed reading `daily_limit` dynamically from `plan_configs` (not hardcoded).
+- Setting a limit via Admin Panel → Plan Configs takes effect on the next API request (no restart required).
+- Free/pro plan limits are enforced. Enterprise null = unlimited confirmed.
+- Report back with confirmation that each plan behaves correctly.
+
+---
+
 ### TASK 8 — Frontend: Professional Results Page Redesign
 **Owner:** Frontend Builder
 **Phase:** 3 — Redesign
