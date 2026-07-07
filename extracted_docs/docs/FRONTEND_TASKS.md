@@ -113,6 +113,80 @@ Keep all CSS in `src/index.css`. Do not add a new component library. Follow exis
 
 ---
 
+### TASK 8B — Professional Wallet Input Page Redesign
+**Phase:** 3 — Redesign
+**Priority:** HIGH — the input page is the entry point to the entire product; it must look as professional as the results page
+**Depends on:** Task 8 ✅ must be done first — footer and design patterns from Task 8 carry over here
+
+**Why you are doing this:**
+The wallet input page (the search form) is the first screen every user lands on. Right now it looks plain and unpolished compared to what OTI represents as a product. Task 8 redesigns the results page — this task does the same for the input page. The two pages must feel like one cohesive, professional product. This task also plants the WOR (Wallet Ownership Registry) ghost links that will connect to real functionality in a future phase.
+
+**Files you will touch:**
+- `src/pages/Home.tsx` (input/search section)
+- `src/index.css`
+
+**Do NOT touch:**
+- The chain selector — at all
+- `vercel.json` — ever
+- The results section (already handled by Task 8)
+- Any scoring logic
+
+**What to build:**
+
+1. **Top section — logo, wordmark, tagline:**
+   - OTI logo (already SVG): add a subtle CSS hover rotation — `transform: rotate(360deg)`, 2–3s ease, infinite. GPU-accelerated only (`transform` + `will-change`), no JS.
+   - "OTI" wordmark: increase visual weight — larger size, stronger typography presence. Should feel like a brand, not a label.
+   - "OpenFlow Trust Infrastructure" subtitle: refine spacing and styling — smaller, muted, sits cleanly below the wordmark.
+   - Tagline below the subtitle: *"On-chain trust scoring for any wallet, any chain"* — mint accent color or soft white, clean readable size.
+
+2. **Input card — premium feel:**
+   - Proper padding and internal spacing — the form should breathe.
+   - Subtle mint border glow on the card (`box-shadow` with mint at low opacity) — matches the mint design system.
+   - Wallet address input and chain selector already work — do not change their logic, only their visual presentation if needed.
+
+3. **Rate limit badge:**
+   - Replace the plain "X lookups per day" text with a styled badge — small, pill-shaped, mint outline or mint background at low opacity. Example: `[ 20 free lookups / day ]`
+   - Still reads from the existing `useAnonymousLimit` hook — no logic changes.
+
+4. **Quick-test example link:**
+   - Below the input field, add a subtle line: *"Try an example →"* that pre-fills the wallet address field with `0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe` and sets chain to `ethereum`.
+   - Ghost style, small text, mint on hover.
+   - On click: populates the form fields and triggers the score lookup automatically.
+
+5. **WOR ghost links — below the form card:**
+   - Two small ghost links, stacked or inline, centered below the card:
+     - *"🔒 Own this wallet? Register it"* — `href="#"`, does nothing for now
+     - *"⚑ Report a compromised wallet"* — `href="#"`, does nothing for now
+   - Both are placeholders for the WOR system (Phase 6). Must be present now so the system can connect to them later.
+   - Style: small, muted, ghost — present but not distracting from the main CTA.
+
+6. **Footer:**
+   - Same footer as the results page: *"© 2026 OpenFlow Labs · openflowlabs.io"*
+   - Consistent across both pages.
+
+7. **Faint spiral watermark:**
+   - Very faint OTI spiral logo centered behind the input card — CSS only, `opacity: 0.04`, no JS library.
+   - Adds depth without distraction.
+
+**Constraints:**
+- All CSS in `src/index.css` — no new component libraries
+- Test on mobile (375px) AND desktop — both must look professional
+- Black background and mint green color scheme throughout
+- Do not touch the chain selector
+
+**Definition of done:**
+- Logo has subtle hover rotation
+- Wordmark and tagline are prominent and well-spaced
+- Input card has mint glow and proper padding
+- Rate limit shows as a styled badge
+- "Try an example" link pre-fills and triggers a score
+- Both WOR ghost links are present below the form
+- Footer matches the results page footer
+- Faint spiral watermark is visible behind the card
+- Looks professional on both 375px mobile and desktop
+
+---
+
 ### TASK 11A — Restructure Vercel App: Marketing Front Door + Scoring at /score
 **Phase:** 4 — Pre-Distribution
 **Priority:** HIGH

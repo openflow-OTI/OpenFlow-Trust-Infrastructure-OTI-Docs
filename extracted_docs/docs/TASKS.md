@@ -316,6 +316,30 @@ The anonymous plan limit was fixed and verified end-to-end. But free, pro, and e
 
 ---
 
+### TASK 8B — Frontend: Professional Wallet Input Page Redesign
+**Owner:** Frontend Builder
+**Phase:** 3 — Redesign
+**Priority:** HIGH — the input page is the entry point to the entire product; must look as professional as the results page
+**Depends on:** Task 8 (results page redesign must be done first — footer and design patterns carry over)
+
+**Why this exists:**
+The wallet input page (search form) is the first screen every user lands on. Task 8 redesigns the results page — this task does the same for the input page. The two pages must feel like one cohesive, professional product. This task also plants the WOR ghost links for future Phase 6 connection.
+
+**What to build:**
+1. **Top section** — OTI logo with subtle CSS hover rotation (2–3s ease, infinite, GPU-accelerated). "OTI" wordmark larger and stronger. "OpenFlow Trust Infrastructure" subtitle refined. Tagline: *"On-chain trust scoring for any wallet, any chain"* in mint or soft white.
+2. **Input card** — proper padding, subtle mint border glow (`box-shadow` at low opacity).
+3. **Rate limit badge** — replace plain text with a styled pill badge. Still reads from `useAnonymousLimit` hook.
+4. **Quick-test example link** — *"Try an example →"* pre-fills wallet address `0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe` + chain `ethereum` and triggers the score lookup automatically.
+5. **WOR ghost links** below the form card:
+   - *"🔒 Own this wallet? Register it"* — `href="#"`, placeholder for Phase 6
+   - *"⚑ Report a compromised wallet"* — `href="#"`, placeholder for Phase 6
+6. **Footer** — *"© 2026 OpenFlow Labs · openflowlabs.io"* matching the results page.
+7. **Faint spiral watermark** — OTI logo behind the card, `opacity: 0.04`, CSS only.
+
+**Definition of done:** Logo hover rotation works. Wordmark and tagline are prominent. Input card has mint glow. Rate limit is a styled badge. "Try an example" pre-fills and triggers lookup. Both WOR ghost links present. Footer matches results page. Faint watermark visible. Professional on 375px mobile and desktop.
+
+---
+
 ### TASK 11A — Restructure Vercel App: Marketing Front Door + Scoring at /score
 **Owner:** Frontend Builder
 **Phase:** 4 — Pre-Distribution (first priority in this phase)
