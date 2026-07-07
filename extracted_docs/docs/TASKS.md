@@ -172,6 +172,20 @@
 
 ---
 
+### Fix: API Keys Tab — Full Resolution ✅ (Backend Builder — July 7, 2026)
+- Root cause: subscriptions table schema on Railway predates the Drizzle schema in the repo
+- Real columns: id, api_key, plan, owner_address, created_at, expires_at, updated_at (NO status column)
+- GET fixed: SELECT * with column-name fallback mapper
+- POST fixed: INSERT (api_key, plan, owner_address) only — no status, no missing columns
+- Stats active_keys fixed: removed WHERE status = 'active' (column does not exist), counts all rows
+- Verified live: Ahmad created enterprise, pro, and free keys successfully at 14:15 on July 7, 2026
+- Edit and Delete buttons confirmed working
+
+### Fix: Admin Panel API Keys UI Resilience ✅ (Frontend Builder — July 7, 2026)
+- "+ New Key" button always visible even when keys list fails to load
+- Error state shows inline with Retry button
+- Keys table only renders on success; non-null assertions removed
+
 ### TASK 9C — Backend: Verify & Harden Plan Limit Enforcement (All Plans)
 **Owner:** Backend Builder
 **Phase:** 2 — Operational
