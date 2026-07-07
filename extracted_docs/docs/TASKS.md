@@ -1,5 +1,5 @@
 # OTI — Master Task Queue
-> Last updated: July 7, 2026 (end-of-session — API Keys fully working, Task 9C in progress, Task 8 on hold) | Maintained by: Development Manager
+> Last updated: July 7, 2026 (end-of-session — Task 8 ✅, Task 9C ✅, color system locked, Task 8B queued, new Frontend Builder waiting onboarding, Backend Builder on Task 11C) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
@@ -20,8 +20,8 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | Active (new account) | All tasks through API Keys UI resilience done — Task 8 next (ON HOLD until Task 9C done) |
-| Backend Builder | New account (July 7, 2026) | Task 9C in progress — code review done, awaiting live 429 test |
+| Frontend Builder | New account (July 7, 2026) | Task 8 done. New account waiting onboarding. Next task: Task 8B (Wallet Input Page Redesign) |
+| Backend Builder | Active | Task 9C done. Next task: Task 11C (Signal Accuracy Audit — CRITICAL) |
 
 ---
 
@@ -150,38 +150,25 @@
 
 ---
 
-## 🟠 In Progress
+### TASK 9C — Backend: Verify & Harden Plan Limit Enforcement ✅
+**Owner:** Backend Builder | **Completed:** July 7, 2026
+
+Critical production bug found and fixed during testing — every API request using a valid key was silently returning HTML 500 since launch due to Drizzle ORM schema mismatch (status column defined in schema but missing from Railway DB).
+
+**Fixes applied:**
+- `apiKeyAuth.ts` — replaced Drizzle ORM select with raw SQL `SELECT *`; missing columns no longer crash the middleware
+- `score.ts` — wrapped compromised-wallets denylist check in try/catch; DB hiccup now returns JSON not HTML 500
+- `admin.ts` DELETE `/admin/keys/:id` — replaced Drizzle `.delete().returning()` with raw SQL
+- `admin.ts` PATCH `/admin/keys/:id` — replaced Drizzle `.update().set().returning()` with raw SQL via pg pool, status column excluded
+
+**429 test results (live Railway):**
+- Free plan (daily_limit=2): Request 1 → 200 ✅, Request 2 → 200 ✅, Request 3 → 429 ✅
+- Enterprise (daily_limit=null): 5/5 requests → 200, never 429 ✅
+- PATCH edit confirmed → HTTP 200 + updated_at timestamp updated ✅
 
 ---
 
 ## 🔴 Queue — Not Started (Build In This Exact Order)
-
----
-
-### TASK 9C — Backend: Verify & Harden Plan Limit Enforcement (All Plans)
-**Owner:** Backend Builder
-**Phase:** 2 — Operational
-**Priority:** HIGH — Admin Panel is live; Ahmad can now set limits for all plans. We must confirm the API actually enforces whatever is set — not just for anonymous but for free, pro, and enterprise keys too.
-**Depends on:** Task 9-BACKEND (done), Plan Configs tab (done)
-**Status:** 🟠 IN PROGRESS — code review step done July 7, 2026. Awaiting live 429 test.
-
-**Why this exists:**
-The anonymous plan limit was fixed and verified end-to-end. But free, pro, and enterprise API key limits have never been tested. The Admin Panel lets Ahmad set any daily_limit for any plan. If `apiKeyAuth.ts` has a bug (hardcoded values, wrong table column, stale cache), Ahmad could set a limit and it would silently not be enforced. This must be confirmed before distribution.
-
-**What to verify and fix:**
-1. Read `src/middlewares/apiKeyAuth.ts` — confirm it reads `daily_limit` from the `plan_configs` table dynamically on every request (not hardcoded, not cached in memory).
-2. Test enforcement for each plan type:
-   - Set free plan `daily_limit` to a low number (e.g. 2) via Admin Panel → make 3 requests with a free API key → third request must be rate-limited (429 or equivalent).
-   - Restore free plan limit after testing.
-   - Confirm enterprise plan with `daily_limit = null` is treated as unlimited (no rate limiting).
-3. If any plan's limit is not enforced correctly — fix it. The fix must not touch `scoring.ts`.
-4. Add the fix to the OpenAPI spec if any error response shape changes.
-
-**Definition of done:**
-- `apiKeyAuth.ts` confirmed reading `daily_limit` dynamically from `plan_configs` (not hardcoded).
-- Setting a limit via Admin Panel → Plan Configs takes effect on the next API request (no restart required).
-- Free/pro plan limits are enforced. Enterprise null = unlimited confirmed.
-- Report back with confirmation that each plan behaves correctly.
 
 ---
 
