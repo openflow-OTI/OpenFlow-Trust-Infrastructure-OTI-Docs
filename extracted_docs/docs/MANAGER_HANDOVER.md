@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 7, 2026 (end-of-session update — API Keys fully working, Task 9C in progress with new Backend Builder, Task 8 on hold until 9C done)
+> Last updated: July 7, 2026 (end-of-session — Task 8 ✅ done, Task 9C ✅ done, new color system locked, Task 8B queued, new Frontend Builder waiting onboarding)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -34,8 +34,8 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active (new account) | All tasks through API Keys UI resilience fix done — Task 8 (Results Page Redesign) is next, ON HOLD until Task 9C done |
-| Backend Builder | New account (July 7, 2026) | Previous account hit credit limit mid-fix. Task 9C in progress — code review done, awaiting live 429 test |
+| Frontend Builder | New account (July 7, 2026) | Previous account hit credit limit after Task 8. New account imported and waiting for onboarding. Next task: Task 8B |
+| Backend Builder | Active | Task 9C fully done and verified. Waiting for next task (Task 11C — Signal Accuracy Audit) |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
 ---
@@ -49,48 +49,55 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ API key + daily quota system (dynamic, DB-driven)
 - ✅ Score caching
 - ✅ Compromised wallet denylist + red banner UI
-- ✅ PNG score card sharing
 - ✅ UI polish, Logo fix, SVG logo (Tasks 1, 2, 2B)
 - ✅ Admin endpoints secured with `x-admin-secret` header (Task 3)
 - ✅ History endpoint reads from `chain_scores` DB (Task 4)
 - ✅ Score response returns weighted signals `{ score, weighted, maxWeight }` per signal (Task 5)
-- ✅ `updated_at` column on `subscriptions` table (Task 6 — manual Railway migration run)
+- ✅ `updated_at` column on `subscriptions` table (Task 6)
 - ✅ Bitcoin wallet age pagination fix — 40-page cap (Task 7D)
 - ✅ Signal bars show `weighted/maxWeight` (Task 7)
 - ✅ txCount cap indicator — "1,000+ transactions" (Task 7B)
-- ✅ Homepage shows live anonymous daily_limit from DB — confirmed showing "20 per day" (Task 7C)
+- ✅ Homepage shows live anonymous daily_limit from DB (Task 7C)
 - ✅ Navbar API health status dot (Task 10)
 - ✅ Admin Panel fully working — login, Dashboard, API Keys (create/list/edit/delete), Query History, Cache, Plan Configs (Tasks 9, 9-BACKEND)
-- ✅ Admin Panel desktop layout — full-width, no cramped layout
-- ✅ API Keys create/list/edit/delete confirmed working — Ahmad created enterprise, pro, free keys at 14:15 July 7, 2026
-- ✅ PATCH /api/admin/plan-configs/:id — accepts UUID and plan name
-- ✅ GET /api/config/anonymous-limit — returns live DB value
+- ✅ API key reveal modal on creation — shows full key once with copy button (Fix: July 7, 2026)
+- ✅ Task 9C — Plan limit enforcement verified: 429 confirmed for free plan, enterprise null = unlimited, all backend ORM schema mismatch bugs fixed (apiKeyAuth.ts, score.ts, admin.ts DELETE + PATCH all use raw SQL)
+- ✅ Task 8 — Professional results page redesign: chain-color ring gauge, tier labels, Trust Signals card, truncated wallet address + copy, Share (native share sheet) + Save as Image (3× PNG), "⚑ Report this wallet" mint ghost link, footer, full color system upgrade
 
 **ADMIN_SECRET status:**
 - Ahmad set `ADMIN_SECRET` in Railway Variables
 - Admin Panel login at `otiscore.vercel.app/admin` confirmed working
 
+**⚠️ OTI COLOR SYSTEM — LOCKED July 7, 2026**
+The app palette was upgraded from flat black to a deep-space aesthetic. All future tasks must use these exact values:
+
+| Token | Value |
+|---|---|
+| Background | `#05080f` |
+| Surface | `#0b0f1a` |
+| Surface-2 | `#0f1520` |
+| Borders | `#1c2535` |
+| Body text | `#e8f4ff` |
+| Dimmed text | `#7a8fa8` |
+| Mint primary | `#00e5a0` |
+| Mint gradient | `#3EFFC1` |
+
+Chain colors: Ethereum `#627EEA` · Bitcoin `#F7931A` · Solana `#9945FF` · BNB `#F3BA2F` (all 15 in codebase).
+Special effects: navbar `backdrop-filter: blur(14px)`, submit button mint glow, score panel `color-mix()` chain tint — all with plain-value fallbacks. Do NOT revert to pure black `#000000`.
+
 **Critical infrastructure note — Railway subscriptions table real schema:**
-The Drizzle schema in the repo does NOT match Railway's actual DB. Real columns confirmed July 7, 2026:
+The Drizzle schema in the repo does NOT match Railway's actual DB. Real columns:
 ```
-id            uuid       NOT NULL
-api_key       text       NOT NULL
-plan          text       NOT NULL
-owner_address text       NOT NULL
-created_at    timestampz NOT NULL
-expires_at    timestampz nullable
-updated_at    timestampz nullable
+id, api_key, plan, owner_address, created_at, expires_at, updated_at
 ```
-**There is NO `status` column and NO `email` column.** All backend handlers use raw SQL or column-name fallback mappers to accommodate this. This mismatch is the root cause of all admin/keys bugs fixed today.
+**NO `status` column. NO `email` column.** All backend handlers use raw SQL. Never use Drizzle ORM selects on this table — they will crash with "column does not exist".
 
 **Known open issues:**
-- 🔴 Task 9C in progress — Backend Builder doing live 429 enforcement test. Free plan key available (ending ...f648). See Task 9C below.
 - 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C — CRITICAL before distribution)
-- 🟡 Satoshi genesis wallet still shows 51 days age despite Task 7D (may be stale cache — flush and retest)
+- 🟡 Satoshi genesis wallet shows incorrect age — may be stale cache, flush and retest
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
-- 🟡 Results page UX needs professional redesign — Task 8 (Frontend Builder, ON HOLD until Task 9C done)
 - 🟡 Dead code: `recordHistory()` in `score.ts` writes to `lib/history.ts` — nothing reads it (future cleanup)
-- 🟡 Anonymous row in plan_configs: if missing, API treats anonymous users as unlimited — confirm the row exists in production
+- 🟡 Key expiry (`expires_at`) enforcement not tested — backend reads the column but unknown if it gates requests. Low priority until developer portal exists.
 
 ---
 
@@ -124,25 +131,22 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. Finish Task 9C — Backend: Plan Limit Enforcement Live Test (IN PROGRESS)
-New Backend Builder has completed the code review step. Awaiting live 429 test.
-- Give Backend Builder a free-plan API key (Ahmad has one ending in ...f648 — get full key from Admin Panel → API Keys)
-- Tell him to: set free plan daily_limit to 2 via Admin Panel → make 3 requests with that key → confirm 3rd = 429 → restore limit → report per-plan results
-- Once confirmed, mark Task 9C done in TASKS.md and BACKEND_TASKS.md
-- Tell Backend Builder to also mark it in both files
+### 1. Onboard the new Frontend Builder — Task 8B
+The new Frontend Builder account has been created and has imported the frontend repo. Send the onboarding prompt, wait for confirmation, then send the Task 8B prompt.
+- Task 8B = Professional Wallet Input Page Redesign (full spec in FRONTEND_TASKS.md)
+- Must use the locked OTI color system — include color table in the task prompt
+- After Task 8B: Task 11A (Marketing Homepage), then Task 11B (Whitepaper)
 
-### 2. Send Task 8 to the Frontend Builder — Results Page Redesign
-Task 8 is ON HOLD until Task 9C is confirmed done. Once 9C is done:
-- Task 8 full prompt is in FRONTEND_TASKS.md (next item in queue)
-- No dependencies unmet (Task 7 ✅, Task 2B ✅)
-- Tell Frontend Builder to start Task 8
+### 2. Send Task 11C to the Backend Builder
+Task 9C is done. Backend Builder is waiting.
+- Task 11C = Signal Accuracy Audit — non-EVM chains (Bitcoin/Solana/TON/Tron/Sui) are currently scored with EVM logic. CRITICAL before any distribution channel launches.
+- Full spec is in TASKS.md under Task 11C
 
-### 3. Frontend queue after Task 8 (in this exact order, one at a time)
+### 3. Frontend queue after Task 8B (in this exact order, one at a time)
 - Task 11A — Marketing Homepage + Move scoring to /score
 - Task 11B — Whitepaper Page
 
-### 4. Backend queue after Task 9C (in this exact order, one at a time)
-- Task 11C — Signal Accuracy Audit & Cross-Chain Fix (CRITICAL — must ship before distribution)
+### 4. Backend queue after Task 11C (in this exact order, one at a time)
 - Tasks 12–15 — Distribution channels (Telegram Bot, Chrome Extension, Widget, Firefox Extension)
 
 ---

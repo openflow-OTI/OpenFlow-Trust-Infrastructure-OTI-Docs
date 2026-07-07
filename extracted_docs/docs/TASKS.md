@@ -185,40 +185,37 @@ The anonymous plan limit was fixed and verified end-to-end. But free, pro, and e
 
 ---
 
-### TASK 8 — Frontend: Professional Results Page Redesign
-**Owner:** Frontend Builder
-**Phase:** 3 — Redesign
-**Priority:** HIGH — MVP requirement, Ahmad's explicit request
-**Depends on:** Task 7 (signal display logic must be correct first), Task 2B (logo must be SVG before the redesign ships)
-**Note on ordering:** This is Phase 3 work placed here deliberately — it depends on Task 7 (Phase 1) and should run after Phase 1 backend tasks are merged. Task 9 (Admin panel, Phase 2) can run in parallel with this since they touch different parts of the codebase.
+### TASK 8 — Frontend: Professional Results Page Redesign ✅
+**Owner:** Frontend Builder | **Completed:** July 7, 2026
 
-**Full prompt for Frontend Builder:**
-> Redesign the scoring results page (`src/pages/Home.tsx` results section and related components). Keep: the black background, the mint green color scheme, the chain selector (do not touch it), the score gauge color system (amber/gold for low scores, mint green for high scores). Keep the "← Score Another Wallet" button.
->
-> Required changes:
->
-> 1. **Wallet address:** Truncate the middle — show `0xAb58...eC9B` format (first 6 + last 4 chars). Add a copy-to-clipboard icon button next to it.
->
-> 2. **Score tier label:** Add a label below the score gauge based on the score value:
->    - 85–100 → "HIGHLY TRUSTED" (mint green)
->    - 65–84 → "TRUSTED" (light green)
->    - 45–64 → "CAUTION" (amber)
->    - 25–44 → "SUSPICIOUS" (orange)
->    - 0–24 → "HIGH RISK" (red)
->
-> 3. **Signal section:** Add a section header "Trust Signals" above the signal bars. Each signal bar now shows `weighted/maxWeight` as the score label (from Task 7). Add visual card/panel separation between the score gauge section and the signals section.
->
-> 4. **Share button:** Make it larger and more prominent — mint green border, full width or centered with min-width, not a tiny button buried at the bottom.
->
-> 5. **Footer:** Add a minimal footer: "© 2026 OpenFlow Labs · openflowlabs.io"
->
-> 6. **Report this wallet:** Add a small ghost link below the signals section: "⚑ Report this wallet" — it should do nothing for now (disabled or href="#") but must be present for the WOR system to connect to later.
->
-> 7. **Empty space:** The large void below the share button must be eliminated. Use the footer to anchor the bottom.
->
-> Keep all CSS in `src/index.css`. Do not add a new component library. Follow existing class naming conventions.
+- Score panel in its own bordered card — ring gauge color matches chain brand color (all 15 chains have exact brand hex)
+- Score number color reflects trust tier; tier label shown beneath gauge: HIGHLY TRUSTED / TRUSTED / CAUTION / SUSPICIOUS / HIGH RISK
+- Trust Signals in separate bordered card with "Trust Signals" heading; each signal shows label, metadata, weighted fraction, colored bar
+- Wallet address truncated (0xAb58...eC9B) with one-click copy button; chain icon + name displayed above
+- Share button — native OS share sheet (navigator.share) with clipboard fallback
+- Save as Image — 3× scale PNG (1920×2580px), chain-color ring arc, tier label, mirrors live UI exactly
+- "⚑ Report this wallet" ghost link in mint — placeholder for WOR system (Phase 6)
+- Footer: "© 2026 OpenFlow Labs · openflowlabs.io"
+- Full color theme upgrade to OTI deep-space palette (see Color System below)
+- Verified live on Vercel by Manager — July 7, 2026
 
-**Definition of done:** Results page looks professional on both mobile (375px) and desktop. Wallet address is truncated. Score tier label is visible. Signal bars show weighted values. Share button is prominent. Footer exists. "Report this wallet" link is present.
+---
+
+### OTI COLOR SYSTEM — LOCKED July 7, 2026 (All future tasks must use these values)
+
+| Token | Value | Usage |
+|---|---|---|
+| Background | `#05080f` | Page background |
+| Surface | `#0b0f1a` | Card/panel backgrounds |
+| Surface-2 | `#0f1520` | Inner elements, bar tracks |
+| Borders | `#1c2535` | All card/panel borders |
+| Body text | `#e8f4ff` | Main text |
+| Dimmed text | `#7a8fa8` | Metadata, secondary labels |
+| Mint primary | `#00e5a0` | CTAs, highlights, active states |
+| Mint gradient | `#3EFFC1` | Gradient highlights |
+
+Chain brand colors: Ethereum `#627EEA` · Bitcoin `#F7931A` · Solana `#9945FF` · BNB `#F3BA2F` (all 15 in codebase)
+Special effects: navbar frosted glass (`backdrop-filter: blur(14px)`), submit button mint glow, score panel chain-color tint via `color-mix()`, all with plain-value fallbacks for older browsers.
 
 ---
 

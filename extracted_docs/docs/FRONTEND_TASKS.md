@@ -69,6 +69,57 @@
 - Error shows inline with Retry button; table guarded behind isSuccess
 - Verified working July 7, 2026
 
+### Fix: API Key Reveal on Creation ✅
+- POST /api/admin/keys response field corrected: `data.apiKey` → `data.api_key`
+- TypeScript interface updated to match: `apiKey: string` → `api_key: string`
+- Modal now displays full key after creation with copy button and "never shown again" warning
+- Verified live on Vercel by Manager
+
+### Task 8 — Professional Results Page Redesign ✅
+- Score panel in its own bordered card — ring gauge color matches chain brand color (all 15 chains)
+- Score number color reflects trust tier; tier label shown: HIGHLY TRUSTED / TRUSTED / CAUTION / SUSPICIOUS / HIGH RISK
+- Trust Signals in separate bordered card with "Trust Signals" heading; each signal shows label, metadata, fraction, colored bar
+- Wallet address truncated (0xAb58...eC9B) with copy button; chain icon + name displayed
+- Share button — native OS share sheet (navigator.share) with clipboard fallback
+- Save as Image — 3× scale PNG (1920×2580px), chain-color ring, tier label, matches live UI exactly
+- "⚑ Report this wallet" ghost link in mint — placeholder for WOR system
+- Footer: "© 2026 OpenFlow Labs · openflowlabs.io"
+- Full color theme upgrade — see OTI Color System below
+- Verified live on Vercel by Manager (July 7, 2026)
+
+---
+
+## 🎨 OTI Color System (Locked — July 7, 2026)
+
+> This palette replaced the old flat black + mint system. Every future task must use these exact values. Do not revert to pure black (#000000) or the old surface colors.
+
+| Token | Value | Usage |
+|---|---|---|
+| Background | `#05080f` | Page background — deep blue-black |
+| Surface | `#0b0f1a` | Card backgrounds, panels |
+| Surface-2 | `#0f1520` | Inner elements, signal bar tracks |
+| Borders | `#1c2535` | All card/panel borders |
+| Body text | `#e8f4ff` | Main readable text — slight blue tint |
+| Dimmed text | `#7a8fa8` | Metadata, labels, secondary text |
+| Mint (primary) | `#00e5a0` | CTAs, highlights, active states, mint accents |
+| Mint (gradient end) | `#3EFFC1` | Gradient highlights |
+
+**Chain brand colors (ring gauge + panel tint):**
+| Chain | Hex |
+|---|---|
+| Ethereum | `#627EEA` |
+| Bitcoin | `#F7931A` |
+| Solana | `#9945FF` |
+| BNB | `#F3BA2F` |
+| (all 15 chains have their exact brand hex in the codebase) |
+
+**Special effects (do not remove):**
+- Navbar: `backdrop-filter: blur(14px)` frosted glass
+- Submit button: green glow on hover `box-shadow: 0 0 24px rgba(0,229,160,0.40)`
+- Score panel: border + background tint shifts toward selected chain's brand color via `color-mix()`
+- Signal bars: 5px height, soft color glow on fill
+- All `color-mix()` declarations have plain-value fallbacks above them for older browsers
+
 ---
 
 ## 🔴 Your Task Queue — Build In This Exact Order
