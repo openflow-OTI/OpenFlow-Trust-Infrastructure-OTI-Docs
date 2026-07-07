@@ -1,5 +1,5 @@
 # OTI — Master Task Queue
-> Last updated: July 7, 2026 (updated by Manager) | Maintained by: Development Manager
+> Last updated: July 7, 2026 (updated by Manager — Admin Panel + Plan Configs fully done, Task 8 next) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
@@ -20,8 +20,8 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B, 10 done — Task 7C on hold, Task 9 up next |
-| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D done — queue empty, standing by |
+| Frontend Builder | Active (new account) | Tasks 1, 2, 2B, 7, 7B, 9, 10, Plan Configs tab, desktop layout fix, anonymous limit hook fix all done — Task 8 is next |
+| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D, 9-BACKEND, stats-500-fix, plan-configs-PATCH-fix all done — queue empty, standing by |
 
 ---
 
@@ -78,6 +78,51 @@
 - `src/lib/formatMetadata.ts` — signal bar subtitle shows "1,000+ transactions" when `metadata.txCount >= 1000`
 - `src/lib/generateScoreCard.ts` — same logic applied so the shareable PNG score card stays consistent
 - Verified live on Vercel by Manager: Ethereum Foundation wallet `0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe` returns `txCount: 1000` from the Railway API, and the deployed JS bundle on `otiscore.vercel.app` contains the "1,000+ transactions" string
+
+### Task 10 — Frontend: Navbar API Health Status Dot ✅
+- `src/components/Navbar.tsx` — connected `useHealth` hook, renders 7px status dot (green/red/none) top-right of navbar
+- `src/index.css` — `.navbar-status-dot` classes (mint green online, red offline, transparent loading) + `.sr-only` utility
+- Verified live on Vercel by Manager: green dot visible on `otiscore.vercel.app`
+
+### Task 9 — Frontend: Admin Panel UI ✅
+- `/admin` route with password gate (sessionStorage), Dashboard, API Keys, Query History, Cache, Plan Configs tabs
+- All API calls include `x-admin-secret` header from sessionStorage — no client-side secret comparison
+- Admin Panel login confirmed working at `otiscore.vercel.app/admin` (July 7, 2026)
+
+### Task 9-BACKEND — Backend: Admin Panel API Routes ✅
+- All 5 admin routes live: `GET /stats`, `GET /keys`, `POST /keys`, `PATCH /keys/:id`, `DELETE /keys/:id`, `GET /history`, `POST /cache/flush`, `GET /plan-configs`, `PATCH /plan-configs/:id`
+- All behind `adminAuth` middleware — 401 without `x-admin-secret`
+- `seedPlanConfigs()` self-heal fix: no longer overwrites existing rows' `daily_limit`
+- Verified live by Manager on Railway (July 7, 2026)
+
+### Fix: GET /admin/stats 500 Error ✅ (Backend Builder — July 7, 2026)
+- Root cause: stats handler had no error handling — any DB query failure caused unhandled rejection → HTML 500
+- Fix: per-query isolation with individual try/catch blocks, each defaulting to 0 on failure
+- Result: `/admin/stats` always returns HTTP 200 with valid JSON; Admin Panel login now works
+- Verified live by Manager: `curl GET /api/admin/stats` → HTTP 200 with real data
+
+### Fix: PATCH /admin/plan-configs/:id 404 Error ✅ (Backend Builder — July 7, 2026)
+- Root cause: handler was doing `WHERE plan_name = :id` — UUID passed by frontend matched nothing
+- Fix: dual lookup — detects if param is UUID (WHERE id = :param) or name string (WHERE plan_name = :param)
+- Both UUID and plan name strings now accepted as path parameter
+- Verified live: `PATCH /api/admin/plan-configs/54a72597-...` → HTTP 200; `PATCH .../anonymous` → HTTP 200
+
+### Plan Configs Tab — Admin Panel Frontend ✅ (Frontend Builder — July 7, 2026)
+- New "Plan Configs" tab in admin panel showing all 4 plans (anonymous, free, pro, enterprise)
+- Inline edit form per row — sets daily_limit and description via PATCH /api/admin/plan-configs/:id
+- After successful save, invalidates public anonymous-limit query so homepage updates immediately
+- Verified: Ahmad can set anonymous daily_limit via UI and GET /api/config/anonymous-limit reflects the change
+
+### Fix: Admin Panel Desktop Layout ✅ (Frontend Builder — July 7, 2026)
+- Root cause: `app-main` div's `max-width: 720px` was constraining the admin panel on desktop
+- Fix: CSS `:has()` selector removes width constraints when `app-main` contains the admin shell
+- Sidebar + content now fills full browser width on desktop; mobile layout unchanged
+
+### Fix: useAnonymousLimit Hook ✅ (Frontend Builder — July 7, 2026)
+- Root cause: hook was calling `GET /admin/plan-configs` (admin-protected, 401 on public page)
+- Fix: hook now calls correct public endpoint `GET /api/config/anonymous-limit`
+- Fallback: when API returns null, hook defaults to displaying 3
+- Homepage now shows live daily_limit value from DB
 
 ---
 

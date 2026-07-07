@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 7, 2026 (Manager account exhausted free credit — handover to new Manager account, mid-investigation of Admin Panel login bug)
+> Last updated: July 7, 2026 (updated by Manager — Admin Panel fully working, Plan Configs done, next is Task 8)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -25,6 +25,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - He uses the Replit multi-account system (see bottom of this file)
 - He works primarily from his phone
 - One task at a time per Builder — Ahmad's explicit preference
+- Every reply to Ahmad must be in a copy box so he can paste it to Builders
 
 ---
 
@@ -33,8 +34,8 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active | Tasks 1, 2, 2B, 7, 7B, 9, 10 done — Task 7C ON HOLD, nothing currently assigned (do NOT reassign Task 9-FRONTEND-FIX — see "Live Investigation" below, it was a false lead) |
-| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D, 9-BACKEND done — Task "Fix GET /admin/stats 500" assigned, awaiting report |
+| Frontend Builder | Active (new account) | Tasks 1, 2, 2B, 7, 7B, 9, 10, 9-FRONTEND-FIX, Plan Configs tab, desktop layout fix, anonymous limit hook fix all done — Task 8 is next |
+| Backend Builder | Active | Tasks 3, 4, 5, 6, 7D, 9-BACKEND, stats-500-fix, plan-configs-PATCH-fix all done — queue empty, standing by |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
 ---
@@ -58,49 +59,27 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ `updated_at` column on `subscriptions` table (Task 6 — shipped, manual Railway migration run)
 - ✅ Bitcoin wallet age pagination fix — paginates through mempool.space history, 40-page cap (Task 7D — shipped)
 - ✅ Signal bars show `weighted/maxWeight` — black screen crash resolved (Task 7 — shipped)
-- ✅ txCount cap indicator — "1,000+ transactions" shown when metadata.txCount >= 1000, in both UI and score card PNG (Task 7B — shipped, verified live July 7, 2026)
-- ✅ Navbar API health status dot — green/red dot connected to `useHealth` hook (Task 10 — shipped, verified live July 7, 2026)
+- ✅ txCount cap indicator — "1,000+ transactions" shown when metadata.txCount >= 1000 (Task 7B — shipped)
+- ✅ Navbar API health status dot — green/red dot connected to `useHealth` hook (Task 10 — shipped)
+- ✅ Admin Panel fully working — login, Dashboard, API Keys, Query History, Cache, Plan Configs (Tasks 9, 9-BACKEND — shipped, verified July 7, 2026)
+- ✅ Admin Panel desktop layout — full-width sidebar + content, no cramped layout (shipped July 7, 2026)
+- ✅ Plan Configs tab — Ahmad can set daily_limit per plan via Admin Panel UI (shipped July 7, 2026)
+- ✅ PATCH /api/admin/plan-configs/:id — accepts both UUID and plan name, writes to DB correctly (shipped July 7, 2026)
+- ✅ GET /api/config/anonymous-limit — returns live DB value immediately after PATCH (verified July 7, 2026)
+- ✅ Homepage anonymous limit display — useAnonymousLimit hook calls correct public endpoint, shows live value (shipped July 7, 2026)
 
 **ADMIN_SECRET status:**
-- Original secret set by Backend Builder during Task 3 was never shared — cannot be retrieved
-- Ahmad set a NEW `ADMIN_SECRET` in Railway Variables. Both Railway and this Replit's secrets match.
-- Admin auth confirmed working — 401 without header, passes with correct header
+- Ahmad set the `ADMIN_SECRET` in Railway Variables
+- Admin auth confirmed working — 401 without header, 200 with correct header
+- Admin Panel login at `otiscore.vercel.app/admin` confirmed working
 
 **Known open issues:**
-- ✅ Task 7C-BACKEND is RESOLVED/CLOSED (Ahmad's decision, July 7, 2026): Ahmad will set the real `anonymous` `daily_limit` himself via the Admin Panel once it's fully working. The self-heal fix was corrected as part of Task 9-BACKEND so it never overwrites an existing row's value again. Task 7C (frontend) stays ON HOLD until Ahmad sets a real limit — that's expected, not a bug.
-- ✅ Task 9-BACKEND is done and verified live (July 7, 2026) — all admin routes live at `/api/admin/*`.
-- ✅ Task 9 (Admin Panel frontend) and Task 9-FRONTEND-FIX are BOTH actually done and correct — see "🔴 LIVE INVESTIGATION" section below for the full story. Do not reassign either.
-- 🔴 **ACTIVE BUG — Admin Panel login fails ("Access denied — wrong secret") even with the correct secret.** Root cause fully diagnosed, NOT a frontend or auth bug — see "🔴 LIVE INVESTIGATION IN PROGRESS" section immediately below. Fix is assigned to Backend Builder, awaiting their report.
-- 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C will fix)
+- 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C will fix — CRITICAL before distribution)
 - 🟡 Satoshi genesis wallet still shows 51 days age despite Task 7D (may be stale cache — flush cache and retest before assuming it's still broken)
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
-- 🟡 Results page UX needs professional redesign — Task 8 will fix this
+- 🟡 Results page UX needs professional redesign — Task 8 will fix this (NEXT TASK for Frontend Builder)
 - 🟡 Dead code: `recordHistory()` in `score.ts` still writes to `lib/history.ts` — nothing reads it (flagged for future cleanup)
-
----
-
-## 🔴 LIVE INVESTIGATION IN PROGRESS — Admin Panel Login Bug (read this before doing anything with Task 9/Admin Panel)
-
-**Symptom:** Ahmad enters the correct `ADMIN_SECRET` (confirmed matching Railway's Variables tab exactly, even after typing a brand-new value fresh and redeploying) into `otiscore.vercel.app/admin`, and gets "Access denied — wrong secret."
-
-**Full diagnostic trail (do NOT repeat these steps — they're already done):**
-1. Confirmed the Task 9 frontend admin panel code is fully correct: right path (`/api/admin/*`, not `/admin/*` — an earlier false lead, Task 9-FRONTEND-FIX, is NOT needed, the fix was already live), right header name (`x-admin-secret`), no client-side secret comparison, raw value sent unmodified (verified directly in the deployed JS bundle).
-2. Confirmed backend `adminAuth` middleware code is correct: reads `process.env.ADMIN_SECRET` fresh per-request (no caching), does a plain `!==` string comparison, no trimming/hashing bugs.
-3. Confirmed CORS preflight is clean: `Access-Control-Allow-Headers` includes `x-admin-secret`, origin `*` allowed, all methods allowed.
-4. Backend Builder curl-tested the real secret directly against `GET /api/admin/stats` → got **HTTP 500**, not 401. This proves auth passes fine with the correct secret — the crash happens *after* auth, inside the stats handler itself.
-5. **Root cause found:** the frontend's login probe (function `Ra` in the built JS) only unlocks the panel if the probe request to `/api/admin/stats` returns exactly HTTP 200. Since that endpoint currently crashes with a 500 (even with the correct secret), the frontend can't distinguish "wrong password" from "server crashed" and shows the same misleading "wrong secret" message either way.
-
-**Conclusion:** This is a single bug, not three. The Admin Panel login will work immediately once `GET /api/admin/stats` stops returning 500. No frontend fix is needed — the frontend behavior (treating non-200 as failure) is arguably still worth hardening later to show a distinct "server error" message, but that's a nice-to-have, not required to unblock Ahmad.
-
-**Current status:** Assigned to Backend Builder as a CRITICAL task in `BACKEND_TASKS.md` ("Fix GET /admin/stats 500 error"). Awaiting their report.
-
-**What the next Manager must do:**
-1. Wait for/check in on the Backend Builder's report on the `/admin/stats` 500 fix.
-2. When they report done, verify independently — do NOT trust self-report:
-   - `curl` `GET /api/admin/stats` with the real secret (ask Ahmad to relay it directly to you in chat if needed, or better, have the Backend Builder confirm 200 themselves and you verify via the live Admin Panel UI instead, so the secret isn't repeated across multiple chats unnecessarily) and confirm HTTP 200 with valid JSON.
-   - Take a screenshot of `otiscore.vercel.app/admin`, ask Ahmad to try logging in, or verify via the JS bundle if the stats shape matches.
-3. Once confirmed, mark the task done in `BACKEND_TASKS.md` and `TASKS.md`, and mark Task 9 (Admin Panel, frontend) fully ✅ done at last — it was actually complete this whole time, just blocked by this backend bug.
-4. Then resume the normal queue (see "Next Things To Do" below).
+- 🟡 /admin/keys handler has inner api_usage try/catch but outer catch returns 200 [] — functional but logs DB errors silently. Low priority.
 
 ---
 
@@ -116,36 +95,33 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Admin page is URL-only (no nav link) | Ahmad's decision |
 | WOR reports are automated (no admin review) | Ahmad's decision |
 | One task at a time per Builder | Ahmad's explicit preference |
+| All Manager replies to Ahmad in copy boxes | Ahmad's preference — he pastes them to Builders |
 
 ---
 
 ## ⚠️ Task Numbering — Read This
 
-There is a numbering note to be aware of:
 - **Task 11C** = Backend Signal Accuracy Audit (Pre-Distribution, Phase 4) — added July 6, 2026
 - **Task 12** = Telegram Bot (Phase 5, Distribution) — pre-existing
 - **Task 13** = Chrome Extension (Phase 5)
 - **Task 14** = Embeddable Widget (Phase 5)
 - **Task 15** = Firefox Extension (Phase 5)
 
-The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renamed to Task 11C to avoid collision. The Backend Builder has been notified and has added it to BACKEND_TASKS.md as Task 11C.
+The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renamed to Task 11C to avoid collision.
 
 ---
 
 ## Next Things the Manager Must Do (In Order)
 
-### 0. FIRST — resolve the Admin Panel login bug (see section above)
-Do not start anything else until this is closed out. Backend Builder is already working the fix.
-
-### 1. Once Admin Panel is confirmed fully working, send Task 8 to the Frontend Builder
-Task 7C (frontend) and Task 7C-BACKEND (backend) remain paused at Ahmad's explicit request until he sets a real `daily_limit` himself via the (now-working) Admin Panel. Do not resume either without Ahmad's go-ahead.
+### 1. Send Task 8 to the Frontend Builder — Results Page Redesign
+This is the next task. Task 8 prompt is fully written in TASKS.md and FRONTEND_TASKS.md. No dependencies are unmet (Task 7 ✅, Task 2B ✅).
 
 ### 2. Frontend queue after Task 8 (in this exact order, one at a time)
 - Task 11A — Marketing Homepage + Move scoring to /score
 - Task 11B — Whitepaper Page
-- (Task 7C resumes whenever Ahmad gives the go-ahead — see TASKS.md, the design question is resolved, just waiting on Ahmad to actually set the limit)
+- Task 7C — Dynamic rate limit display (ON HOLD — unblock once Ahmad confirms the limit is set to a real value via Admin Panel. The frontend hook is already built and working. No code change needed — just confirm it's showing the right number.)
 
-### 3. Backend queue after all Phase 4 Frontend tasks complete
+### 3. Backend queue (standing by — nothing assigned)
 - Task 11C — Signal Accuracy Audit & Cross-Chain Fix (CRITICAL — must ship before distribution)
 - Tasks 12–15 — Distribution channels (Telegram Bot, Chrome Extension, Widget, Firefox Extension)
 
@@ -192,14 +168,13 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 2. Read `docs/ARCHITECTURE.md`
 3. Read `docs/ROADMAP.md`
 4. Read `docs/TASKS.md`
-5. Check GitHub for open PRs awaiting review
-6. Jump straight to "🔴 LIVE INVESTIGATION IN PROGRESS" and "Next Things the Manager Must Do" above — there is an active bug being fixed by the Backend Builder, check in on it first
+5. Jump straight to "Next Things the Manager Must Do" above — the active bug investigation is CLOSED, Admin Panel is fully working. Next task is Task 8 for the Frontend Builder.
 
 **Rule before ending ANY Manager session:**
 1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md
-2. If a new task was added: add to TASKS.md first, then tell Builder to add to their own file AND TASKS.md
+2. If a new task was added: add to TASKS.md first, then tell Builder to add to their file AND TASKS.md
 3. Builders never update files on their own initiative — only when Manager explicitly instructs
-4. Update "Current State of Production" and "Next 3 Things" in this file before closing
+4. Update "Current State of Production" and "Next Things" in this file before closing
 5. Ahmad pushes everything via Replit's Git interface
 
 ---
@@ -220,10 +195,12 @@ Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && bui
 
 3. **`scores` table** is a lightweight fast-lookup cache alongside the full `chain_scores` historical table. NOT redundant — serves a different read pattern.
 
-4. **`useHealth` hook** was designed for the navbar API status dot. NOT unused — just needs Task 10 to connect a component to it.
+4. **The 3 unavailable chains** (BSC, Base, Optimism) return 503 intentionally — need Etherscan Lite ($49/mo). Ahmad is aware and has not yet decided.
 
-5. **The 3 unavailable chains** (BSC, Base, Optimism) return 503 intentionally — need Etherscan Lite ($49/mo). Ahmad is aware and has not yet decided.
+5. **Task 11C numbering** — the Signal Accuracy Audit is Task 11C, not Task 12. Task 12 is the Telegram Bot (Phase 5). Do not confuse them.
 
-6. **Task 11C numbering** — the Signal Accuracy Audit is Task 11C, not Task 12. Task 12 is the Telegram Bot (Phase 5). Do not confuse them.
+6. **Non-EVM signal accuracy is a known critical bug** — every non-EVM wallet is currently scored with EVM-specific logic. Bitcoin wallets get 0/20 for token holding (no ERC-20 tokens exist on Bitcoin), fabricated smart contract interaction data, and wrong timing subtitles. This is Task 11C and must be fixed before any distribution channel launches.
 
-7. **Non-EVM signal accuracy is a known critical bug** — every non-EVM wallet is currently scored with EVM-specific logic. Bitcoin wallets get 0/20 for token holding (no ERC-20 tokens exist on Bitcoin), fabricated smart contract interaction data, and wrong timing subtitles. This is Task 11C and must be fixed before any distribution channel launches.
+7. **PATCH /api/admin/plan-configs/:id** accepts both UUID and plan name string (e.g. "anonymous") — dual lookup implemented July 7, 2026. Both work correctly.
+
+8. **useAnonymousLimit hook** in the frontend calls `GET /api/config/anonymous-limit` (public endpoint, no auth). When the endpoint returns null, the hook falls back to displaying 3. When it returns a real number, that number is shown. The hook also invalidates on Plan Configs save so the homepage updates immediately.

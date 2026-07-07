@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 7, 2026 | Maintained by: Development Manager
+> Last updated: July 7, 2026 (updated by Manager — Plan Configs + layout + hook fixes all done, Task 8 is next) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
@@ -27,6 +27,30 @@
 - `generateScoreCard.ts` updated — score card PNG shows weighted labels and correct fills
 - Verified live against real wallet on Vercel — all 5 bars show weighted values
 - Also resolved black screen crash caused by Task 5 API shape mismatch
+
+---
+
+## ✅ Additional Completed Tasks (July 7, 2026)
+
+### Plan Configs Tab — Admin Panel ✅
+- New "Plan Configs" tab in admin panel — table of all 4 plans, inline edit form per row
+- PATCH sends `daily_limit` (snake_case) to backend correctly
+- After save, invalidates public anonymous-limit query so homepage updates immediately
+- Verified live by Manager
+
+### Admin Panel Desktop Layout Fix ✅
+- CSS `:has()` selector removes `max-width: 720px` constraint when admin shell is present
+- Sidebar + content fills full browser width on desktop; mobile unchanged
+
+### useAnonymousLimit Hook Fix ✅
+- Hook now calls correct public endpoint `GET /api/config/anonymous-limit`
+- Fallback to 3 when API returns null
+- Homepage shows live daily_limit value from DB
+
+### Homepage Scrollbar + Layout Fix ✅
+- html/body/root use `min-height` instead of `height`; app-shell no longer clips with `overflow:hidden`
+- Navbar is sticky; browser scrollbar now at far right edge as expected
+- Content + rate limit note positioned correctly on desktop and mobile
 
 ---
 
