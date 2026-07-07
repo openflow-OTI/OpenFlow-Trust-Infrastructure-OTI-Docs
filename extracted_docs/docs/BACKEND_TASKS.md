@@ -1,5 +1,5 @@
 # OTI — Backend Builder Task List
-> Last updated: July 7, 2026 (updated by Manager — API Keys fully working, Task 9C in progress) | Maintained by: Development Manager
+> Last updated: July 7, 2026 (session 2 — Task 9C ✅ done and verified, Task 11C is next active task) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Do not skip ahead.
 
@@ -59,43 +59,79 @@
 - Stats active_keys fixed: removed WHERE status = 'active' (column does not exist); counts all rows
 - Verified live: Ahmad created enterprise, pro, and free keys at 14:15 July 7, 2026 — Edit and Delete buttons confirmed working
 
+### TASK 9C — Verify & Harden Plan Limit Enforcement ✅
+**Completed:** July 7, 2026
+
+**Fixes applied:**
+- `apiKeyAuth.ts` — replaced Drizzle ORM select with raw SQL `SELECT *`; missing columns no longer crash the middleware
+- `score.ts` — wrapped compromised-wallets denylist check in try/catch; DB hiccup now returns JSON not HTML 500
+- `admin.ts` DELETE `/admin/keys/:id` — replaced Drizzle `.delete().returning()` with raw SQL
+- `admin.ts` PATCH `/admin/keys/:id` — replaced Drizzle `.update().set().returning()` with raw SQL via pg pool, status column excluded
+
+**429 test results (live Railway):**
+- Free plan (daily_limit=2): Request 1 → 200 ✅, Request 2 → 200 ✅, Request 3 → 429 ✅
+- Enterprise (daily_limit=null): 5/5 requests → 200, never 429 ✅
+- PATCH edit confirmed → HTTP 200 + updated_at timestamp updated ✅
+
 ---
 
 ## 🔴 Your Task Queue — Build In This Exact Order
 
-### TASK 9C — Verify & Harden Plan Limit Enforcement (All Plans)
-**Priority:** HIGH
-**Depends on:** Nothing — Plan Configs admin UI is live
+### TASK 11C — Signal Accuracy Audit & Cross-Chain Fix
+**Phase:** Pre-Distribution (must be done before Phase 5 launches)
+**Priority:** CRITICAL — signals are the core product; wrong data destroys trust
+**Depends on:** Nothing — start immediately
 
-**Why:** The Admin Panel now lets Ahmad set daily_limit for any plan.
-We confirmed anonymous enforcement works. Free, pro, and enterprise
-have never been tested. If apiKeyAuth.ts has a bug, Ahmad could set
-a limit that silently does nothing.
+**Context:**
+The 5 scoring signals were designed with EVM chains in mind. Bitcoin, Solana, TON, Tron, and Sui have fundamentally different data models — no ERC-20 tokens, no internal transactions, no smart contracts in the EVM sense. Currently these non-EVM chains are being scored using EVM-specific logic, producing wrong and misleading results. Examples: the Satoshi genesis wallet scores ~51 days wallet age (correct is 5,700+ days); Bitcoin wallets get 0/20 for token holding because ERC-20 tokens don't exist on Bitcoin; "1 smart-contract tx" appears on Bitcoin wallets that have never touched a smart contract. These are not edge cases — they affect every single non-EVM wallet scored by OTI.
 
-**What to do:**
-1. Read `src/middlewares/apiKeyAuth.ts` — confirm it reads daily_limit
-   from plan_configs dynamically per request (not hardcoded, not cached).
-2. Test each plan:
-   - Set free plan daily_limit to 2 via Admin Panel → make 3 requests
-     with a free API key → 3rd must be rate-limited (429).
-   - Restore the limit after testing.
-   - Confirm enterprise (daily_limit = null) = unlimited (no 429 ever).
-3. Fix anything broken. Do not touch scoring.ts.
+**What to audit and fix — per signal:**
+
+**Signal 1 — Wallet Age (25%)**
+- EVM: first transaction timestamp from Etherscan — correct
+- Bitcoin: Task 7D attempted a fix but the Satoshi genesis wallet may still show ~51 days (possible stale cache). Flush cache and re-verify. If still wrong, re-investigate `bitcoin.ts`.
+- Solana: verify first tx timestamp is pulled correctly
+- TON, Tron, Sui: verify each individually
+
+**Signal 2 — Transaction Count (20%)**
+- EVM: Etherscan tx count, capped at 1,000 — correct
+- Non-EVM: verify each chain returns real tx count, not a placeholder or default
+
+**Signal 3 — Token Holding Behavior (20%)**
+- EVM: ERC-20 token diversity — correct
+- Bitcoin: has NO tokens — currently returns 0/20 which unfairly penalises BTC wallets. Fix: if chain is Bitcoin, skip this signal and redistribute its weight proportionally across the other 4 signals, OR score it as neutral (50/100).
+- Solana: has SPL tokens — ensure SPL token diversity is being scored, not defaulting to 0
+- TON, Tron, Sui: verify token data source and scoring for each
+
+**Signal 4 — Smart Contract Interactions (20%)**
+- EVM: internal tx count from Etherscan — correct
+- Bitcoin: has NO smart contracts — currently returns fabricated data. Fix: same approach as Token Holding — redistribute weight or score neutral.
+- Solana: program interactions = equivalent of contract interactions — verify this is scored correctly
+- TON, Tron, Sui: verify each
+
+**Signal 5 — Transaction Timing Patterns (15%)**
+- EVM: uses internal transaction timestamps — correct
+- Non-EVM: subtitle currently shows "0 internal transactions" for non-EVM chains. Use actual transaction timestamps for timing analysis. Do not default to 0 or use internal tx counts as a proxy.
+
+**⚠️ SACRED FILES — do not touch:**
+- `src/lib/scoring.ts` — ever
+- `nixpacks.toml` — ever
 
 **Definition of done:**
-- apiKeyAuth.ts reads daily_limit dynamically confirmed.
-- Free/pro limits enforced immediately after Admin Panel change.
-- Enterprise null = unlimited confirmed.
-- Report back with results per plan.
+- The Satoshi genesis wallet (`1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa`) scores wallet age > 5,000 days
+- No signal shows fabricated data for chains where that data type doesn't exist
+- Non-applicable signals are either redistributed or scored neutral — never 0 by default
+- All 15 supported chains tested with at least one known wallet
+- Results documented in a short test log committed to the repo
+- Report back to Manager with results before marking done
 
 ---
 
 ## ⏳ Future Tasks (Not Yet Active — Manager Will Assign When Ready)
 
-These are coming after the queue above is complete. You do not need to read these in detail now — they are listed so you know what is ahead.
+These are coming after Task 11C is complete. You do not need to read these in detail now.
 
-- **Phase 4 (Pre-Distribution) — Task 11C:** Signal Accuracy Audit & Cross-Chain Fix. CRITICAL. Non-EVM chains (Bitcoin, Solana, TON, Tron, Sui) are being scored with EVM-specific logic. Must be fixed before any distribution channel launches. Full spec will be provided by the Manager when assigned.
-- **Phase 5:** Telegram bot (Task 12), Chrome Extension (Task 13), Embeddable Widget (Task 14), Firefox Extension (Task 15)
+- **Phase 5:** Telegram bot (Task 12), Discord Bot (Task 13), Embeddable Widget (Task 14), Firefox Extension (Task 15)
 - **Phase 6:** Wallet Ownership Registry (WOR) — Ahmad's flagship feature. Off-chain EIP-191 signing + passkey. New DB tables, new routes.
 - **Phase 7:** Monetization — self-serve developer portal, paid plan tiers, BSC/Base/Optimism unlock
 

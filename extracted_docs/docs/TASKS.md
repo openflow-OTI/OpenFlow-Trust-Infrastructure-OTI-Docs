@@ -1,5 +1,5 @@
 # OTI — Master Task Queue
-> Last updated: July 7, 2026 (end-of-session — Task 8 ✅, Task 9C ✅, color system locked, Task 8B queued, new Frontend Builder waiting onboarding, Backend Builder on Task 11C) | Maintained by: Development Manager
+> Last updated: July 7, 2026 (session 2 — Task 8B active with Frontend Builder, Backend Builder on Task 11C next) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
@@ -20,8 +20,8 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | New account (July 7, 2026) | Task 8 done. New account waiting onboarding. Next task: Task 8B (Wallet Input Page Redesign) |
-| Backend Builder | Active | Task 9C done. Next task: Task 11C (Signal Accuracy Audit — CRITICAL) |
+| Frontend Builder | Active (new account July 7, 2026) | Task 8B active — Wallet Input Page Redesign in progress. After 8B: Task 11A, then Task 11B. |
+| Backend Builder | Active | Task 9C done ✅. Next task: Task 11C (Signal Accuracy Audit — CRITICAL). |
 
 ---
 
@@ -232,7 +232,7 @@ Special effects: navbar frosted glass (`backdrop-filter: blur(14px)`), submit bu
 
 **Definition of done:** `/admin` route works. Password gates all screens. All 4 screens render real data from the backend. Cache flush button works.
 
-**Frontend status (July 7, 2026):** Frontend Builder shipped this — password gate, all 4 screens, and secure auth design (backend is sole authority on the secret, no client-side comparison). Manager verified live: gate renders correctly on `otiscore.vercel.app/admin`, but `GET /admin/stats`, `/admin/keys`, `/admin/history`, `/admin/cache/flush` all return **404** on the live Railway backend — routes don't exist yet. Blocked on Task 9-BACKEND below.
+**Status: ✅ DONE — verified live by Manager, July 7, 2026.** Password gate, all 4 screens (Dashboard, API Keys, Query History, Cache, Plan Configs), and secure auth design confirmed working on `otiscore.vercel.app/admin`. All screens load real data from the backend.
 
 ---
 
@@ -276,27 +276,7 @@ Special effects: navbar frosted glass (`backdrop-filter: blur(14px)`), submit bu
 **Full prompt for Frontend Builder:**
 > In `src/lib/adminClient.ts` (and anywhere else admin routes are called), change the base path so all admin requests go to `/api/admin/*` instead of `/admin/*`. Confirm `/admin/stats`, `/admin/keys`, `/admin/history`, `/admin/cache/flush`, `/admin/usage`, and `/admin/plan-configs` (if referenced) all use the `/api/admin/` prefix.
 
-**Definition of done:** Logging into `/admin` on `otiscore.vercel.app` with the real secret loads real data on all 4 screens with no errors.
-
----
-
-### TASK 10 — Frontend: API Health Status Indicator
-**Owner:** Frontend Builder
-**Phase:** 2 — Operational
-**Priority:** LOW — quick win, already built
-**Depends on:** Nothing (the hook already exists)
-
-**Full prompt for Frontend Builder:**
-> The `src/hooks/useHealth.ts` hook already exists and pings `GET /api/healthz`. Connect it to a small status indicator in the Navbar (`src/components/Navbar.tsx`).
->
-> Display: a small colored dot (6–8px circle) in the top-right of the navbar.
-> - Green dot = API is responding (`status: "ok"`)
-> - Red dot = API is unreachable (error state)
-> - No dot / pulsing = loading
->
-> Tooltip on hover: "API online" or "API offline". Keep it subtle — it should not distract from the main content.
-
-**Definition of done:** Navbar shows a green dot when Railway API is up, red when it's down. Verified by checking the deployed frontend.
+**Status: ✅ DONE — verified live by Manager, July 7, 2026.** All admin API calls use `/api/admin/*` prefix. All 4 screens load real data with no errors.
 
 ---
 
@@ -343,9 +323,10 @@ Move the current homepage (wallet address form + results) to the `/score` route.
 
 **Part B — Build the marketing homepage at `/`**
 
-**Brand system — everything derives from the OTI spiral logo:**
-- Primary mint: `#3EFFC1` (outer/bright), `#2BD9A4` (inner/deeper)
-- Background: `#0A0A0A` deep black
+**Brand system — use the LOCKED OTI color system (see Color System section above):**
+- Background: `#05080f` · Surface: `#0b0f1a` · Borders: `#1c2535`
+- Mint primary: `#00e5a0` · Mint gradient: `#3EFFC1`
+- Body text: `#e8f4ff` · Dimmed text: `#7a8fa8`
 - Typography: Geist Sans or Inter — clean, geometric, modern
 - Micro-interaction: the spiral logo rotates subtly on hover (CSS `transform: rotate()`, 2–3s ease, infinite)
 - All CTAs, highlights, active states: mint only — no other accent color
@@ -426,7 +407,7 @@ Ahmad creates a form at tally.so (free): fields = Name (optional), Email (option
 - Navbar "Score a Wallet" navigates correctly between the two views
 - Crisp script is in `<head>` (even if ID is empty placeholder)
 - Responsive on mobile (375px) and desktop (1440px)
-- Brand system (`#0A0A0A` + `#3EFFC1` mint) is consistent throughout
+- Brand system uses the locked OTI color system (Background `#05080f`, Mint `#00e5a0`/`#3EFFC1`) throughout
 
 ---
 
@@ -445,7 +426,7 @@ Ahmad creates a form at tally.so (free): fields = Name (optional), Email (option
 ---
 
 **Design rules:**
-- Same `#0A0A0A` black + `#3EFFC1` mint brand system as the rest of the site
+- Use the locked OTI color system (Background `#05080f`, Surface `#0b0f1a`, Mint `#00e5a0`/`#3EFFC1` — see Color System section above)
 - Typography: Geist Sans or Inter. Body text slightly larger than normal (17–18px), high line-height (1.8) for readability — this is a long-form document
 - Section numbers are displayed in mint: `01`, `02`, `03` etc.
 - Sticky table of contents sidebar on desktop (collapses to a "Jump to section" accordion on mobile)

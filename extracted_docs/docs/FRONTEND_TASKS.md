@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 7, 2026 (updated by Manager — all fixes done through Task 9C-adjacent work, Task 8 is next) | Maintained by: Development Manager
+> Last updated: July 7, 2026 (session 2 — Task 8B now active) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
@@ -252,9 +252,10 @@ Move the current homepage (wallet address form + results) to the `/score` route.
 
 **Part B — Build the marketing homepage at `/`**
 
-Brand system:
-- Primary mint: `#3EFFC1` (outer/bright), `#2BD9A4` (inner/deeper)
-- Background: `#0A0A0A` deep black
+Brand system — use the locked OTI color system (see Color System section above):
+- Background: `#05080f` · Surface: `#0b0f1a` · Borders: `#1c2535`
+- Mint primary: `#00e5a0` · Mint gradient: `#3EFFC1`
+- Body text: `#e8f4ff` · Dimmed text: `#7a8fa8`
 - Typography: Geist Sans or Inter — clean, geometric, modern
 - Micro-interaction: the spiral logo rotates subtly on hover (CSS `transform: rotate()`, 2–3s ease, infinite)
 - All CTAs, highlights, active states: mint only
@@ -345,7 +346,7 @@ OTI is positioning itself as infrastructure for enterprises — exchanges, custo
 **Route:** `/whitepaper`
 
 **Design rules:**
-- Same `#0A0A0A` black + `#3EFFC1` mint brand system
+- Use the locked OTI color system (Background `#05080f`, Surface `#0b0f1a`, Mint `#00e5a0`/`#3EFFC1` — see Color System section above)
 - Body text 17–18px, line-height 1.8 — this is a long-form document
 - Section numbers displayed in mint: `01`, `02`, `03`
 - Sticky table of contents sidebar on desktop (collapses to "Jump to section" accordion on mobile)

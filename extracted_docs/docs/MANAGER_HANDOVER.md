@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 7, 2026 (end-of-session — Task 8 ✅ done, Task 9C ✅ done, new color system locked, Task 8B queued, new Frontend Builder waiting onboarding)
+> Last updated: July 7, 2026 (session 2 — Task 8B active with Frontend Builder, Task 11C next for Backend Builder)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -195,9 +195,9 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 5. Jump straight to "Next Things the Manager Must Do" above and start from step 1
 
 **What is happening right now:**
-- Task 9C is IN PROGRESS with the new Backend Builder. Code review step is done. Awaiting live 429 enforcement test. Give the Backend Builder a free API key (get it from Admin Panel → API Keys — the one ending in ...f648) and tell him to run the test.
-- Task 8 (Frontend Results Page Redesign) is ON HOLD. Do not send it to the Frontend Builder until Task 9C is confirmed done and marked.
-- Both Builders are waiting. Be precise — one task at a time per Builder, no exceptions.
+- Task 8B (Wallet Input Page Redesign) is ACTIVE with the Frontend Builder. Onboarding done, task sent, waiting for their output.
+- Task 11C (Signal Accuracy Audit) is NEXT for the Backend Builder. Task 9C is done and verified. Send Task 11C prompt when ready.
+- One task at a time per Builder — do not send Task 11A until Task 8B is confirmed done and merged.
 
 **Rule before ending ANY Manager session:**
 1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md
