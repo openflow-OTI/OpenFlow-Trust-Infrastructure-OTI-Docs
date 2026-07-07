@@ -124,74 +124,46 @@
 - Fallback: when API returns null, hook defaults to displaying 3
 - Homepage now shows live daily_limit value from DB
 
+### Task 7C-BACKEND — Public Anonymous Rate Limit Endpoint ✅ (Backend Builder — July 7, 2026)
+- `GET /api/config/anonymous-limit` — public endpoint, no auth required
+- Returns `{ "daily_limit": number | null }` from plan_configs table
+- `seedPlanConfigs()` fixed: no longer overwrites existing rows — only seeds when row is missing entirely
+- Verified: endpoint returns live DB value immediately after Admin Panel PATCH
+
+### Task 7C — Frontend: Dynamic Rate Limit Display ✅ (Frontend Builder — July 7, 2026)
+- `src/hooks/useAnonymousLimit.ts` calls `GET /api/config/anonymous-limit`
+- Homepage confirmed showing "Anonymous lookups are limited to 20 per day" (July 7, 2026)
+- Falls back gracefully when API returns null
+- Hook invalidates on Plan Configs save so homepage updates immediately
+
+### Fix: API Keys Tab — Full Resolution ✅ (Backend Builder — July 7, 2026)
+- Root cause: Railway subscriptions table predates Drizzle schema — real columns confirmed via information_schema
+- Real columns: id, api_key, plan, owner_address, created_at, expires_at, updated_at (NO status, NO email column)
+- GET fixed: raw SQL SELECT * with column-name fallback mapper; no WHERE filter on status
+- POST fixed: INSERT (api_key, plan, owner_address) only
+- Stats active_keys fixed: removed WHERE status = 'active' (column does not exist); counts all rows
+- Verified live: Ahmad created enterprise, pro, and free keys at 14:15 July 7, 2026 — Edit and Delete confirmed working
+
+### Fix: Admin Panel API Keys UI Resilience ✅ (Frontend Builder — July 7, 2026)
+- "+ New Key" button always visible even when keys list fails to load
+- Error shows inline with Retry button; table guarded behind isSuccess
+
+---
+
+## 🟠 In Progress
+
 ---
 
 ## 🔴 Queue — Not Started (Build In This Exact Order)
 
 ---
 
-### TASK 7C-BACKEND — Backend: Public Anonymous Rate Limit Endpoint
-**Owner:** Backend Builder
-**Phase:** 2 — Operational
-**Priority:** MEDIUM — blocks Task 7C (Frontend)
-**Status:** ✅ RESOLVED / CLOSED (July 7, 2026, Ahmad's decision — see resolution below)
-**Depends on:** Nothing
-**Context:** Frontend Builder correctly flagged that `GET /admin/plan-configs` now requires `x-admin-secret` (Task 3), and sending that secret from public client-side code would expose it to every user in devtools. Do not do that. This task adds a safe public endpoint instead.
-
-**Full prompt for Backend Builder:**
-> Add a new public endpoint `GET /api/config/anonymous-limit` that returns `{ "daily_limit": number }` — the `daily_limit` value for the `anonymous` row in the `plan_configs` table. No authentication required (this is not sensitive data — it's the same "3 per day" text already shown publicly on the homepage). Do not add this to the `/api/admin/*` route group — it must stay outside `adminAuth` middleware since the frontend calls it with no secret. Add it to the OpenAPI spec.
-
-**Definition of done:** `curl https://workspaceapi-server-production-5c0c.up.railway.app/api/config/anonymous-limit` returns `{ "daily_limit": 3 }` (or current value) with no headers required, no 401.
-
-**Full history — read this before touching the code again:**
-1. First deploy: endpoint returned `{ "daily_limit": null }` in production. Investigated — root cause was that the `anonymous` row's `daily_limit` in the **production** `plan_configs` table was `NULL`. Backend Builder assumed this was accidental corruption (e.g. an unauthenticated write before Task 3/admin-auth shipped) and shipped a "self-heal" fix in `seedPlanConfigs()`: on every server boot, if `daily_limit` is `NULL` for anonymous/free/pro, it resets it to a default (3 for anonymous). Enterprise is excluded since `NULL` is its intended "unlimited" meaning.
-2. **Ahmad then clarified: the `NULL` value was intentional.** He set it himself, deliberately, to remove the anonymous limit while he does his own manual testing of the live site (unlimited lookups, no 3/day cap getting in his way). He plans to set a real limit himself once the Admin Panel (Task 9) exists.
-3. This creates a genuine conflict with the self-heal fix: the fix is *designed* to force `NULL` back to `3` on every boot — which would silently undo Ahmad's intentional testing setup every time Railway restarts, without telling him.
-4. Manager re-tested after the fix deployed — endpoint still returned `null` (fix may not have taken effect yet, or Railway hadn't finished redeploying, or the self-heal isn't matching the row — never fully confirmed either way, since Ahmad asked to pause before further debugging).
-5. **Ahmad's explicit instruction: leave the limit unlimited for now. Do not force it back to a number. Pause this task until he's done testing.**
-
-**Resolution (Ahmad's decision, July 7, 2026):** Closed. Ahmad will set the real `anonymous` `daily_limit` himself directly via the Admin Panel (Task 9) once it's live — that is now the intended, permanent way this value gets managed, not a temporary testing state. The self-heal fix in `seedPlanConfigs()` must be changed so it never overwrites an existing row's value (including an intentional `NULL`) — it should only seed a default when a plan row is missing entirely (e.g. first-ever boot / fresh database). This fix is folded into Task 9-BACKEND below. The public endpoint itself (route, schema, auth exclusion) does not need to change.
-
----
-
-### TASK 7C — Frontend: Dynamic Rate Limit Display
-**Owner:** Frontend Builder
-**Phase:** 2 — Operational
-**Priority:** MEDIUM
-**Status:** 🟠 ON HOLD — waiting on Ahmad to set a real `daily_limit` via the Admin Panel (Task 9), not a code blocker
-**Depends on:** Task 9-BACKEND (admin routes) so Ahmad has a UI to set the limit
-
-**Frontend work already done (per Builder report, July 7, 2026):**
-- `src/hooks/useAnonymousLimit.ts` created — ready, just needs to point at the new endpoint once it exists
-- `src/pages/Home.tsx` updated — displays live limit on success, falls back to "Anonymous lookups are limited per day. Choose your wallet carefully." on failure
-- Correctly avoided sending the admin secret from the client
-
-**Why this is paused too:** The backend endpoint currently returns `null` for `daily_limit` — intentional, since Ahmad plans to set the real value himself via the Admin Panel once it's live. There is nothing broken on the frontend side. No further frontend action needed until Ahmad sets a real limit.
-
-**Definition of done:** Homepage rate limit text reflects the live `anonymous` plan's daily_limit via the new public endpoint. Changing the value in the database updates what the homepage shows automatically.
-
----
-
-### Fix: API Keys Tab — Full Resolution ✅ (Backend Builder — July 7, 2026)
-- Root cause: subscriptions table schema on Railway predates the Drizzle schema in the repo
-- Real columns: id, api_key, plan, owner_address, created_at, expires_at, updated_at (NO status column)
-- GET fixed: SELECT * with column-name fallback mapper
-- POST fixed: INSERT (api_key, plan, owner_address) only — no status, no missing columns
-- Stats active_keys fixed: removed WHERE status = 'active' (column does not exist), counts all rows
-- Verified live: Ahmad created enterprise, pro, and free keys successfully at 14:15 on July 7, 2026
-- Edit and Delete buttons confirmed working
-
-### Fix: Admin Panel API Keys UI Resilience ✅ (Frontend Builder — July 7, 2026)
-- "+ New Key" button always visible even when keys list fails to load
-- Error state shows inline with Retry button
-- Keys table only renders on success; non-null assertions removed
-
 ### TASK 9C — Backend: Verify & Harden Plan Limit Enforcement (All Plans)
 **Owner:** Backend Builder
 **Phase:** 2 — Operational
 **Priority:** HIGH — Admin Panel is live; Ahmad can now set limits for all plans. We must confirm the API actually enforces whatever is set — not just for anonymous but for free, pro, and enterprise keys too.
 **Depends on:** Task 9-BACKEND (done), Plan Configs tab (done)
-**Status:** 🔴 Not started — assigned July 7, 2026
+**Status:** 🟠 IN PROGRESS — code review step done July 7, 2026. Awaiting live 429 test.
 
 **Why this exists:**
 The anonymous plan limit was fixed and verified end-to-end. But free, pro, and enterprise API key limits have never been tested. The Admin Panel lets Ahmad set any daily_limit for any plan. If `apiKeyAuth.ts` has a bug (hardcoded values, wrong table column, stale cache), Ahmad could set a limit and it would silently not be enforced. This must be confirmed before distribution.
