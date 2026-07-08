@@ -34,7 +34,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active (July 8, 2026) | Task 8B ✅, 8C ✅, 8D ✅, and 8E ✅ all done, live, and verified by Ahmad. Waiting for next task: Task 11A (Marketing Homepage). |
+| Frontend Builder | Active (July 8, 2026) | Task 8B ✅, 8C ✅, 8D ✅, 8E ✅, and 11A ✅ all done, live, and verified by Ahmad. Waiting for next task: Task 11B (Whitepaper). |
 | Backend Builder | Active | Task 9C fully done and verified. Waiting for next task (Task 11C — Signal Accuracy Audit) |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
@@ -67,6 +67,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ Task 8C — Anonymous rate-limit cache sync fixed. Real root cause: `setEditId(null)` in the admin mutation's `onSuccess` raced with React 18 batching and unmounted the edit row before the success banner/cache write could be trusted. Fixed by keeping the row open until "Done" is clicked. Verified live on Vercel July 8, 2026 — anonymous limit change to 42 updated the homepage instantly; unlimited (blank field) correctly showed "Unlimited".
 - ✅ Task 8D — Homepage visual polish shipped: white placeholder/example-link text, "Try an example" border rebuilt as a GPU-cheap transform-based animation (was a paint-triggering `@property`/conic-gradient causing jank), corrected oversized/zoom sizing, improved spacing and typographic hierarchy. Verified live by Ahmad via screen recording July 8, 2026.
 - ✅ Task 8E — Mobile pinch/double-tap zoom fixed: viewport meta set to `maximum-scale=5, minimum-scale=1` (accessibility-conscious compromise, not a full zoom lock) plus a `touch-action: manipulation` CSS backstop for iOS double-tap. Confirmed working smoothly across homepage, results page, and admin dashboard on mobile; desktop zoom unaffected. Verified by Ahmad, July 8, 2026.
+- ✅ Task 11A — Marketing homepage live at `/` (Hero, chain row, How It Works, Trust Signals, Use Cases, Get the API, Find Us/Integrations, footer); scoring tool live unchanged at `/score`. Brand consistency confirmed (locked color system, shared components, logo matches `/score` exactly). Verified live by Manager via fresh cache-busted screenshot + JS bundle inspection, and by Ahmad directly, July 8, 2026.
 
 **ADMIN_SECRET status:**
 - Ahmad set `ADMIN_SECRET` in Railway Variables
@@ -135,20 +136,18 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. Onboard the new Frontend Builder — Task 8B
-The new Frontend Builder account has been created and has imported the frontend repo. Send the onboarding prompt, wait for confirmation, then send the Task 8B prompt.
-- Task 8B = Professional Wallet Input Page Redesign (full spec in FRONTEND_TASKS.md)
-- Must use the locked OTI color system — include color table in the task prompt
-- After Task 8B: Task 11A (Marketing Homepage), then Task 11B (Whitepaper)
+### 1. Send Task 11B to the Frontend Builder
+Task 11A is done, live, and verified. Frontend Builder is waiting.
+- Task 11B = Whitepaper Page at `/whitepaper` (full spec in FRONTEND_TASKS.md) — reuse Task 11A's navbar/footer components, same locked color system, no new deviation
+- After Task 11B: Task 11 (Developer Docs Site — Docusaurus) closes out the Phase 4 gate
 
 ### 2. Send Task 11C to the Backend Builder
 Task 9C is done. Backend Builder is waiting.
 - Task 11C = Signal Accuracy Audit — non-EVM chains (Bitcoin/Solana/TON/Tron/Sui) are currently scored with EVM logic. CRITICAL before any distribution channel launches.
 - Full spec is in TASKS.md under Task 11C
 
-### 3. Frontend queue after Task 8B (in this exact order, one at a time)
-- Task 11A — Marketing Homepage + Move scoring to /score
-- Task 11B — Whitepaper Page
+### 3. Frontend queue after Task 11B (in this exact order, one at a time)
+- Task 11 — Developer Docs Site (Docusaurus, closes Phase 4 gate)
 
 ### 4. Backend queue after Task 11C (in this exact order, one at a time)
 - Tasks 12–15 — Distribution channels (Telegram Bot, Chrome Extension, Widget, Firefox Extension)
@@ -203,10 +202,11 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 - Task 8C (Anonymous Rate Limit Cache Sync Fix) is ✅ DONE, verified live by Ahmad on Vercel (real root cause was `setEditId(null)` racing with React 18 batching in the admin mutation's `onSuccess`).
 - Task 8D (homepage polish: contrast, animated CTA border rebuilt to be GPU-cheap, zoom/sizing, spacing, typography) is ✅ DONE, verified live by Ahmad via screen recording.
 - Task 8E (disable mobile pinch/double-tap zoom, accessibility-conscious `maximum-scale=5` compromise) is ✅ DONE, confirmed working smoothly by Ahmad.
-- The entire Task 8 frontend redesign arc (8, 8B, 8C, 8D, 8E) is now closed out. Frontend Builder is free for the next task.
-- Next up for Frontend Builder: Task 11A (Marketing Homepage + move scoring to `/score`), then Task 11B (Whitepaper).
+- Task 11A (Marketing Homepage at `/`, scoring tool moved intact to `/score`) is ✅ DONE. Manager double-checked live via cache-busted screenshot + JS bundle inspection after an initial false alarm from a stale first check — genuinely live and brand-consistent. Confirmed by Ahmad directly too.
+- The entire Task 8 frontend redesign arc (8, 8B, 8C, 8D, 8E) plus Task 11A are now closed out. Frontend Builder is free for the next task.
+- Next up for Frontend Builder: Task 11B (Whitepaper), then Task 11 (Developer Docs Site).
 - Task 11C (Signal Accuracy Audit) is NEXT for the Backend Builder. Task 9C is done and verified. Send Task 11C prompt when ready.
-- One task at a time per Builder — send only Task 11A next to Frontend Builder, and only Task 11C next to Backend Builder.
+- One task at a time per Builder — send only Task 11B next to Frontend Builder, and only Task 11C next to Backend Builder.
 
 **Rule before ending ANY Manager session:**
 1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md

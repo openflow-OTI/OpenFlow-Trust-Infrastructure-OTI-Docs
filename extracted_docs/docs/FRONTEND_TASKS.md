@@ -333,7 +333,11 @@ Ahmad noticed that on mobile, users can pinch-zoom and double-tap-zoom the page 
 
 ---
 
-### TASK 11A — Restructure Vercel App: Marketing Front Door + Scoring at /score
+### TASK 11A — Restructure Vercel App: Marketing Front Door + Scoring at /score ✅
+**Completed:** July 8, 2026. Marketing homepage live at `/` (Hero, chain row, How It Works, Trust Signals, Use Cases, Get the API, Find Us/Integrations, footer), scoring tool live unchanged at `/score`. Brand consistency confirmed — locked OTI color system, shared components, logo matches `/score` exactly. Verified live by Manager via fresh cache-busted screenshot and JS bundle inspection, and by Ahmad directly.
+
+<details><summary>Original spec (for reference)</summary>
+
 **Phase:** 4 — Pre-Distribution
 **Priority:** HIGH
 **Depends on:** Task 8 (results redesign done) AND Task 2B (SVG logo done)

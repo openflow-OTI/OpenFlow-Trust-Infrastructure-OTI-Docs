@@ -300,7 +300,11 @@ Special effects: navbar frosted glass (`backdrop-filter: blur(14px)`), submit bu
 
 ---
 
-### TASK 11A — Restructure Vercel App: Marketing Front Door + Scoring at /score
+### TASK 11A — Restructure Vercel App: Marketing Front Door + Scoring at /score ✅
+**Completed:** July 8, 2026. Marketing homepage live at `/` (Hero, chain row, How It Works, Trust Signals, Use Cases, Get the API, Find Us/Integrations, footer), scoring tool live unchanged at `/score`. Brand consistency confirmed — locked OTI color system, shared components, logo matches `/score` exactly. Verified live by Manager via fresh cache-busted screenshot and JS bundle inspection, and by Ahmad directly.
+
+<details><summary>Original spec (for reference)</summary>
+
 **Owner:** Frontend Builder
 **Phase:** 4 — Pre-Distribution (first priority in this phase)
 **Priority:** HIGH — the current Vercel URL is impossibly long; the scoring tool has no marketing context for new visitors
@@ -416,6 +420,8 @@ Ahmad creates a form at tally.so (free): fields = Name (optional), Email (option
 - Brand system uses the locked OTI color system (Background `#05080f`, Mint `#00e5a0`/`#3EFFC1`) throughout, with zero one-off/invented colors, fonts, or component styles anywhere on the page
 - Logo renders identically (crispness, proportions) to how it appears on `/score`
 - Side-by-side screenshot of `/` and `/score` submitted to Manager showing visual consistency before marking done
+
+</details>
 
 ---
 
