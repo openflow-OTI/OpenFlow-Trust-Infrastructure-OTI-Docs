@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 7, 2026 (session 2 — Task 8B active with Frontend Builder, Task 11C next for Backend Builder)
+> Last updated: July 8, 2026 (session 3 — outgoing Manager ran low on credits. Task 11A ✅ done/verified live. Task 11B just sent to Frontend Builder (Whitepaper page), awaiting their work. Task 11C prompt drafted but NOT yet sent to Backend Builder — send it next.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -34,8 +34,8 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active (July 8, 2026) | Task 8B ✅, 8C ✅, 8D ✅, 8E ✅, and 11A ✅ all done, live, and verified by Ahmad. Waiting for next task: Task 11B (Whitepaper). |
-| Backend Builder | Active | Task 9C fully done and verified. Waiting for next task (Task 11C — Signal Accuracy Audit) |
+| Frontend Builder | Active (July 8, 2026) | Task 8B ✅, 8C ✅, 8D ✅, 8E ✅, 11A ✅ all done/live/verified. Task 11B (Whitepaper) just sent — in progress, not yet reviewed. |
+| Backend Builder | Active | Task 9C fully done and verified. Task 11C (Signal Accuracy Audit) prompt is ready in TASKS.md but has NOT been sent yet — send it next. |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
 ---
@@ -136,21 +136,24 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. Send Task 11B to the Frontend Builder
-Task 11A is done, live, and verified. Frontend Builder is waiting.
-- Task 11B = Whitepaper Page at `/whitepaper` (full spec in FRONTEND_TASKS.md) — reuse Task 11A's navbar/footer components, same locked color system, no new deviation
-- After Task 11B: Task 11 (Developer Docs Site — Docusaurus) closes out the Phase 4 gate
+### 1. FIRST — check on Task 11B with the Frontend Builder
+Task 11B (Whitepaper page at `/whitepaper`) prompt was just sent, before this handover, but was NOT reviewed or verified live yet. Check their progress/reply first. When they report done: verify live yourself (fresh cache-busted screenshot, not just their word — see "Lesson learned" note below), check brand consistency against `/` and `/score`, then mark ✅ in FRONTEND_TASKS.md, TASKS.md, and this file.
+- Also remind them to mark Task 11A ✅ done in their own local copies of the docs (asked of them, not yet confirmed).
+- After Task 11B: Task 11 (Developer Docs Site — Docusaurus) closes out the Phase 4 gate.
 
-### 2. Send Task 11C to the Backend Builder
-Task 9C is done. Backend Builder is waiting.
+### 2. Send Task 11C to the Backend Builder — NOT YET SENT
+Task 9C is done. Backend Builder is waiting idle. Send this next:
 - Task 11C = Signal Accuracy Audit — non-EVM chains (Bitcoin/Solana/TON/Tron/Sui) are currently scored with EVM logic. CRITICAL before any distribution channel launches.
-- Full spec is in TASKS.md under Task 11C
+- Full spec is in TASKS.md under Task 11C — send it verbatim/summarized like other task prompts, one task at a time per Builder.
 
 ### 3. Frontend queue after Task 11B (in this exact order, one at a time)
 - Task 11 — Developer Docs Site (Docusaurus, closes Phase 4 gate)
 
 ### 4. Backend queue after Task 11C (in this exact order, one at a time)
 - Tasks 12–15 — Distribution channels (Telegram Bot, Chrome Extension, Widget, Firefox Extension)
+
+### Lesson learned this session (read before trusting any "it's done" report)
+A live-site check of Task 11A initially looked broken (`/` showed the old scoring form, not the marketing homepage) — turned out to be a stale/cached first screenshot, not a real bug. A second cache-busted screenshot (`?t=<random>` query param + checking `x-vercel-cache`/`age` headers) confirmed it was genuinely live and correct. **Always re-verify with a cache-busted check before reporting a problem to Ahmad** — false alarms cost trust too.
 
 ---
 
@@ -204,9 +207,9 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 - Task 8E (disable mobile pinch/double-tap zoom, accessibility-conscious `maximum-scale=5` compromise) is ✅ DONE, confirmed working smoothly by Ahmad.
 - Task 11A (Marketing Homepage at `/`, scoring tool moved intact to `/score`) is ✅ DONE. Manager double-checked live via cache-busted screenshot + JS bundle inspection after an initial false alarm from a stale first check — genuinely live and brand-consistent. Confirmed by Ahmad directly too.
 - The entire Task 8 frontend redesign arc (8, 8B, 8C, 8D, 8E) plus Task 11A are now closed out. Frontend Builder is free for the next task.
-- Next up for Frontend Builder: Task 11B (Whitepaper), then Task 11 (Developer Docs Site).
-- Task 11C (Signal Accuracy Audit) is NEXT for the Backend Builder. Task 9C is done and verified. Send Task 11C prompt when ready.
-- One task at a time per Builder — send only Task 11B next to Frontend Builder, and only Task 11C next to Backend Builder.
+- Task 11B (Whitepaper) prompt has just been sent to Frontend Builder — IN PROGRESS, not yet reviewed/verified. Check on it first.
+- Task 11C (Signal Accuracy Audit) is drafted and ready in TASKS.md but has NOT been sent to Backend Builder yet — send it next, Backend Builder is idle waiting.
+- One task at a time per Builder — do not send Task 11 (Docs Site) until 11B is verified done; do not send anything after 11C to Backend Builder until 11C is verified done.
 
 **Rule before ending ANY Manager session:**
 1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md
