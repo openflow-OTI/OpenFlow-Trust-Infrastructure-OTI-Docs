@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 8, 2026 (session 3 — outgoing Manager ran low on credits. Task 11A ✅ done/verified live. Task 11B just sent to Frontend Builder (Whitepaper page), awaiting their work. Task 11C prompt drafted but NOT yet sent to Backend Builder — send it next.)
+> Last updated: July 8, 2026 (session 4 — Task 11B (Whitepaper) built and live but NOT done: 3 fixes sent back to Frontend Builder (body text color, mobile horizontal scroll, remove Roadmap section). Task 11C sent to Backend Builder — awaiting their work.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -34,8 +34,8 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active (July 8, 2026) | Task 8B ✅, 8C ✅, 8D ✅, 8E ✅, 11A ✅ all done/live/verified. Task 11B (Whitepaper) just sent — in progress, not yet reviewed. |
-| Backend Builder | Active | Task 9C fully done and verified. Task 11C (Signal Accuracy Audit) prompt is ready in TASKS.md but has NOT been sent yet — send it next. |
+| Frontend Builder | Active (July 8, 2026) | Task 8B ✅, 8C ✅, 8D ✅, 8E ✅, 11A ✅ all done/live/verified. Task 11B (Whitepaper) live at `/whitepaper` but NOT done — 3 fixes sent back (body text must be white, remove mobile horizontal scroll, remove Roadmap section entirely). Awaiting fixed version. |
+| Backend Builder | Active | Task 9C fully done and verified. Task 11C (Signal Accuracy Audit) sent — in progress, not yet reviewed. |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
 ---
@@ -136,15 +136,16 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. FIRST — check on Task 11B with the Frontend Builder
-Task 11B (Whitepaper page at `/whitepaper`) prompt was just sent, before this handover, but was NOT reviewed or verified live yet. Check their progress/reply first. When they report done: verify live yourself (fresh cache-busted screenshot, not just their word — see "Lesson learned" note below), check brand consistency against `/` and `/score`, then mark ✅ in FRONTEND_TASKS.md, TASKS.md, and this file.
+### 1. FIRST — get the Task 11B fixes back from the Frontend Builder
+Task 11B (Whitepaper page at `/whitepaper`) is built and live, but the Manager verified it live (fresh cache-busted screenshot, July 8, 2026 session 4) and confirmed body text renders in the dimmed grey token instead of white. Ahmad also flagged a mobile horizontal-scroll/shift bug and asked for the Roadmap section to be removed entirely (no public dates promised). All 3 fixes sent back to the Frontend Builder — do NOT mark 11B ✅ until they're confirmed live:
+1. All body/paragraph text → white (`#e8f4ff`); keep section numbers mint (`#00e5a0`)
+2. Eliminate mobile horizontal scroll/shift — everything must fit one column at 375px
+3. Remove the Roadmap section entirely; renumber all following sections/TOC entries sequentially
 - Also remind them to mark Task 11A ✅ done in their own local copies of the docs (asked of them, not yet confirmed).
-- After Task 11B: Task 11 (Developer Docs Site — Docusaurus) closes out the Phase 4 gate.
+- After Task 11B is fully done: Task 11 (Developer Docs Site — Docusaurus) closes out the Phase 4 gate.
 
-### 2. Send Task 11C to the Backend Builder — NOT YET SENT
-Task 9C is done. Backend Builder is waiting idle. Send this next:
-- Task 11C = Signal Accuracy Audit — non-EVM chains (Bitcoin/Solana/TON/Tron/Sui) are currently scored with EVM logic. CRITICAL before any distribution channel launches.
-- Full spec is in TASKS.md under Task 11C — send it verbatim/summarized like other task prompts, one task at a time per Builder.
+### 2. Task 11C sent to the Backend Builder — awaiting their work
+Task 9C is done. Task 11C (Signal Accuracy Audit — non-EVM chains scored with EVM logic, CRITICAL before distribution) was sent to the Backend Builder in session 4. Do not send anything further to Backend Builder until 11C is verified done.
 
 ### 3. Frontend queue after Task 11B (in this exact order, one at a time)
 - Task 11 — Developer Docs Site (Docusaurus, closes Phase 4 gate)

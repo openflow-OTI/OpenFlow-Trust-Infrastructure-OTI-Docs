@@ -1,5 +1,5 @@
 # OTI — Master Task Queue
-> Last updated: July 8, 2026 (session 3 — Task 8B ✅ and Task 8C ✅ done and verified live; Task 8D (homepage polish) queued, previous Frontend Builder hit credit limit mid-work, new account imported and waiting onboarding; Backend Builder on Task 11C) | Maintained by: Development Manager
+> Last updated: July 8, 2026 (session 4 — Task 11B live but not done, 3 fixes sent to Frontend Builder; Task 11C sent to Backend Builder, awaiting their work) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
@@ -20,8 +20,8 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | New account (July 8, 2026) | Task 8B ✅ and Task 8C ✅ both done and verified live. Previous account hit credit limit mid-way through Task 8D (homepage polish); Ahmad imported a new account, waiting onboarding. Next task: Task 8D. |
-| Backend Builder | Active | Task 9C done ✅. Next task: Task 11C (Signal Accuracy Audit — CRITICAL). |
+| Frontend Builder | Active (July 8, 2026) | Task 11B (Whitepaper) live at `/whitepaper` but not done — 3 fixes sent back: body text must be white, remove mobile horizontal scroll, remove Roadmap section. |
+| Backend Builder | Active | Task 9C done ✅. Task 11C (Signal Accuracy Audit — CRITICAL) sent, in progress. |
 
 ---
 
@@ -430,6 +430,10 @@ Ahmad creates a form at tally.so (free): fields = Name (optional), Email (option
 **Phase:** 4 — Pre-Distribution
 **Priority:** HIGH — builds credibility with investors, enterprise partners, and serious developers
 **Depends on:** Task 11A (lives inside the same Vercel project)
+**Status: 🟡 LIVE BUT NOT DONE** — built and deployed at `/whitepaper`, but Manager's live verification (July 8, 2026, session 4) found body text rendering in the dimmed grey token instead of white; Ahmad also flagged a mobile horizontal-scroll bug and requested the Roadmap section be removed entirely. Fix list sent back to Frontend Builder:
+1. All body/paragraph text → white (`#e8f4ff`), keep section numbers mint (`#00e5a0`)
+2. Eliminate mobile horizontal scroll/shift — must fit one column at 375px
+3. Remove the Roadmap section entirely; renumber all following sections/TOC sequentially
 
 **Route:** `/whitepaper`
 
@@ -798,6 +802,7 @@ See ROADMAP.md Phase 5, Channel 2 for full technical spec.
 **Phase:** Pre-Distribution (must be done before Phase 5 launches)
 **Priority:** CRITICAL — signals are the core product; wrong data destroys trust
 **Depends on:** Task 11B (do this last in pre-distribution, signals must be accurate before bots drive traffic)
+**Status: 🟡 SENT** — sent to Backend Builder July 8, 2026 (session 4), in progress, not yet reviewed.
 
 **Context:**
 The 5 scoring signals were designed with EVM chains in mind. Bitcoin, Solana, TON, Tron, and Sui have fundamentally different data models — no ERC-20 tokens, no internal transactions, no smart contracts in the EVM sense. Currently these non-EVM chains are being scored using EVM-specific logic, producing wrong and misleading results. The Satoshi genesis wallet (1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa) scored 51 days wallet age when the correct answer is ~5,700+ days. Smart contract interactions showing "1 smart-contract tx" on a Bitcoin wallet that has never touched a smart contract. Token holding showing 0/20 for Bitcoin wallets because ERC-20 tokens don't exist on Bitcoin. These are not edge cases — they affect every single non-EVM wallet scored by OTI.

@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 8, 2026 (session 3 — Task 8B ✅ and Task 8C ✅ done and verified live; Task 8D (homepage polish) queued next) | Maintained by: Development Manager
+> Last updated: July 8, 2026 (session 4 — Task 11B live but not done, 3 fixes sent: body text white, remove mobile horizontal scroll, remove Roadmap section) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
@@ -453,6 +453,11 @@ Ahmad creates a form at tally.so and provides the embed snippet. Place it in a m
 **Phase:** 4 — Pre-Distribution
 **Priority:** HIGH
 **Depends on:** Task 11A must be merged first
+**Status: 🟡 LIVE BUT NOT DONE** — built and deployed at `/whitepaper`. Manager verified live (July 8, 2026, session 4) and found 3 issues Ahmad wants fixed before this is marked done:
+1. All body/paragraph text must be white (`#e8f4ff`) — currently rendering in the dimmed grey token (`#7a8fa8`). Keep section numbers mint (`#00e5a0`).
+2. Page can be scrolled/shifted horizontally on mobile — eliminate all horizontal overflow so everything fits one column at 375px.
+3. Remove the "Roadmap" section entirely (no public dates being promised) — renumber every following section and the TOC sequentially.
+Reply to Manager when the fixed version is live.
 
 **Why you are doing this:**
 OTI is positioning itself as infrastructure for enterprises — exchanges, custody platforms, DeFi protocols. Those buyers do not sign contracts based on a landing page alone. They need a technical document that explains what OTI is, how it works, who built it, and what the business model is. A whitepaper also builds credibility with investors and serious developers. The `/whitepaper` route lives inside the same Vercel project — no new deployment, no new domain needed.
