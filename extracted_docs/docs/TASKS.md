@@ -319,15 +319,25 @@ Move the current homepage (wallet address form + results) to the `/score` route.
 
 **Part B — Build the marketing homepage at `/`**
 
-**Brand system — use the LOCKED OTI color system (see Color System section above):**
-- Background: `#05080f` · Surface: `#0b0f1a` · Borders: `#1c2535`
+**⚠️ Brand consistency is non-negotiable for this task.** This is not a fresh design — it must look and feel like it belongs to the exact same product as `/score` (the results/scoring pages) and the admin dashboard. A visitor moving from `/` to `/score` should never feel like they landed on a different site. Before writing any code:
+1. Open the actual live `/score` page and the results page and note the real, current values in use — border radius, card padding, shadow/glow treatments, button states (hover/active/disabled), font weights, and spacing rhythm between sections — don't guess or approximate them.
+2. Reuse existing shared components/CSS classes/tokens from the scoring app wherever possible (buttons, card containers, badges, chain icons) instead of rebuilding equivalents from scratch. This avoids visual drift and keeps future updates in sync.
+3. Any new component introduced for the homepage (that doesn't exist in the scoring app) must still derive from the same tokens below — never introduce a one-off color, font, radius, or shadow value.
+
+**Brand system — use the LOCKED OTI color system exactly (see Color System section above), zero deviation:**
+- Background: `#05080f` · Surface: `#0b0f1a` · Surface-2: `#0f1520` · Borders: `#1c2535`
 - Mint primary: `#00e5a0` · Mint gradient: `#3EFFC1`
 - Body text: `#e8f4ff` · Dimmed text: `#7a8fa8`
-- Typography: Geist Sans or Inter — clean, geometric, modern
+- Chain brand colors: use the same per-chain hex values already defined in the scoring app (Ethereum `#627EEA`, Bitcoin `#F7931A`, Solana `#9945FF`, BNB `#F3BA2F`, all 15 total) — do not invent new ones for the homepage's chain row
+- Typography: same font family already in use across the scoring app (Geist Sans or Inter) — match weights and sizing scale, not just the family name
+- Same special effects already established: navbar frosted glass (`backdrop-filter: blur(14px)`), mint glow on primary buttons, `color-mix()` tint techniques where relevant — with plain-value fallbacks for older browsers
 - Micro-interaction: the spiral logo rotates subtly on hover (CSS `transform: rotate()`, 2–3s ease, infinite)
 - All CTAs, highlights, active states: mint only — no other accent color
+- Do NOT revert to pure black `#000000` anywhere
 
-**Logo:** Current `logo.jpg` is blurry — Task 2B replaces it with `logo.svg`. Task 11A should depend on Task 2B being merged first. If Task 2B is not yet done, use the JPG as a placeholder with a code comment.
+**Logo:** Use `logo.svg` (the current, non-blurry logo already live on the scoring app — Task 2B is done) at the same aspect ratio and visual treatment as it appears in the scoring app's navbar. It must look identical in the homepage navbar/footer as it does on `/score` — same crispness, same proportions, same hover behavior if any exists there.
+
+**Overall bar:** this must read as a fully polished, professional product website — not a placeholder or template. Treat spacing, alignment, hover states, and responsive behavior with the same level of care and polish that Task 8/8B/8D delivered on the scoring app. Screenshot both `/` and `/score` side by side before calling this done and confirm they feel like one coherent product.
 
 **Sections to build:**
 
@@ -403,7 +413,9 @@ Ahmad creates a form at tally.so (free): fields = Name (optional), Email (option
 - Navbar "Score a Wallet" navigates correctly between the two views
 - Crisp script is in `<head>` (even if ID is empty placeholder)
 - Responsive on mobile (375px) and desktop (1440px)
-- Brand system uses the locked OTI color system (Background `#05080f`, Mint `#00e5a0`/`#3EFFC1`) throughout
+- Brand system uses the locked OTI color system (Background `#05080f`, Mint `#00e5a0`/`#3EFFC1`) throughout, with zero one-off/invented colors, fonts, or component styles anywhere on the page
+- Logo renders identically (crispness, proportions) to how it appears on `/score`
+- Side-by-side screenshot of `/` and `/score` submitted to Manager showing visual consistency before marking done
 
 ---
 
@@ -422,8 +434,9 @@ Ahmad creates a form at tally.so (free): fields = Name (optional), Email (option
 ---
 
 **Design rules:**
-- Use the locked OTI color system (Background `#05080f`, Surface `#0b0f1a`, Mint `#00e5a0`/`#3EFFC1` — see Color System section above)
-- Typography: Geist Sans or Inter. Body text slightly larger than normal (17–18px), high line-height (1.8) for readability — this is a long-form document
+- Use the locked OTI color system (Background `#05080f`, Surface `#0b0f1a`, Mint `#00e5a0`/`#3EFFC1` — see Color System section above) — must match the homepage (Task 11A) and scoring app exactly, same tokens, no deviation
+- Typography: same font family as the rest of the site (Geist Sans or Inter). Body text slightly larger than normal (17–18px), high line-height (1.8) for readability — this is a long-form document
+- Reuse the shared navbar/footer components from Task 11A rather than rebuilding them — this page must feel like a continuation of the same site, not a separate document viewer
 - Section numbers are displayed in mint: `01`, `02`, `03` etc.
 - Sticky table of contents sidebar on desktop (collapses to a "Jump to section" accordion on mobile)
 - Faint spiral logo watermark centered behind the page header — `opacity: 0.04`, CSS only

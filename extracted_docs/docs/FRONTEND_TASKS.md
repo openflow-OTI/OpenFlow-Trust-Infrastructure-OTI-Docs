@@ -347,13 +347,25 @@ Move the current homepage (wallet address form + results) to the `/score` route.
 
 **Part B — Build the marketing homepage at `/`**
 
-Brand system — use the locked OTI color system (see Color System section above):
-- Background: `#05080f` · Surface: `#0b0f1a` · Borders: `#1c2535`
+**⚠️ Brand consistency is non-negotiable.** This must look and feel like the exact same product as `/score` and the admin dashboard — a visitor moving between them should never feel like they landed on a different site. Before writing any code:
+1. Open the live `/score` and results pages and note the real, current values — border radius, card padding, shadow/glow treatments, button hover/active states, font weights, spacing rhythm — don't guess.
+2. Reuse existing shared components/CSS classes/tokens from the scoring app wherever possible (buttons, card containers, badges, chain icons) instead of rebuilding equivalents.
+3. Any new component must still derive from the same tokens below — never introduce a one-off color, font, radius, or shadow value.
+
+Brand system — use the locked OTI color system exactly (see Color System section above), zero deviation:
+- Background: `#05080f` · Surface: `#0b0f1a` · Surface-2: `#0f1520` · Borders: `#1c2535`
 - Mint primary: `#00e5a0` · Mint gradient: `#3EFFC1`
 - Body text: `#e8f4ff` · Dimmed text: `#7a8fa8`
-- Typography: Geist Sans or Inter — clean, geometric, modern
+- Chain brand colors: use the same per-chain hex values already defined in the scoring app (all 15) — do not invent new ones for the homepage's chain row
+- Typography: same font family already in use across the scoring app (Geist Sans or Inter) — match weights and sizing scale, not just the family name
+- Same special effects already established: navbar frosted glass (`backdrop-filter: blur(14px)`), mint glow on primary buttons, `color-mix()` tint techniques where relevant — with plain-value fallbacks
 - Micro-interaction: the spiral logo rotates subtly on hover (CSS `transform: rotate()`, 2–3s ease, infinite)
 - All CTAs, highlights, active states: mint only
+- Do NOT revert to pure black `#000000` anywhere
+
+**Logo:** Use `logo.svg` (the current, non-blurry logo already live on the scoring app) at the same aspect ratio and visual treatment as it appears in the scoring app's navbar — same crispness, same proportions, same hover behavior if any exists there.
+
+**Overall bar:** this must read as a fully polished, professional product website, not a placeholder or template — same level of care as Task 8/8B/8D. Screenshot both `/` and `/score` side by side before calling this done and confirm they feel like one coherent product.
 
 Sections to build:
 
@@ -427,6 +439,9 @@ Ahmad creates a form at tally.so and provides the embed snippet. Place it in a m
 - Navbar "Score a Wallet" navigates correctly between the two views
 - Crisp script is in `<head>` (even if ID is empty placeholder)
 - Responsive on mobile (375px) and desktop (1440px)
+- Brand system uses the locked OTI color system throughout, with zero one-off/invented colors, fonts, or component styles anywhere on the page
+- Logo renders identically (crispness, proportions) to how it appears on `/score`
+- Side-by-side screenshot of `/` and `/score` submitted to Manager showing visual consistency before marking done
 
 ---
 
@@ -441,8 +456,9 @@ OTI is positioning itself as infrastructure for enterprises — exchanges, custo
 **Route:** `/whitepaper`
 
 **Design rules:**
-- Use the locked OTI color system (Background `#05080f`, Surface `#0b0f1a`, Mint `#00e5a0`/`#3EFFC1` — see Color System section above)
-- Body text 17–18px, line-height 1.8 — this is a long-form document
+- Use the locked OTI color system (Background `#05080f`, Surface `#0b0f1a`, Mint `#00e5a0`/`#3EFFC1` — see Color System section above) — must match the homepage (Task 11A) and scoring app exactly, same tokens, no deviation
+- Reuse the shared navbar/footer components from Task 11A rather than rebuilding them — this page must feel like a continuation of the same site
+- Typography: same font family as the rest of the site (Geist Sans or Inter). Body text 17–18px, line-height 1.8 — this is a long-form document
 - Section numbers displayed in mint: `01`, `02`, `03`
 - Sticky table of contents sidebar on desktop (collapses to "Jump to section" accordion on mobile)
 - Faint spiral watermark behind page header — `opacity: 0.04`, CSS only
