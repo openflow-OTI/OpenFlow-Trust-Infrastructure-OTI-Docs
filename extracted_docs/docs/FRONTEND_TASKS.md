@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 7, 2026 (session 2 — Task 8B now active) | Maintained by: Development Manager
+> Last updated: July 8, 2026 (session 3 — Task 8B ✅ done incl. polish round, new critical Task 8C found via audit) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
@@ -164,77 +164,55 @@ Keep all CSS in `src/index.css`. Do not add a new component library. Follow exis
 
 ---
 
-### TASK 8B — Professional Wallet Input Page Redesign
-**Phase:** 3 — Redesign
-**Priority:** HIGH — the input page is the entry point to the entire product; it must look as professional as the results page
-**Depends on:** Task 8 ✅ must be done first — footer and design patterns from Task 8 carry over here
+### TASK 8B — Professional Wallet Input Page Redesign ✅
+**Completed:** July 8, 2026 (initial build + one polish round)
+
+- Logo (56px), CSS hover rotation, gradient wordmark, tagline, mint-glow form card, styled rate-limit pill badge, "Try an example →" link, WOR ghost links, footer, faint watermark — all shipped
+- Polish round: main logo increased 1.5× and repositioned higher; zkSync + Linea chain logos fixed (were invisible against dark background); chain icon size and dropdown width increased; vertical spacing tightened so the whole page fits without scrolling on mobile; "Report a compromised wallet" link converted to a mint-bordered card for visibility
+- Verified live by Manager via screenshot — July 8, 2026
+
+---
+
+### TASK 8C — Fix Anonymous Rate Limit Cache Sync Bug
+**Phase:** 2 — Operational
+**Priority:** CRITICAL — admin control is currently broken; Ahmad cannot reliably change the homepage's displayed rate limit
+**Depends on:** Nothing — start immediately
 
 **Why you are doing this:**
-The wallet input page (the search form) is the first screen every user lands on. Right now it looks plain and unpolished compared to what OTI represents as a product. Task 8 redesigns the results page — this task does the same for the input page. The two pages must feel like one cohesive, professional product. This task also plants the WOR (Wallet Ownership Registry) ghost links that will connect to real functionality in a future phase.
+When Ahmad changes the anonymous plan's `daily_limit` in the Admin Panel (Plan Configs tab), the homepage's "X free lookups / day" badge does not reliably update. A full audit (by the previous Frontend Builder) found the root cause: the entire sync mechanism is a single fragile `setQueryData` call with no fallback, no invalidation, and multiple silent-failure paths. This must be replaced with a mechanism that actually works every time.
 
 **Files you will touch:**
-- `src/pages/Home.tsx` (input/search section)
-- `src/index.css`
+- `src/components/admin/PlanConfigs.tsx`
+- `src/hooks/useAnonymousLimit.ts`
+- `src/pages/Home.tsx`
 
-**Do NOT touch:**
-- The chain selector — at all
-- `vercel.json` — ever
-- The results section (already handled by Task 8)
-- Any scoring logic
+**Confirmed bugs from the audit — fix all of them:**
 
-**What to build:**
+1. **No fallback path.** `setQueryData(['anonymous-limit'], ...)` in `PlanConfigs.tsx`'s per-mutate `onSuccess` is the ONLY update mechanism. There is zero `invalidateQueries(['anonymous-limit'])` anywhere. Fix: call `qc.invalidateQueries({ queryKey: ['anonymous-limit'] })` in the mutation's `onSuccess` (or `onSettled`) so the Home page is guaranteed to refetch the real value from the server, regardless of what the per-mutate callback does.
 
-1. **Top section — logo, wordmark, tagline:**
-   - OTI logo (already SVG): add a subtle CSS hover rotation — `transform: rotate(360deg)`, 2–3s ease, infinite. GPU-accelerated only (`transform` + `will-change`), no JS.
-   - "OTI" wordmark: increase visual weight — larger size, stronger typography presence. Should feel like a brand, not a label.
-   - "OpenFlow Trust Infrastructure" subtitle: refine spacing and styling — smaller, muted, sits cleanly below the wordmark.
-   - Tagline below the subtitle: *"On-chain trust scoring for any wallet, any chain"* — mint accent color or soft white, clean readable size.
+2. **Silent string-match failure.** The `'anonymous'` plan-name check (`getPlanName(cfg).trim().toLowerCase() === 'anonymous'`) can silently evaluate to `false` if the backend field names don't match what's expected (`plan_name` vs `planName` vs `plan`). Fix: make `getPlanName` robust, and if the check ever fails to match a known plan, log a `console.warn` — don't fail silently.
 
-2. **Input card — premium feel:**
-   - Proper padding and internal spacing — the form should breathe.
-   - Subtle mint border glow on the card (`box-shadow` with mint at low opacity) — matches the mint design system.
-   - Wallet address input and chain selector already work — do not change their logic, only their visual presentation if needed.
+3. **Closure value instead of server response.** The per-mutate `onSuccess` uses the form's local `daily_limit` value, not the actual value returned by the PATCH response. Fix: use the value from the mutation's response object, not the form closure.
 
-3. **Rate limit badge:**
-   - Replace the plain "X lookups per day" text with a styled badge — small, pill-shaped, mint outline or mint background at low opacity. Example: `[ 20 free lookups / day ]`
-   - Still reads from the existing `useAnonymousLimit` hook — no logic changes.
+4. **React Query v5 unmount issue.** Per-mutate callbacks are not guaranteed to fire if the component unmounts before the mutation resolves (e.g. admin navigates away right after clicking Save). Fix: move the cache invalidation into the mutation's global `onSuccess`/`onSettled` (defined in `useMutation(...)`, not passed at call-time to `.mutate()`), since global callbacks are not affected by unmounting.
 
-4. **Quick-test example link:**
-   - Below the input field, add a subtle line: *"Try an example →"* that pre-fills the wallet address field with `0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe` and sets chain to `ethereum`.
-   - Ghost style, small text, mint on hover.
-   - On click: populates the form fields and triggers the score lookup automatically.
+5. **60-second stale dead zone.** `useAnonymousLimit.ts` uses `staleTime: 60_000`. Combined with the invalidation fix above, this is fine — invalidation forces a refetch regardless of staleTime. Just confirm the fix in #1 actually forces a refetch and doesn't get skipped due to staleTime.
 
-5. **WOR ghost links — below the form card:**
-   - Two small ghost links, stacked or inline, centered below the card:
-     - *"🔒 Own this wallet? Register it"* — `href="#"`, does nothing for now
-     - *"⚑ Report a compromised wallet"* — `href="#"`, does nothing for now
-   - Both are placeholders for the WOR system (Phase 6). Must be present now so the system can connect to them later.
-   - Style: small, muted, ghost — present but not distracting from the main CTA.
+6. **Ordering race between global and per-mutate `onSuccess`.** Avoid relying on both firing in a specific order. Consolidate the cache-update logic into one place (the global mutation callback) rather than splitting it across global + per-call callbacks.
 
-6. **Footer:**
-   - Same footer as the results page: *"© 2026 OpenFlow Labs · openflowlabs.io"*
-   - Consistent across both pages.
+7. **"Unlimited" (null) displayed as "3".** When admin sets a plan to unlimited (`daily_limit = null`), the frontend currently stores/display "3" — a display lie. Fix: when `daily_limit` is `null`, the Home page should show something like "Unlimited free lookups / day" (or omit the badge), not silently show 3. Keep the fallback-to-3 behavior only for the case where the API call itself fails (network error / anonymous plan not found) — not for a legitimate null value.
 
-7. **Faint spiral watermark:**
-   - Very faint OTI spiral logo centered behind the input card — CSS only, `opacity: 0.04`, no JS library.
-   - Adds depth without distraction.
+8. **Wasted/harmful fetch on results page.** `useAnonymousLimit()` in `Home.tsx` fires unconditionally even when the user is viewing a score result (not the landing form). Fix: only enable the query when the landing view is showing (e.g. `enabled: !hasQuery` in the hook options), so cache freshness isn't churned by irrelevant fetches.
 
-**Constraints:**
-- All CSS in `src/index.css` — no new component libraries
-- Test on mobile (375px) AND desktop — both must look professional
-- Black background and mint green color scheme throughout
-- Do not touch the chain selector
+9. **No observability.** Add a `console.warn` (or equivalent lightweight logging) when: the plan-name match fails, the mutation fails, or invalidation is triggered — enough that a future debugging session doesn't require React Query DevTools to diagnose this again.
 
 **Definition of done:**
-- Logo has subtle hover rotation
-- Wordmark and tagline are prominent and well-spaced
-- Input card has mint glow and proper padding
-- Rate limit shows as a styled badge
-- "Try an example" link pre-fills and triggers a score
-- Both WOR ghost links are present below the form
-- Footer matches the results page footer
-- Faint spiral watermark is visible behind the card
-- Looks professional on both 375px mobile and desktop
+- Changing the anonymous plan's `daily_limit` in Admin Panel → Plan Configs updates the Home page badge within a few seconds, every time, with no manual refresh needed
+- Setting the plan to unlimited (null) shows an accurate "Unlimited" state, not "3"
+- Cache invalidation happens via `invalidateQueries`, not solely via `setQueryData`
+- `useAnonymousLimit` no longer fires while viewing a score result
+- Manually test: set limit to 5 → confirm Home shows 5. Set to null (unlimited) → confirm Home shows "Unlimited". Set back to a number → confirm Home updates again. Test navigating away from Admin immediately after clicking Save (before the PATCH resolves) to confirm the fix still works.
+- Report back to Manager with test results for each scenario above before marking done
 
 ---
 

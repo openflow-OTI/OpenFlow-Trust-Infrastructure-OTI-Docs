@@ -1,5 +1,5 @@
 # OTI — Master Task Queue
-> Last updated: July 7, 2026 (session 2 — Task 8B active with Frontend Builder, Backend Builder on Task 11C next) | Maintained by: Development Manager
+> Last updated: July 8, 2026 (session 3 — Task 8B ✅ done incl. polish round; CRITICAL Task 8C bug found via full audit; previous Frontend Builder hit credit limit, new account imported, waiting onboarding; Backend Builder on Task 11C) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
@@ -20,7 +20,7 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | Active (new account July 7, 2026) | Task 8B active — Wallet Input Page Redesign in progress. After 8B: Task 11A, then Task 11B. |
+| Frontend Builder | New account (July 8, 2026) | Task 8B done incl. polish round. Previous account hit credit limit after audit. New account imported, waiting onboarding. Next task: Task 8C (Anonymous Rate Limit Cache Sync Fix — CRITICAL). |
 | Backend Builder | Active | Task 9C done ✅. Next task: Task 11C (Signal Accuracy Audit — CRITICAL). |
 
 ---
@@ -280,27 +280,23 @@ Special effects: navbar frosted glass (`backdrop-filter: blur(14px)`), submit bu
 
 ---
 
-### TASK 8B — Frontend: Professional Wallet Input Page Redesign
+### TASK 8B — Frontend: Professional Wallet Input Page Redesign ✅
+**Completed:** July 8, 2026, incl. one polish round (logo size/position, zkSync/Linea icon visibility, chain icon size, spacing, report-link styling). Verified live by Manager via screenshot.
+
+---
+
+### TASK 8C — Frontend: Fix Anonymous Rate Limit Cache Sync Bug
 **Owner:** Frontend Builder
-**Phase:** 3 — Redesign
-**Priority:** HIGH — the input page is the entry point to the entire product; must look as professional as the results page
-**Depends on:** Task 8 (results page redesign must be done first — footer and design patterns carry over)
+**Phase:** 2 — Operational
+**Priority:** CRITICAL — admin control over the anonymous rate limit is currently unreliable
+**Depends on:** Nothing — start immediately
 
 **Why this exists:**
-The wallet input page (search form) is the first screen every user lands on. Task 8 redesigns the results page — this task does the same for the input page. The two pages must feel like one cohesive, professional product. This task also plants the WOR ghost links for future Phase 6 connection.
+During Task 8B's final polish, Ahmad found that changing the anonymous plan's `daily_limit` in the Admin Panel does not reliably update the homepage badge. A full audit found 9 concrete root causes, the main one being that the only sync mechanism is a fragile `setQueryData` call with no `invalidateQueries` fallback.
 
-**What to build:**
-1. **Top section** — OTI logo with subtle CSS hover rotation (2–3s ease, infinite, GPU-accelerated). "OTI" wordmark larger and stronger. "OpenFlow Trust Infrastructure" subtitle refined. Tagline: *"On-chain trust scoring for any wallet, any chain"* in mint or soft white.
-2. **Input card** — proper padding, subtle mint border glow (`box-shadow` at low opacity).
-3. **Rate limit badge** — replace plain text with a styled pill badge. Still reads from `useAnonymousLimit` hook.
-4. **Quick-test example link** — *"Try an example →"* pre-fills wallet address `0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe` + chain `ethereum` and triggers the score lookup automatically.
-5. **WOR ghost links** below the form card:
-   - *"🔒 Own this wallet? Register it"* — `href="#"`, placeholder for Phase 6
-   - *"⚑ Report a compromised wallet"* — `href="#"`, placeholder for Phase 6
-6. **Footer** — *"© 2026 OpenFlow Labs · openflowlabs.io"* matching the results page.
-7. **Faint spiral watermark** — OTI logo behind the card, `opacity: 0.04`, CSS only.
+**What to build:** Full bug list and fix spec is in FRONTEND_TASKS.md under Task 8C — replace the fragile per-mutate cache write with `invalidateQueries`, fix the plan-name matching, use the PATCH response instead of stale form state, fix "Unlimited" plans showing as "3", stop the query firing on the results view, add basic logging.
 
-**Definition of done:** Logo hover rotation works. Wordmark and tagline are prominent. Input card has mint glow. Rate limit is a styled badge. "Try an example" pre-fills and triggers lookup. Both WOR ghost links present. Footer matches results page. Faint watermark visible. Professional on 375px mobile and desktop.
+**Definition of done:** See full spec in FRONTEND_TASKS.md. Manually verified: changing the limit (including to unlimited/null) updates the homepage every time, with no manual refresh.
 
 ---
 
