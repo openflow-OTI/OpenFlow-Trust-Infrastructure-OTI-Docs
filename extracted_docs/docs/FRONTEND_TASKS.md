@@ -288,7 +288,11 @@ A previous Builder started this exact task and got partway through before hittin
 
 ---
 
-### TASK 8E — Disable Mobile Pinch/Double-Tap Zoom Across the App
+### TASK 8E — Disable Mobile Pinch/Double-Tap Zoom Across the App ✅
+**Completed:** July 8, 2026. Confirmed working smoothly by Ahmad. Shipped as the accessibility-conscious compromise: `maximum-scale=5, minimum-scale=1` (not `user-scalable=no`), plus a `touch-action: manipulation` CSS backstop for iOS double-tap-zoom. Deliberate pinch-zoom still available; accidental zoom and desktop behavior unaffected.
+
+<details><summary>Original spec (for reference)</summary>
+
 **Phase:** 3 — Redesign
 **Priority:** MEDIUM — polish/UX consistency issue, not a functional bug
 **Depends on:** Task 8D ✅ (done)
@@ -324,6 +328,8 @@ Ahmad noticed that on mobile, users can pinch-zoom and double-tap-zoom the page 
 - On desktop, Ctrl+/-, Ctrl+scroll, and browser zoom controls still work exactly as before — completely unaffected
 - No regressions to existing touch interactions (chain selector dropdown, admin table scrolling, any swipeable elements)
 - Report back to Manager confirming you tested all three views on mobile emulation and confirmed desktop zoom is unaffected, before marking done
+
+</details>
 
 ---
 
