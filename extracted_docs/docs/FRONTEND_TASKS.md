@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 8, 2026 (session 4 — Task 11B fixes reported done by Builder. Manager verified live: body text white ✅, Roadmap removed + renumbered ✅. Mobile horizontal-scroll fix NOT yet independently verified — awaiting proof screenshot at 375px.) | Maintained by: Development Manager
+> Last updated: July 8, 2026 (session 4 — Task 11B ✅ DONE. Body text white ✅, Roadmap removed + renumbered ✅ (Manager-verified live), mobile horizontal-scroll fix ✅ (Ahmad-verified live). All 3 fixes confirmed on /whitepaper.) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 

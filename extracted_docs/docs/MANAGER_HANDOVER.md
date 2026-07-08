@@ -34,7 +34,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | New account (July 8, 2026) — previous account hit credit limit, new account imported, awaiting onboarding | Task 8B ✅, 8C ✅, 8D ✅, 8E ✅, 11A ✅ all done/live/verified (by the prior account). Task 11B (Whitepaper) live at `/whitepaper` but NOT done — 3 fixes owed (body text must be white, remove mobile horizontal scroll, remove Roadmap section entirely). This is the new account's first task. |
+| Frontend Builder | New account (July 8, 2026) — previous account hit credit limit, new account imported | Task 8B ✅, 8C ✅, 8D ✅, 8E ✅, 11A ✅, 11B ✅ all done/live/verified. Whitepaper at `/whitepaper` complete: white body text, no mobile horizontal scroll, Roadmap section removed and renumbered. Idle, awaiting next task. |
 | Backend Builder | Active | Task 9C fully done and verified. Task 11C (Signal Accuracy Audit) sent — in progress, not yet reviewed. |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 

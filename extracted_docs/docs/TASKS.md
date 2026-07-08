@@ -20,7 +20,7 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | New account (July 8, 2026) — previous account hit credit limit, new account imported, onboarding sent | Task 11B (Whitepaper) live at `/whitepaper` but not done — 3 fixes owed: body text must be white, remove mobile horizontal scroll, remove Roadmap section. This is the new account's first task. |
+| Frontend Builder | New account (July 8, 2026) — previous account hit credit limit, new account imported | Task 11B ✅ DONE — Whitepaper live at `/whitepaper`, all 3 fixes confirmed (body text white, mobile horizontal scroll eliminated, Roadmap section removed + renumbered). Idle, awaiting next task. |
 | Backend Builder | Active | Task 9C done ✅. Task 11C (Signal Accuracy Audit — CRITICAL) sent, in progress. |
 
 ---
