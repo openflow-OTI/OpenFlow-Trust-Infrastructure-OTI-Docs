@@ -304,7 +304,7 @@ Special effects: navbar frosted glass (`backdrop-filter: blur(14px)`), submit bu
 **Why this exists:**
 Ahmad found that mobile users can pinch-zoom and double-tap-zoom every page (homepage, results/scoring page, admin dashboard), which breaks the carefully sized mobile layout from Task 8D. Needs to be disabled on mobile only — desktop zoom must stay completely unaffected.
 
-**What to build:** Full spec is in FRONTEND_TASKS.md under Task 8E — update the viewport meta tag (`maximum-scale=1, user-scalable=no`) which should cover the whole SPA in one change, plus a `touch-action: manipulation` CSS backstop if iOS Safari still allows double-tap-zoom. Must be verified across all three views and confirmed not to affect desktop zoom or existing touch interactions (chain selector, admin tables).
+**What to build:** Full spec is in FRONTEND_TASKS.md under Task 8E — update the viewport meta tag to `maximum-scale=5, minimum-scale=1` (deliberately NOT `user-scalable=no`/`maximum-scale=1`, per Ahmad's accessibility-conscious compromise — WCAG 1.4.4 requires users be able to zoom for readability), which should cover the whole SPA in one change, plus a `touch-action: manipulation` CSS backstop for iOS double-tap-zoom. Must be verified across all three views and confirmed not to affect desktop zoom or existing touch interactions (chain selector, admin tables).
 
 **Definition of done:** See full spec in FRONTEND_TASKS.md. Must be tested on mobile emulation across all three views, and desktop zoom confirmed unaffected, before being marked done.
 

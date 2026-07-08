@@ -298,25 +298,29 @@ Ahmad noticed that on mobile, users can pinch-zoom and double-tap-zoom the page 
 
 **Files you will likely touch:**
 - `index.html` (the `<meta name="viewport">` tag — this is almost certainly the single source of truth for this, since it's one HTML file serving the whole SPA)
-- Possibly `src/index.css` (a global `touch-action` rule, only if needed as a backstop for iOS Safari's double-tap-to-zoom, which some iOS versions honor even when `user-scalable=no` is set)
+- Possibly `src/index.css` (a global `touch-action` rule to curb iOS Safari's double-tap-to-zoom specifically — pinch-zoom must remain available for accessibility, only double-tap is being curbed)
 
 **Do NOT touch:**
 - `src/lib/scoring.ts`, `nixpacks.toml`, `vercel.json`
 - Anything already fixed in Task 8C/8D — this is purely a zoom/viewport-behavior task
 
+**Accessibility note (Ahmad's decision, already made):** Fully disabling zoom (`user-scalable=no`, `maximum-scale=1`) is a known WCAG 1.4.4 (Resize Text) accessibility anti-pattern — it blocks low-vision users from zooming to read content. Ahmad has chosen the compromise below: still prevent the *accidental* pinch-zoom-while-scrolling annoyance, but allow deliberate zoom up to a reasonable limit for users who need it.
+
 **What to build:**
 
-1. Update the viewport meta tag to prevent mobile pinch-zoom and double-tap-zoom:
-   `<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">`
+1. Update the viewport meta tag to:
+   `<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1">`
+   Do NOT set `user-scalable=no` and do NOT set `maximum-scale=1` — both fully disable zoom, which Ahmad has decided against. `maximum-scale=5` still allows deliberate zoom for accessibility while preventing runaway pinch-zoom.
 
 2. This must apply everywhere in the app — homepage, scoring/results view, and the admin dashboard (`/admin`) — since they're all part of the same single-page app served from one `index.html`, one correct change should cover all of them. Confirm this is actually true for this codebase (check whether admin has any separate HTML entry point) rather than assuming.
 
-3. If double-tap-to-zoom still works on iOS Safari after the meta tag change (a known iOS quirk where `user-scalable=no` alone isn't always fully respected), add a CSS backstop: `touch-action: manipulation;` on `html, body` (or a more targeted selector if a global rule causes any side effects with existing interactions like the chain selector dropdown or admin table scrolling — test those specifically).
+3. Double-tap-to-zoom on iOS Safari is a separate gesture from pinch-zoom and can still be curbed for the "accidental zoom" annoyance without affecting deliberate pinch-zoom accessibility. Add a CSS backstop: `touch-action: manipulation;` on `html, body` (or a more targeted selector if a global rule causes any side effects with existing interactions like the chain selector dropdown or admin table scrolling — test those specifically).
 
 4. **Desktop must be completely unaffected.** Viewport meta tags and `touch-action` only affect touch/mobile zoom gestures — desktop zoom (Ctrl+/-, Ctrl+scroll, browser zoom controls) is a separate browser-level feature and is not affected by these changes. Just confirm this is actually true after your changes — test zooming in a desktop browser and confirm it still works normally.
 
 **Definition of done:**
-- On a mobile device or mobile emulation (touch simulation on), pinch-to-zoom and double-tap-to-zoom no longer work on the homepage, the results/scoring view, and the admin dashboard
+- On a mobile device or mobile emulation (touch simulation on), double-tap-to-zoom no longer works, and accidental/runaway pinch-zoom is curbed, on the homepage, the results/scoring view, and the admin dashboard
+- Deliberate pinch-zoom still works up to 5x on mobile (accessibility requirement — do not fully disable it)
 - On desktop, Ctrl+/-, Ctrl+scroll, and browser zoom controls still work exactly as before — completely unaffected
 - No regressions to existing touch interactions (chain selector dropdown, admin table scrolling, any swipeable elements)
 - Report back to Manager confirming you tested all three views on mobile emulation and confirmed desktop zoom is unaffected, before marking done
