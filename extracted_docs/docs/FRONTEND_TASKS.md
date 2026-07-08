@@ -496,6 +496,39 @@ OTI is positioning itself as infrastructure for enterprises — exchanges, custo
 
 ---
 
+### TASK 11 — Developer Docs Site
+**Phase:** 4 — Pre-Distribution
+**Priority:** HIGH — hard dependency before any bot or widget launches
+**Depends on:** Task 5 (weighted signal response, already live in backend) ✅ — unblocked
+
+**Why you are doing this:**
+Every bot reply, widget badge, and extension popup that OTI ships will link to a developer docs page. Without it, curious developers hit a dead end and never integrate. This closes out the Phase 4 pre-distribution gate alongside Task 11A (done) and Task 11B (done).
+
+**What to build:**
+Set up a Docusaurus documentation site for OTI. Deploy it to Vercel on the same account as the frontend (Vercel auto-detects Docusaurus — zero config needed).
+
+```bash
+npx create-docusaurus@latest oti-docs classic
+```
+
+The docs must cover, in this priority order:
+1. **Getting Started (CRITICAL)** — What OTI is in one paragraph. How to get a free API key. One copy-paste cURL example that works immediately. Link to API Reference.
+2. **API Reference (CRITICAL)** — Every endpoint, every parameter, every response field (use the current weighted signal shape — `score`, `weighted`, `maxWeight` per signal), all error codes.
+3. **Score Explanation (CRITICAL)** — What 0–100 means. What each signal measures. The 5 tier labels (HIGHLY TRUSTED / TRUSTED / CAUTION / SUSPICIOUS / HIGH RISK). How weighted contributions work.
+4. **Supported Chains (IMPORTANT)** — All 15 chains, chain IDs, limitations (BSC/Base/Optimism = 503, txCount cap at 1,000).
+5. **Rate Limits & Plans (IMPORTANT)** — Anonymous = 3/day (or current live value — check the admin panel/API, don't hardcode a stale number), Free plan limits, how to upgrade.
+6. **Code Examples (IMPORTANT)** — JavaScript (fetch), Python (requests), cURL — all copy-paste working examples.
+
+**Style:** Keep OTI branding — use the locked OTI color system (see Color System section above) wherever Docusaurus theming allows it (primary/accent color, dark mode as default). Footer must say "OpenFlow Labs · openflowlabs.io". Link back to the main site (`otiscore.vercel.app`) from the docs nav.
+
+**Definition of done:**
+- Docusaurus site is live on its own Vercel deployment
+- Getting Started page works — a developer can read it and make their first successful API call within 5 minutes
+- All 6 sections above are present and accurate against the live API (don't guess response shapes — check the real API response)
+- Report the live docs URL back to the Manager before marking done
+
+---
+
 ## ⏳ Future Tasks (Not Yet Active — Manager Will Assign When Ready)
 
 These are coming after the queue above is complete. You do not need to read these in detail now.

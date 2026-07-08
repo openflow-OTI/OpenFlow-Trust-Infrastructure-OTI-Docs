@@ -136,19 +136,14 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. FIRST — get the Task 11B fixes back from the Frontend Builder
-Task 11B (Whitepaper page at `/whitepaper`) is built and live, but the Manager verified it live (fresh cache-busted screenshot, July 8, 2026 session 4) and confirmed body text renders in the dimmed grey token instead of white. Ahmad also flagged a mobile horizontal-scroll/shift bug and asked for the Roadmap section to be removed entirely (no public dates promised). All 3 fixes sent back to the Frontend Builder — do NOT mark 11B ✅ until they're confirmed live:
-1. All body/paragraph text → white (`#e8f4ff`); keep section numbers mint (`#00e5a0`)
-2. Eliminate mobile horizontal scroll/shift — everything must fit one column at 375px
-3. Remove the Roadmap section entirely; renumber all following sections/TOC entries sequentially
-- Also remind them to mark Task 11A ✅ done in their own local copies of the docs (asked of them, not yet confirmed).
-- After Task 11B is fully done: Task 11 (Developer Docs Site — Docusaurus) closes out the Phase 4 gate.
+### 1. DONE — Task 11B fixes confirmed live
+Task 11B (Whitepaper page at `/whitepaper`) is ✅ DONE. All 3 fixes confirmed live: body text white (Manager-verified via cache-busted screenshot), Roadmap section removed + renumbered (Manager-verified), mobile horizontal-scroll fixed (Ahmad-verified). Task 11 (Developer Docs Site — Docusaurus) has been sent to the Frontend Builder next, along with instructions to mark 11B done in his own local docs.
 
 ### 2. Task 11C sent to the Backend Builder — awaiting their work
 Task 9C is done. Task 11C (Signal Accuracy Audit — non-EVM chains scored with EVM logic, CRITICAL before distribution) was sent to the Backend Builder in session 4. Do not send anything further to Backend Builder until 11C is verified done.
 
-### 3. Frontend queue after Task 11B (in this exact order, one at a time)
-- Task 11 — Developer Docs Site (Docusaurus, closes Phase 4 gate)
+### 3. Frontend queue — Task 11 now active
+- Task 11 — Developer Docs Site (Docusaurus, closes Phase 4 gate) — sent July 8, 2026. Do not queue anything else for Frontend Builder until this is confirmed done and verified live.
 
 ### 4. Backend queue after Task 11C (in this exact order, one at a time)
 - Tasks 12–15 — Distribution channels (Telegram Bot, Chrome Extension, Widget, Firefox Extension)
@@ -208,9 +203,10 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 - Task 8E (disable mobile pinch/double-tap zoom, accessibility-conscious `maximum-scale=5` compromise) is ✅ DONE, confirmed working smoothly by Ahmad.
 - Task 11A (Marketing Homepage at `/`, scoring tool moved intact to `/score`) is ✅ DONE. Manager double-checked live via cache-busted screenshot + JS bundle inspection after an initial false alarm from a stale first check — genuinely live and brand-consistent. Confirmed by Ahmad directly too.
 - The entire Task 8 frontend redesign arc (8, 8B, 8C, 8D, 8E) plus Task 11A are now closed out. Frontend Builder is free for the next task.
-- Task 11B (Whitepaper) prompt has just been sent to Frontend Builder — IN PROGRESS, not yet reviewed/verified. Check on it first.
-- Task 11C (Signal Accuracy Audit) is drafted and ready in TASKS.md but has NOT been sent to Backend Builder yet — send it next, Backend Builder is idle waiting.
-- One task at a time per Builder — do not send Task 11 (Docs Site) until 11B is verified done; do not send anything after 11C to Backend Builder until 11C is verified done.
+- Task 11B (Whitepaper) is ✅ DONE — all 3 fixes confirmed live (white body text, no mobile horizontal scroll, Roadmap removed + renumbered).
+- Task 11 (Developer Docs Site — Docusaurus) sent to Frontend Builder July 8, 2026 — IN PROGRESS, not yet reviewed/verified.
+- Task 11C (Signal Accuracy Audit) status with Backend Builder needs confirming — check whether it was actually sent.
+- One task at a time per Builder — do not send anything after Task 11 to Frontend Builder until it's verified done; do not send anything after 11C to Backend Builder until 11C is verified done.
 
 **Rule before ending ANY Manager session:**
 1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md

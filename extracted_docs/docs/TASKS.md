@@ -765,8 +765,8 @@ Before any distribution channel (Tasks 12–15) is assigned, confirm ALL of the 
 - [x] Task 3 — Admin auth live on Railway ✅
 - [x] Task 5 — Weighted signal response in API ✅
 - [ ] Task 9 — Admin panel UI live on Vercel
-- [ ] Task 11A — Marketing homepage live at `/`, scoring tool at `/score`, Vercel project renamed to `oti`
-- [ ] Task 11 — Developer docs site live on Vercel
+- [x] Task 11A — Marketing homepage live at `/`, scoring tool at `/score` ✅
+- [ ] Task 11 — Developer docs site live on Vercel (sent to Frontend Builder July 8, 2026)
 - [ ] Ahmad: Rename Vercel project to `oti` in dashboard (Project Settings → General → Project Name)
 - [ ] Ahmad: Sign up for Crisp.chat (free), provide Website ID to Frontend Builder
 - [ ] Ahmad: Create Tally.so feedback form (free), provide embed snippet to Frontend Builder
