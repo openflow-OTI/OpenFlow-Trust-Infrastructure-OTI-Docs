@@ -34,7 +34,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | New account (July 8, 2026) | Task 8B done incl. polish round. That Builder's full-audit found 9 concrete bugs (CRITICAL — anonymous rate limit cache sync), then hit credit limit. A new account is imported and waiting for onboarding. Next task after onboarding: Task 8C |
+| Frontend Builder | New account (July 8, 2026) | Task 8B ✅ and Task 8C ✅ both done, live, and verified by Ahmad. That Builder then started Task 8D (homepage polish) and hit their credit limit mid-work; Ahmad pushed the partial state live (has some jank/incomplete polish). Another new account is imported and waiting for onboarding. Next task after onboarding: Task 8D |
 | Backend Builder | Active | Task 9C fully done and verified. Waiting for next task (Task 11C — Signal Accuracy Audit) |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
@@ -64,9 +64,10 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ Task 9C — Plan limit enforcement verified: 429 confirmed for free plan, enterprise null = unlimited, all backend ORM schema mismatch bugs fixed (apiKeyAuth.ts, score.ts, admin.ts DELETE + PATCH all use raw SQL)
 - ✅ Task 8 — Professional results page redesign: chain-color ring gauge, tier labels, Trust Signals card, truncated wallet address + copy, Share (native share sheet) + Save as Image (3× PNG), "⚑ Report this wallet" mint ghost link, footer, full color system upgrade
 - ✅ Task 8B — Professional wallet input page redesign, incl. polish round (logo size/position, zkSync/Linea icon visibility, chain icon size, spacing, report-link styling) — verified live July 8, 2026
+- ✅ Task 8C — Anonymous rate-limit cache sync fixed. Real root cause: `setEditId(null)` in the admin mutation's `onSuccess` raced with React 18 batching and unmounted the edit row before the success banner/cache write could be trusted. Fixed by keeping the row open until "Done" is clicked. Verified live on Vercel July 8, 2026 — anonymous limit change to 42 updated the homepage instantly; unlimited (blank field) correctly showed "Unlimited".
 
-**Known bug (CRITICAL, not yet fixed):**
-- 🔴 Anonymous rate-limit badge on the homepage does not reliably reflect admin changes to the anonymous plan's `daily_limit`. Root cause: the only sync mechanism is a fragile per-mutate `setQueryData` call — no `invalidateQueries` fallback, plus 8 other compounding issues (stale form value instead of PATCH response, silent plan-name mismatch, "Unlimited" plans shown as "3", query firing on the results view, no logging). Full breakdown and fix spec is Task 8C in FRONTEND_TASKS.md — queued next for the new Frontend Builder account after onboarding.
+**Known issue (not yet fixed — live in a partial/incomplete state):**
+- 🟡 Task 8D (homepage polish) is partially shipped. Ahmad asked for: white placeholder + example-link text, an animated moving mint-green border around "Try an example →", reduced oversized/zoom sizing, and general spacing/typography polish. The Builder working on it hit their credit limit mid-way and Ahmad pushed the in-progress state live. Current live state has: visible animation jank/lag from the border effect, zoom/sizing not fully resolved, and spacing still cramped (especially below the rate-limit badge). Full remaining spec is Task 8C's replacement — Task 8D in FRONTEND_TASKS.md — queued next for the new Frontend Builder account after onboarding. Whoever picks this up must audit current state first, not start from scratch.
 
 **ADMIN_SECRET status:**
 - Ahmad set `ADMIN_SECRET` in Railway Variables
@@ -199,12 +200,13 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 5. Jump straight to "Next Things the Manager Must Do" above and start from step 1
 
 **What is happening right now:**
-- Task 8B (Wallet Input Page Redesign) is ✅ DONE, including a polish round from Ahmad's screenshot feedback (logo, chain icons, spacing, report-link styling). Verified live.
-- During 8B's final polish, a real production bug surfaced: the admin-set anonymous rate limit doesn't reliably update on the homepage. Ahmad had that Frontend Builder run a full audit — it found 9 concrete root causes. That Builder then hit their credit limit.
-- Ahmad has created/imported the project into a NEW Frontend Builder account, currently waiting for onboarding.
-- Next steps, strictly in order (one task at a time): (1) send the onboarding prompt to the new Frontend Builder account, (2) once they confirm they're oriented, send Task 8C (Anonymous Rate Limit Cache Sync Fix — CRITICAL, full spec now in FRONTEND_TASKS.md).
+- Task 8B (Wallet Input Page Redesign) is ✅ DONE, verified live.
+- Task 8C (Anonymous Rate Limit Cache Sync Fix) is ✅ DONE, verified live by Ahmad on Vercel (real root cause was `setEditId(null)` racing with React 18 batching in the admin mutation's `onSuccess`).
+- Ahmad then requested Task 8D (homepage polish: white placeholder/example-link text, animated mint border on "Try an example", reduced oversized/zoom sizing, better spacing, typography hierarchy). That Builder got partway through and hit their credit limit; Ahmad pushed the in-progress state live — it's on Vercel now but incomplete (visible animation jank, zoom/spacing not fully resolved).
+- Ahmad has imported the project into a NEW Frontend Builder account, waiting for onboarding.
+- Next steps, strictly in order (one task at a time): (1) send onboarding prompt to the new Frontend Builder account, (2) once they confirm oriented, send Task 8D (full spec in FRONTEND_TASKS.md) — make clear to them that work is partially done and live, so they must audit current state before changing anything, not start from scratch.
 - Task 11C (Signal Accuracy Audit) is NEXT for the Backend Builder. Task 9C is done and verified. Send Task 11C prompt when ready.
-- One task at a time per Builder — do not send Task 11A/11C-adjacent frontend work until Task 8C is confirmed done and merged.
+- One task at a time per Builder — do not send Task 11A-adjacent frontend work until Task 8D is confirmed done and merged.
 
 **Rule before ending ANY Manager session:**
 1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md

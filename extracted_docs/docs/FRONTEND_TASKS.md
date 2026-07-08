@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 8, 2026 (session 3 — Task 8B ✅ done incl. polish round, new critical Task 8C found via audit) | Maintained by: Development Manager
+> Last updated: July 8, 2026 (session 3 — Task 8B ✅ and Task 8C ✅ done and verified live; Task 8D (homepage polish) queued next) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
@@ -173,7 +173,11 @@ Keep all CSS in `src/index.css`. Do not add a new component library. Follow exis
 
 ---
 
-### TASK 8C — Fix Anonymous Rate Limit Cache Sync Bug
+### TASK 8C — Fix Anonymous Rate Limit Cache Sync Bug ✅
+**Completed:** July 8, 2026. Root cause was `setEditId(null)` in `onSuccess` racing with React 18 batching, unmounting the edit row before the success banner (and its `invalidateQueries` call) could ever be seen/trusted. Fixed by keeping the row mounted until the user clicks "Done". Verified live on Vercel by Ahmad: anonymous limit set to 42 → homepage badge updated without refresh; enterprise set to unlimited (blank field) → homepage correctly showed "Unlimited". Confirmed working in production.
+
+<details><summary>Original spec (for reference)</summary>
+
 **Phase:** 2 — Operational
 **Priority:** CRITICAL — admin control is currently broken; Ahmad cannot reliably change the homepage's displayed rate limit
 **Depends on:** Nothing — start immediately
@@ -213,6 +217,68 @@ When Ahmad changes the anonymous plan's `daily_limit` in the Admin Panel (Plan C
 - `useAnonymousLimit` no longer fires while viewing a score result
 - Manually test: set limit to 5 → confirm Home shows 5. Set to null (unlimited) → confirm Home shows "Unlimited". Set back to a number → confirm Home updates again. Test navigating away from Admin immediately after clicking Save (before the PATCH resolves) to confirm the fix still works.
 - Report back to Manager with test results for each scenario above before marking done
+
+</details>
+
+---
+
+### TASK 8D — Homepage Visual Polish: Contrast, Animated CTA, Spacing & Density
+**Phase:** 3 — Redesign
+**Priority:** HIGH — Ahmad wants this 100% professional before moving on
+**Depends on:** Task 8B ✅ and Task 8C ✅ (both done — this task polishes what's already live)
+
+**Context — read this first:**
+A previous Builder started this exact task and got partway through before hitting their account's credit limit. Ahmad pushed their in-progress work to Vercel, so it is now live in production — but it is incomplete and has introduced a new problem (janky animation). Do not assume a blank slate: pull the current `src/index.css` and `src/pages/Home.tsx` and see exactly what's there before making changes. Some of what's below may already be partially done — verify, don't guess.
+
+**Files you will touch:**
+- `src/index.css`
+- `src/pages/Home.tsx` (only if the animation markup needs restructuring — no logic changes)
+
+**Do NOT touch:**
+- `src/lib/scoring.ts`, `nixpacks.toml`, `vercel.json`
+- The chain selector logic
+- Anything related to Task 8C's rate-limit fetching/caching logic (already fixed and verified — don't touch `useAnonymousLimit.ts` or the admin mutation logic)
+
+**What to fix — in order:**
+
+1. **Placeholder text contrast.**
+   The wallet address input's placeholder ("0x… or wallet address") currently renders as dim grey and is hard to read against the dark card. Set the `::placeholder` color to white (or near-white, consistent with the rest of the input text) while keeping it visually distinct from actual typed text (e.g. via opacity, not a different color).
+
+2. **"Try an example →" — visible text + moving border, WITHOUT lag.**
+   The text itself must be white (currently too dim). Ahmad wants a thin animated mint-green line that traces/moves around the text — always in motion, eye-catching, but it currently causes real, visible lag/jank on mobile Chrome. This must be fixed, not removed — Ahmad confirmed he wants to keep the moving effect, he just wants it smooth.
+   - Root cause is almost certainly that the current implementation animates an expensive property (`box-shadow`, `filter`, `backdrop-filter`, or a background repaint) every frame.
+   - Rebuild using only GPU-cheap properties: animate `transform` (e.g. `rotate()`) on a small pseudo-element with a `conic-gradient` background, clipped to a thin ring via `mask`/`-webkit-mask`, positioned behind/around the text. This is the standard performant "moving border" technique — it only triggers compositing, not layout or paint, on every frame.
+   - Do not animate `width`, `height`, `top`/`left`, `box-shadow`, or `filter` on every frame — these cause jank on mobile.
+   - Respect `prefers-reduced-motion: reduce` — pause the animation for users who have that OS setting on.
+   - Test specifically on a throttled/mobile-simulated profile in Chrome DevTools (4x CPU slowdown) and confirm no visible stutter before reporting done.
+   - Color: same mint green used everywhere else (`--mint` / whatever the existing CSS variable is called) — do not introduce a new green shade.
+
+3. **Zoom / oversized content — verify and finish.**
+   A previous attempt scaled things down but the current live screenshot still looks too large/zoomed on mobile (375–414px width). Audit every size value on this page — logo dimensions, wordmark font-size, tagline font-size, input height/font-size, button height/font-size, badge font-size, icon sizes, paddings, margins — at the mobile breakpoint, and reduce consistently so the full page (header through footer) comfortably fits a standard mobile viewport (375×812) without feeling oversized and without introducing scroll. Don't do a partial pass — go element by element and confirm each one against the live screenshot.
+
+4. **Spacing — give everything room to breathe.**
+   The current live layout is visually cramped, especially the gap between the "42 free lookups / day" badge and the buttons/links below it (WOR ghost links). Increase vertical spacing (margin/gap) between every major block on the page: header → input card → rate-limit badge → WOR links → footer. The page must still fit on one screen without scrolling on mobile — this means the extra spacing has to come from the size reductions in step 3, not by making the page taller. Treat steps 3 and 4 as one job: shrink what's oversized, then redistribute the reclaimed space as breathing room, don't just compress everything to fit.
+
+5. **Typography hierarchy — not everything should be the same size.**
+   Some text is currently too small across the board. Establish a clear hierarchy:
+   - **Primary (largest, most weight):** the "OTI" wordmark, the "Check trust score" button label
+   - **Secondary (medium):** the tagline, the wallet address input text
+   - **Tertiary (small, muted):** field labels ("WALLET ADDRESS", "CHAIN"), the rate-limit badge, footer text, WOR ghost links
+   Increase primary/secondary sizes where they're currently too small to command attention, while keeping tertiary elements compact. This should feel intentional, not uniform.
+
+**Constraints:**
+- All CSS in `src/index.css`, no new component libraries or animation libraries
+- Must work on both mobile (375px) and desktop
+- Black background, mint green accent color system — no new colors
+- No performance regressions — the animation fix in step 2 must be verified smooth on a throttled mobile profile
+
+**Definition of done:**
+- Placeholder text is clearly readable (white/near-white)
+- "Try an example →" text is white with a smooth, continuously moving mint-green border effect — zero visible jank on a throttled mobile CPU profile
+- Page fits a 375×812 mobile viewport without feeling zoomed in and without introducing scroll
+- Clear, comfortable spacing between every section, especially below the rate-limit badge
+- Clear typographic hierarchy — primary elements stand out, secondary/tertiary elements stay compact
+- Screenshot the final result on a simulated mobile viewport (375px) and report back to Manager before marking done
 
 ---
 

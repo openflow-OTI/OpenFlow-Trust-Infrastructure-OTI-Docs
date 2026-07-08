@@ -1,5 +1,5 @@
 # OTI — Master Task Queue
-> Last updated: July 8, 2026 (session 3 — Task 8B ✅ done incl. polish round; CRITICAL Task 8C bug found via full audit; previous Frontend Builder hit credit limit, new account imported, waiting onboarding; Backend Builder on Task 11C) | Maintained by: Development Manager
+> Last updated: July 8, 2026 (session 3 — Task 8B ✅ and Task 8C ✅ done and verified live; Task 8D (homepage polish) queued, previous Frontend Builder hit credit limit mid-work, new account imported and waiting onboarding; Backend Builder on Task 11C) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
@@ -20,7 +20,7 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | New account (July 8, 2026) | Task 8B done incl. polish round. Previous account hit credit limit after audit. New account imported, waiting onboarding. Next task: Task 8C (Anonymous Rate Limit Cache Sync Fix — CRITICAL). |
+| Frontend Builder | New account (July 8, 2026) | Task 8B ✅ and Task 8C ✅ both done and verified live. Previous account hit credit limit mid-way through Task 8D (homepage polish); Ahmad imported a new account, waiting onboarding. Next task: Task 8D. |
 | Backend Builder | Active | Task 9C done ✅. Next task: Task 11C (Signal Accuracy Audit — CRITICAL). |
 
 ---
@@ -285,18 +285,23 @@ Special effects: navbar frosted glass (`backdrop-filter: blur(14px)`), submit bu
 
 ---
 
-### TASK 8C — Frontend: Fix Anonymous Rate Limit Cache Sync Bug
+### TASK 8C — Frontend: Fix Anonymous Rate Limit Cache Sync Bug ✅
+**Completed:** July 8, 2026. Real root cause found on the second audit pass: `setEditId(null)` inside the mutation's `onSuccess` raced with React 18 batching and unmounted the edit row before the success banner/cache update could be trusted. Fixed by keeping the row open until the user clicks "Done". Verified live on Vercel by Ahmad — anonymous limit change to 42 updated the homepage badge instantly, and unlimited (blank field) correctly showed "Unlimited".
+
+---
+
+### TASK 8D — Frontend: Homepage Visual Polish (Contrast, Animated CTA, Spacing, Density)
 **Owner:** Frontend Builder
-**Phase:** 2 — Operational
-**Priority:** CRITICAL — admin control over the anonymous rate limit is currently unreliable
-**Depends on:** Nothing — start immediately
+**Phase:** 3 — Redesign
+**Priority:** HIGH — Ahmad wants full professional polish before moving to Phase 4
+**Depends on:** Task 8B ✅, Task 8C ✅
 
 **Why this exists:**
-During Task 8B's final polish, Ahmad found that changing the anonymous plan's `daily_limit` in the Admin Panel does not reliably update the homepage badge. A full audit found 9 concrete root causes, the main one being that the only sync mechanism is a fragile `setQueryData` call with no `invalidateQueries` fallback.
+Ahmad requested polish on three fronts: text contrast (placeholder + example link), a moving mint-green border animation around "Try an example →", and reduced zoom/oversized sizing. A previous Builder started this and hit their credit limit mid-work; Ahmad pushed the partial state live, which introduced visible animation jank and left the zoom/spacing issues unresolved.
 
-**What to build:** Full bug list and fix spec is in FRONTEND_TASKS.md under Task 8C — replace the fragile per-mutate cache write with `invalidateQueries`, fix the plan-name matching, use the PATCH response instead of stale form state, fix "Unlimited" plans showing as "3", stop the query firing on the results view, add basic logging.
+**What to build:** Full spec is in FRONTEND_TASKS.md under Task 8D — white placeholder text, a GPU-cheap (transform-based, not box-shadow/filter-based) moving border animation on the example link with zero jank on throttled mobile, a full audit-and-fix of oversized elements at mobile breakpoint, increased spacing between all major sections (especially below the rate-limit badge), and a clearer typographic hierarchy (primary/secondary/tertiary sizing).
 
-**Definition of done:** See full spec in FRONTEND_TASKS.md. Manually verified: changing the limit (including to unlimited/null) updates the homepage every time, with no manual refresh.
+**Definition of done:** See full spec in FRONTEND_TASKS.md. Must be verified smooth on a throttled mobile CPU profile and screenshotted on a 375px viewport before being marked done.
 
 ---
 
