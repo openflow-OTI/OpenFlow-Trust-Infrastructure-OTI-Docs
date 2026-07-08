@@ -34,7 +34,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | New account (July 8, 2026) | Task 8B ✅ and Task 8C ✅ both done, live, and verified by Ahmad. That Builder then started Task 8D (homepage polish) and hit their credit limit mid-work; Ahmad pushed the partial state live (has some jank/incomplete polish). Another new account is imported and waiting for onboarding. Next task after onboarding: Task 8D |
+| Frontend Builder | New account (July 8, 2026) | Task 8B ✅, 8C ✅, and 8D ✅ all done, live, and verified by Ahmad. That Builder hit their credit limit after finishing 8D. Another new account is imported and waiting for onboarding. Next task after onboarding: Task 8E (disable mobile pinch/double-tap zoom) |
 | Backend Builder | Active | Task 9C fully done and verified. Waiting for next task (Task 11C — Signal Accuracy Audit) |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
@@ -65,9 +65,10 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ Task 8 — Professional results page redesign: chain-color ring gauge, tier labels, Trust Signals card, truncated wallet address + copy, Share (native share sheet) + Save as Image (3× PNG), "⚑ Report this wallet" mint ghost link, footer, full color system upgrade
 - ✅ Task 8B — Professional wallet input page redesign, incl. polish round (logo size/position, zkSync/Linea icon visibility, chain icon size, spacing, report-link styling) — verified live July 8, 2026
 - ✅ Task 8C — Anonymous rate-limit cache sync fixed. Real root cause: `setEditId(null)` in the admin mutation's `onSuccess` raced with React 18 batching and unmounted the edit row before the success banner/cache write could be trusted. Fixed by keeping the row open until "Done" is clicked. Verified live on Vercel July 8, 2026 — anonymous limit change to 42 updated the homepage instantly; unlimited (blank field) correctly showed "Unlimited".
+- ✅ Task 8D — Homepage visual polish shipped: white placeholder/example-link text, "Try an example" border rebuilt as a GPU-cheap transform-based animation (was a paint-triggering `@property`/conic-gradient causing jank), corrected oversized/zoom sizing, improved spacing and typographic hierarchy. Verified live by Ahmad via screen recording July 8, 2026.
 
-**Known issue (not yet fixed — live in a partial/incomplete state):**
-- 🟡 Task 8D (homepage polish) is partially shipped. Ahmad asked for: white placeholder + example-link text, an animated moving mint-green border around "Try an example →", reduced oversized/zoom sizing, and general spacing/typography polish. The Builder working on it hit their credit limit mid-way and Ahmad pushed the in-progress state live. Current live state has: visible animation jank/lag from the border effect, zoom/sizing not fully resolved, and spacing still cramped (especially below the rate-limit badge). Full remaining spec is Task 8C's replacement — Task 8D in FRONTEND_TASKS.md — queued next for the new Frontend Builder account after onboarding. Whoever picks this up must audit current state first, not start from scratch.
+**Known issue (not yet fixed):**
+- 🟡 Mobile pinch-zoom and double-tap-zoom are currently enabled everywhere (homepage, results page, admin dashboard) — this fights against the carefully sized mobile layout from Task 8D. Needs to be disabled on mobile only, with desktop zoom completely unaffected. Full spec is Task 8E in FRONTEND_TASKS.md — queued next for the new Frontend Builder account after onboarding.
 
 **ADMIN_SECRET status:**
 - Ahmad set `ADMIN_SECRET` in Railway Variables
@@ -202,11 +203,12 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 **What is happening right now:**
 - Task 8B (Wallet Input Page Redesign) is ✅ DONE, verified live.
 - Task 8C (Anonymous Rate Limit Cache Sync Fix) is ✅ DONE, verified live by Ahmad on Vercel (real root cause was `setEditId(null)` racing with React 18 batching in the admin mutation's `onSuccess`).
-- Ahmad then requested Task 8D (homepage polish: white placeholder/example-link text, animated mint border on "Try an example", reduced oversized/zoom sizing, better spacing, typography hierarchy). That Builder got partway through and hit their credit limit; Ahmad pushed the in-progress state live — it's on Vercel now but incomplete (visible animation jank, zoom/spacing not fully resolved).
-- Ahmad has imported the project into a NEW Frontend Builder account, waiting for onboarding.
-- Next steps, strictly in order (one task at a time): (1) send onboarding prompt to the new Frontend Builder account, (2) once they confirm oriented, send Task 8D (full spec in FRONTEND_TASKS.md) — make clear to them that work is partially done and live, so they must audit current state before changing anything, not start from scratch.
+- Task 8D (homepage polish: contrast, animated CTA border rebuilt to be GPU-cheap, zoom/sizing, spacing, typography) is ✅ DONE, verified live by Ahmad via screen recording.
+- Ahmad then flagged a new issue: mobile pinch/double-tap zoom is enabled everywhere (homepage, results page, admin dashboard) and should be disabled on mobile only, without affecting desktop zoom. This is Task 8E — full spec in FRONTEND_TASKS.md.
+- That Frontend Builder hit their credit limit right after finishing 8D. Ahmad has imported the project into a NEW Frontend Builder account, waiting for onboarding.
+- Next steps, strictly in order (one task at a time): (1) send onboarding prompt to the new Frontend Builder account, (2) once they confirm oriented, send Task 8E.
 - Task 11C (Signal Accuracy Audit) is NEXT for the Backend Builder. Task 9C is done and verified. Send Task 11C prompt when ready.
-- One task at a time per Builder — do not send Task 11A-adjacent frontend work until Task 8D is confirmed done and merged.
+- One task at a time per Builder — do not send Task 11A-adjacent frontend work until Task 8E is confirmed done and merged.
 
 **Rule before ending ANY Manager session:**
 1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md

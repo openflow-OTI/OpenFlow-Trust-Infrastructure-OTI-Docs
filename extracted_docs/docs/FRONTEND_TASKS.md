@@ -222,7 +222,11 @@ When Ahmad changes the anonymous plan's `daily_limit` in the Admin Panel (Plan C
 
 ---
 
-### TASK 8D — Homepage Visual Polish: Contrast, Animated CTA, Spacing & Density
+### TASK 8D — Homepage Visual Polish: Contrast, Animated CTA, Spacing & Density ✅
+**Completed:** July 8, 2026. Fixed placeholder contrast, rebuilt the "Try an example" moving border from a paint-triggering animated `@property`-driven conic-gradient to a GPU-cheap transform-based rotation (no jank), corrected oversized/zoom sizing, added breathing room between sections, and established a clear typographic hierarchy. Verified live by Ahmad via screen recording — confirmed working normally and looking good.
+
+<details><summary>Original spec (for reference)</summary>
+
 **Phase:** 3 — Redesign
 **Priority:** HIGH — Ahmad wants this 100% professional before moving on
 **Depends on:** Task 8B ✅ and Task 8C ✅ (both done — this task polishes what's already live)
@@ -279,6 +283,43 @@ A previous Builder started this exact task and got partway through before hittin
 - Clear, comfortable spacing between every section, especially below the rate-limit badge
 - Clear typographic hierarchy — primary elements stand out, secondary/tertiary elements stay compact
 - Screenshot the final result on a simulated mobile viewport (375px) and report back to Manager before marking done
+
+</details>
+
+---
+
+### TASK 8E — Disable Mobile Pinch/Double-Tap Zoom Across the App
+**Phase:** 3 — Redesign
+**Priority:** MEDIUM — polish/UX consistency issue, not a functional bug
+**Depends on:** Task 8D ✅ (done)
+
+**Why you are doing this:**
+Ahmad noticed that on mobile, users can pinch-zoom and double-tap-zoom the page — on the homepage, the scoring/results page, and the admin dashboard. Since every page is carefully sized and spaced for mobile already (per Task 8D), letting users zoom in/out breaks the intended layout and feels unpolished. This must be disabled on mobile only — desktop zoom behavior (Ctrl +/-, Ctrl+scroll) must be completely unaffected.
+
+**Files you will likely touch:**
+- `index.html` (the `<meta name="viewport">` tag — this is almost certainly the single source of truth for this, since it's one HTML file serving the whole SPA)
+- Possibly `src/index.css` (a global `touch-action` rule, only if needed as a backstop for iOS Safari's double-tap-to-zoom, which some iOS versions honor even when `user-scalable=no` is set)
+
+**Do NOT touch:**
+- `src/lib/scoring.ts`, `nixpacks.toml`, `vercel.json`
+- Anything already fixed in Task 8C/8D — this is purely a zoom/viewport-behavior task
+
+**What to build:**
+
+1. Update the viewport meta tag to prevent mobile pinch-zoom and double-tap-zoom:
+   `<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">`
+
+2. This must apply everywhere in the app — homepage, scoring/results view, and the admin dashboard (`/admin`) — since they're all part of the same single-page app served from one `index.html`, one correct change should cover all of them. Confirm this is actually true for this codebase (check whether admin has any separate HTML entry point) rather than assuming.
+
+3. If double-tap-to-zoom still works on iOS Safari after the meta tag change (a known iOS quirk where `user-scalable=no` alone isn't always fully respected), add a CSS backstop: `touch-action: manipulation;` on `html, body` (or a more targeted selector if a global rule causes any side effects with existing interactions like the chain selector dropdown or admin table scrolling — test those specifically).
+
+4. **Desktop must be completely unaffected.** Viewport meta tags and `touch-action` only affect touch/mobile zoom gestures — desktop zoom (Ctrl+/-, Ctrl+scroll, browser zoom controls) is a separate browser-level feature and is not affected by these changes. Just confirm this is actually true after your changes — test zooming in a desktop browser and confirm it still works normally.
+
+**Definition of done:**
+- On a mobile device or mobile emulation (touch simulation on), pinch-to-zoom and double-tap-to-zoom no longer work on the homepage, the results/scoring view, and the admin dashboard
+- On desktop, Ctrl+/-, Ctrl+scroll, and browser zoom controls still work exactly as before — completely unaffected
+- No regressions to existing touch interactions (chain selector dropdown, admin table scrolling, any swipeable elements)
+- Report back to Manager confirming you tested all three views on mobile emulation and confirmed desktop zoom is unaffected, before marking done
 
 ---
 

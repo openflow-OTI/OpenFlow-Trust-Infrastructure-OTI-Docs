@@ -290,18 +290,23 @@ Special effects: navbar frosted glass (`backdrop-filter: blur(14px)`), submit bu
 
 ---
 
-### TASK 8D — Frontend: Homepage Visual Polish (Contrast, Animated CTA, Spacing, Density)
+### TASK 8D — Frontend: Homepage Visual Polish (Contrast, Animated CTA, Spacing, Density) ✅
+**Completed:** July 8, 2026. Placeholder contrast fixed, "Try an example" border animation rebuilt from a paint-triggering animated `@property`/conic-gradient to a GPU-cheap transform-based rotation, oversized/zoom sizing corrected, spacing and typographic hierarchy improved. Verified live by Ahmad via screen recording.
+
+---
+
+### TASK 8E — Frontend: Disable Mobile Pinch/Double-Tap Zoom Across the App
 **Owner:** Frontend Builder
 **Phase:** 3 — Redesign
-**Priority:** HIGH — Ahmad wants full professional polish before moving to Phase 4
-**Depends on:** Task 8B ✅, Task 8C ✅
+**Priority:** MEDIUM — polish/UX consistency, not a functional bug
+**Depends on:** Task 8D ✅
 
 **Why this exists:**
-Ahmad requested polish on three fronts: text contrast (placeholder + example link), a moving mint-green border animation around "Try an example →", and reduced zoom/oversized sizing. A previous Builder started this and hit their credit limit mid-work; Ahmad pushed the partial state live, which introduced visible animation jank and left the zoom/spacing issues unresolved.
+Ahmad found that mobile users can pinch-zoom and double-tap-zoom every page (homepage, results/scoring page, admin dashboard), which breaks the carefully sized mobile layout from Task 8D. Needs to be disabled on mobile only — desktop zoom must stay completely unaffected.
 
-**What to build:** Full spec is in FRONTEND_TASKS.md under Task 8D — white placeholder text, a GPU-cheap (transform-based, not box-shadow/filter-based) moving border animation on the example link with zero jank on throttled mobile, a full audit-and-fix of oversized elements at mobile breakpoint, increased spacing between all major sections (especially below the rate-limit badge), and a clearer typographic hierarchy (primary/secondary/tertiary sizing).
+**What to build:** Full spec is in FRONTEND_TASKS.md under Task 8E — update the viewport meta tag (`maximum-scale=1, user-scalable=no`) which should cover the whole SPA in one change, plus a `touch-action: manipulation` CSS backstop if iOS Safari still allows double-tap-zoom. Must be verified across all three views and confirmed not to affect desktop zoom or existing touch interactions (chain selector, admin tables).
 
-**Definition of done:** See full spec in FRONTEND_TASKS.md. Must be verified smooth on a throttled mobile CPU profile and screenshotted on a 375px viewport before being marked done.
+**Definition of done:** See full spec in FRONTEND_TASKS.md. Must be tested on mobile emulation across all three views, and desktop zoom confirmed unaffected, before being marked done.
 
 ---
 
