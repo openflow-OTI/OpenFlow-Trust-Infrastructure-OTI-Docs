@@ -3,3 +3,4 @@
 - [Vercel docs proxy gotchas](vercel-docs-proxy.md) — trailing-slash routes need their own explicit rewrite rule; Docusaurus baseUrl ≠ physical output nesting.
 - [Builder file sync](builder-file-sync.md) — Frontend/Backend Builders hold separate physical copies of task files; Manager must explicitly instruct them to update their own copy every time, never assume sync.
 - [OTI token is independent from FLOW](oti-token-independent.md) — OTI has its own token/tokenomics (see TOKENOMICS.md), deliberately decoupled from OpenFlow's FLOW ecosystem token so OTI's fundraising/growth isn't gated by OpenFlow's timeline.
+- [OTI token price & liquidity deferred](oti-token-price-liquidity-deferred.md) — price/liquidity pool design intentionally stripped from TOKENOMICS.md; team decides later, don't reconstruct or re-add without Ahmad reopening it.

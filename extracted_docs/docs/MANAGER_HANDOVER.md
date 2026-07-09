@@ -1,6 +1,7 @@
 # OTI — Manager Handover Document
-> Last updated: July 9, 2026 (session 6 — full documentation audit/sync pass at Ahmad's request: fixed TASKS.md duplication and confusing section header, added explicit "builder copies don't auto-sync" warnings to every doc file. Ahmad confirmed priority: close out ALL Phase 4 items before Distribution (Phase 5) starts. New scope added: payments (fiat + crypto) and a BSC token presale + pitch deck, planned to land before Distribution — tokenomics discussion in progress, Ahmad providing his own design. Task 11C still with Backend Builder, awaiting their work. Task 11E scoped, being finalized into a full prompt. **OTI Tokenomics finalized and locked — see `TOKENOMICS.md`.** OTI has its OWN independent token (not the OpenFlow "FLOW" ecosystem token discussed earlier) — 30,000,000 fixed supply, launching on BSC first, cross-chain later. Full sale, vesting, liquidity, and revenue-distribution design is documented there.)
+> Last updated: July 9, 2026 (session 7 — HANDOVER, previous Manager running low on context, NO development work happened this session. Ahmad spent the whole session refining OTI tokenomics with the previous Manager, then explicitly decided: (1) remove ALL price and liquidity numbers from TOKENOMICS.md — the team will decide price/liquidity later, closer to launch; (2) `TOKENOMICS.md` now only covers supply, allocation, vesting, sale structure (no price), and revenue distribution; (3) **explicitly resume development from Task 11 on** — Ahmad said "we didn't build anything today," so the next Manager should pick up exactly where session 6 left off: check in on Task 11C, finalize/send Task 11E. Do NOT reopen the price/liquidity discussion — it was intentionally deferred, and reconstructing numbers from git history would go against Ahmad's explicit instruction.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
+> **⚠️ Read `TOKENOMICS.md` before touching anything token-related — price/liquidity sections were deliberately removed at Ahmad's request July 9, 2026. Do not add them back or estimate them yourself.**
 
 ---
 
@@ -160,6 +161,12 @@ Ahmad personally authorized the previous Frontend Builder to keep working past t
 
 ### Lesson learned this session (Vercel/Docusaurus docs proxy debugging)
 Full detail in the Manager's persistent memory (`vercel-docs-proxy.md` topic) — summary: (1) Vercel rewrites treat `/docs` and `/docs/` as distinct routes, a wildcard `/docs/:path*` rule does not cover the bare trailing-slash case, always test all three forms via curl; (2) Docusaurus's `baseUrl` only changes link prefixes/router basename, not physical build output folder structure — don't assume a hosting platform's directory settings are misconfigured before checking the actual local `build/` folder structure.
+
+### 0. RESUME HERE — session 7 was a tokenomics-only session, no dev work happened
+Ahmad spent session 7 entirely on refining OTI tokenomics with the Manager (liquidity/market-cap ratio math went back and forth several times). He explicitly said "we didn't build anything with you today" and asked to resume from Task 11 onward. **Nothing changed in Task 11C or Task 11E status since session 6 — pick up exactly there:**
+- Check in with Backend Builder on Task 11C (Signal Accuracy Audit) progress.
+- Finalize the Task 11E prompt (AI-native tell audit) and confirm priority with Ahmad before sending to Frontend Builder (still not sent as of end of session 7).
+- `TOKENOMICS.md` is otherwise locked (supply/allocation/vesting/sale/revenue) — price and liquidity were explicitly stripped out per Ahmad's instruction; do not re-add them without him raising it again.
 
 ### 2. Task 11C sent to the Backend Builder — awaiting their work
 Task 9C is done. Task 11C (Signal Accuracy Audit — non-EVM chains scored with EVM logic, CRITICAL before distribution) was sent to the Backend Builder. Do not send anything further to Backend Builder until 11C is verified done.
