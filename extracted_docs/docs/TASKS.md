@@ -756,6 +756,18 @@ Mustapha is the co-founder of OpenFlow and works alongside Ahmad in building the
 
 **Definition of done:** Docusaurus site is live on Vercel. Getting Started page works — a developer can read it and make their first API call within 5 minutes.
 
+**Status update (July 9, 2026):** Content is code-complete (all 6 sections built, API values live-verified). Ahmad authorized open-ended follow-on work, which also added: an OG image, a "Try It Live" widget, a privacy audit that removed leaked internal doc references, and a migration of API URLs to a not-yet-live custom domain (`api.otiscore.io`). This broke production: `/docs/` 404s on Vercel (SPA catch-all intercepts it — docs were never deployed as their own Vercel project) and "Try It Live" fails (DNS for `api.otiscore.io` isn't live). Fix plan: revert API URLs to the working Railway URL, deploy `oti-docs/` as its own Vercel project, then add a `vercel.json` rewrite (`/docs/:path*` → that deployment, ordered before the SPA catch-all) so the public URL stays `otiscore.vercel.app/docs/` with no custom domain needed. Full detail in FRONTEND_TASKS.md Task 11.
+
+---
+
+### TASK 11D — Replace emoji icons with a real icon set + copy tone pass
+**Owner:** Frontend Builder
+**Phase:** 4 — Pre-Distribution
+**Priority:** Medium — after Task 11 deployment fixes
+**Added:** July 9, 2026
+
+Homepage Trust Signals and Use Cases sections use raw emoji as icons (from the original Task 11A spec) — reads as unpolished for an enterprise sales motion. Replace with a proper icon set (Lucide/Heroicons) in mint. Also do a read-through of the whitepaper and docs copy for AI-sounding phrasing and flag findings to the Manager before rewriting. See FRONTEND_TASKS.md Task 11D for full spec.
+
 ---
 
 ---
@@ -766,7 +778,8 @@ Before any distribution channel (Tasks 12–15) is assigned, confirm ALL of the 
 - [x] Task 5 — Weighted signal response in API ✅
 - [ ] Task 9 — Admin panel UI live on Vercel
 - [x] Task 11A — Marketing homepage live at `/`, scoring tool at `/score` ✅
-- [ ] Task 11 — Developer docs site live on Vercel (sent to Frontend Builder July 8, 2026)
+- [ ] Task 11 — Developer docs site live on Vercel (code-complete, deployment/remediation pending — see status update above)
+- [ ] Task 11D — Emoji icons replaced, copy tone pass done
 - [ ] Ahmad: Rename Vercel project to `oti` in dashboard (Project Settings → General → Project Name)
 - [ ] Ahmad: Sign up for Crisp.chat (free), provide Website ID to Frontend Builder
 - [ ] Ahmad: Create Tally.so feedback form (free), provide embed snippet to Frontend Builder

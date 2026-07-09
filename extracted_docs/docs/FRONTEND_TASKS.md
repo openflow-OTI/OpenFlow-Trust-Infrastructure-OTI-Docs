@@ -499,36 +499,69 @@ OTI is positioning itself as infrastructure for enterprises — exchanges, custo
 ### TASK 11 — Developer Docs Site
 **Phase:** 4 — Pre-Distribution
 **Priority:** HIGH — hard dependency before any bot or widget launches
-**Status: 🟡 CODE COMPLETE — DEPLOYMENT PENDING**
+**Status: 🟡 CODE COMPLETE — DEPLOYMENT + REMEDIATION PENDING**
 
 **Context for the new account inheriting this task:**
-The previous Frontend Builder fully built the Docusaurus site. It lives at `oti-docs/` in the frontend repo and works correctly in the Replit dev environment at port 3000 via a Vite proxy. It is NOT yet live on Vercel. `otiscore.vercel.app/docs/` returns 404 because the main site's `vercel.json` SPA catch-all intercepts `/docs/*` and serves the React app — the docs were never deployed as a separate Vercel project, which is what they need to be.
+Ahmad gave the previous Frontend Builder open-ended go-ahead on this task, so the scope grew well beyond the original spec across 8 self-directed rounds. Below is the FULL list of what was actually built, so you know exactly what exists and what's left broken. Read this whole section before touching anything.
 
-**Your three jobs to complete this task:**
+**✅ What is already built and working (do not redo):**
+1. Docusaurus site at `oti-docs/` in the frontend repo, with all 6 required sections, API values live-verified against production
+2. An OG social-share image for the docs site
+3. A "privacy audit" pass that removed internal-only doc folders and scrubbed leaked internal references from the public Whitepaper — this was a genuine security fix, keep it
+4. A "Try It Live" interactive widget embedded in the docs that calls the real API
 
-**Job 1 — Fix the baseUrl before Ahmad deploys (do this first, immediately):**
-Open `oti-docs/docusaurus.config.js`. Change:
-```
-baseUrl: '/docs/',
-```
-to:
-```
-baseUrl: '/',
-```
-The `/docs/` base path was only correct for the local Replit proxy environment. On its own Vercel project (the correct deployment target), the docs sit at the root, so `baseUrl` must be `/`. Notify Ahmad when this is done so he can push and deploy.
+**🔴 What is broken right now and why:**
+1. `otiscore.vercel.app/docs/` returns a 404 in production. Root cause: the docs were only ever proxied via Vite in the local Replit dev environment. On Vercel, the main site's `vercel.json` SPA catch-all (`{"source":"/(.*)", "destination":"/index.html"}`) intercepts `/docs/*` first and serves the React app instead, because the docs were never deployed as their own Vercel project.
+2. "Try It Live" doesn't work in production. Root cause: during this scope creep, all API URLs across the codebase (MarketingNavbar.tsx, Landing.tsx, Whitepaper.tsx, oti-docs/docusaurus.config.js, and the Try It Live widget itself) were migrated from the working Railway backend URL to `https://api.otiscore.io` — a custom domain Ahmad has not set up. Manager confirmed by DNS check that `api.otiscore.io` does not currently resolve. Every API call in the docs and the widget is failing against a domain that doesn't exist yet.
 
-**Job 2 — Ahmad deploys to Vercel (his action, not yours):**
-Ahmad will: vercel.com → New Project → import the frontend GitHub repo → set Root Directory to `oti-docs` → Deploy. Vercel auto-detects Docusaurus, zero config needed. Ahmad will provide the live URL once it's up.
+**Ahmad's decision (July 9, 2026): do NOT wait on a custom domain purchase/DNS.** Instead, both the docs path and the API path get proxied through Vercel rewrites so everything stays under the single `otiscore.vercel.app` URL. This is free, requires no domain purchase, and if Ahmad buys a real domain later, only the Vercel project's domain settings need to change — no code changes.
 
-**Job 3 — Update all hardcoded URLs once the live URL is known:**
-The codebase currently has `https://docs.otiscore.vercel.app` hardcoded in several places (MarketingNavbar.tsx, Landing.tsx, Whitepaper.tsx, oti-docs/docusaurus.config.js). Once Ahmad gives you the real live URL, do a full search for `docs.otiscore.vercel.app` across the entire repo and replace every occurrence with the real URL. Then notify the Manager.
+**Your four jobs to complete this task:**
+
+**Job 1 — Fix the baseUrl (do this first):**
+Open `oti-docs/docusaurus.config.js`. Change `baseUrl: '/docs/'` to `baseUrl: '/'`. The `/docs/` base path was only correct for the local Replit proxy environment; on its own Vercel project the docs sit at the root.
+
+**Job 2 — Revert the API domain migration:**
+Search the entire repo for `api.otiscore.io` and replace every occurrence with the working Railway backend URL (the one in use before this migration). This immediately fixes "Try It Live" without needing any DNS work. Do this in code — do not touch `vercel.json` for this step, it's a plain string revert.
+
+**Job 3 — Ahmad deploys `oti-docs/` as its own Vercel project (his action, not yours):**
+Ahmad will: vercel.com → New Project → import the frontend GitHub repo → set Root Directory to `oti-docs` → Deploy. Vercel auto-detects Docusaurus, zero config needed. He'll share the resulting `*.vercel.app` deployment URL with you.
+
+**Job 4 — Add a `vercel.json` rewrite so `/docs/` keeps working under the main domain:**
+This is the one approved exception to "never touch vercel.json" — Manager has pre-cleared it. Once Ahmad gives you the docs deployment URL, add a rewrite rule to the main site's `vercel.json`, placed BEFORE the existing SPA catch-all rule (order matters — first match wins):
+```json
+{"source": "/docs/:path*", "destination": "https://<oti-docs-deployment-url>/:path*"}
+```
+Do not remove or reorder the existing SPA catch-all rule below it. Test that `otiscore.vercel.app/docs/` loads the real docs site (not a 404, not the React app) after this change.
 
 **Definition of done:**
-- `baseUrl: '/'` is set in `oti-docs/docusaurus.config.js` ✅ (your action)
-- Docs site is live on its own Vercel deployment (Ahmad's action)
-- All hardcoded `docs.otiscore.vercel.app` occurrences replaced with the real URL ✅ (your action)
+- `baseUrl: '/'` set in `oti-docs/docusaurus.config.js`
+- All `api.otiscore.io` references reverted to the Railway backend URL — "Try It Live" works again
+- `oti-docs/` deployed as its own Vercel project (Ahmad's action)
+- `vercel.json` rewrite added (docs rule before the SPA catch-all) — `otiscore.vercel.app/docs/` loads correctly, no 404
 - Getting Started page works — a developer can read it and make their first successful API call within 5 minutes
-- Report the live docs URL back to the Manager before marking done
+- Report back to the Manager with a live, cache-busted screenshot of `/docs/` before marking done
+
+---
+
+### TASK 11D — Replace emoji icons with a real icon set + copy tone pass
+**Phase:** 4 — Pre-Distribution
+**Priority:** MEDIUM — do after Task 11 deployment fixes, before wider distribution
+**Depends on:** none, can run independently of Task 11's deployment work
+
+**Why you are doing this:**
+Ahmad's read (and Manager agrees after review): the Trust Signals and Use Cases sections on the homepage use raw emoji as icons (🕐📊🪙🔗⏱ and 💱🏦🖼🎮🗳🔐📡🛠). This was actually in the Manager's original Task 11A spec, not a builder invention — but for a product selling into exchanges, custody platforms, and DeFi protocols, emoji icons read as consumer/hobby-project rather than enterprise infrastructure. Manager reviewed the live homepage and whitepaper Executive Summary directly and found the actual prose (headline, sub-headline, How It Works copy, whitepaper Section 01) reads clean and professional — the AI/emoji impression is concentrated in these two icon-grid sections specifically, not systemic across all copy.
+
+**What to build:**
+1. Replace all emoji icons in the Trust Signals (5-card) and Use Cases (9-tile) sections on the homepage with a consistent icon set (Lucide or Heroicons — pick one, use it everywhere) styled in mint (`#00e5a0`) on the locked dark theme. Do not introduce a new icon library if one is already installed in the repo — check first.
+2. Do a full read-through of the Whitepaper (`/whitepaper`, all 13 sections) and the Docusaurus docs site copy specifically looking for generic AI-pattern phrasing (overly hedged corporate language, repetitive sentence structures, buzzword stacking without specifics). Flag anything found to the Manager with the exact sentence and section before rewriting — Manager will confirm which to change.
+3. Do NOT touch the homepage hero, "How It Works," or whitepaper Executive Summary copy — Manager has already reviewed these live and confirmed they read fine as-is.
+
+**Definition of done:**
+- No raw emoji characters remain as icons anywhere on the marketing site, whitepaper, or docs
+- Icon set is consistent and uses the locked mint color
+- List of flagged AI-sounding sentences (if any) sent to the Manager before any docs/whitepaper copy is rewritten
+- Screenshot of updated Trust Signals and Use Cases sections submitted to Manager
 
 ---
 

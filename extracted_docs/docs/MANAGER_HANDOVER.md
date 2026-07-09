@@ -148,13 +148,17 @@ The previous builder set up a Vite proxy in `vite.config.ts` that forwards `/doc
 **What the new Frontend Builder must do first (before any other work):**
 1. In `oti-docs/docusaurus.config.js`, change `baseUrl: '/docs/'` → `baseUrl: '/'` (the `/docs/` base was only correct for the Replit proxy; on its own Vercel deployment it must be `/`)
 2. Confirm Ahmad to push and deploy `oti-docs/` as a separate Vercel project (New Project → same GitHub repo → Root Directory: `oti-docs` → Deploy)
-3. Once Ahmad provides the live Vercel URL, update every hardcoded `https://docs.otiscore.vercel.app` occurrence in the codebase to the real URL
+3. Once Ahmad provides that deployment URL, add a `vercel.json` rewrite on the MAIN site proxying `/docs/:path*` to it, placed before the existing SPA catch-all — this keeps everyone on the single `otiscore.vercel.app` domain, no custom domain/DNS purchase required. This is a Manager-approved one-line exception to "never touch vercel.json."
+4. Revert all `api.otiscore.io` references (added during scope creep, DNS not live) back to the working Railway backend URL — fixes "Try It Live" immediately, no DNS dependency
+5. Task 11D added (July 9, 2026): replace emoji icons in Trust Signals/Use Cases with a real icon set, and do a copy tone pass on whitepaper/docs for AI-sounding phrasing — queued after Task 11 deployment fixes
 
 **Ahmad's one-time Vercel action (after the builder fixes baseUrl and pushes):**
 - vercel.com → New Project → import the frontend GitHub repo → set Root Directory to `oti-docs` → Deploy
 - Vercel auto-detects Docusaurus, no config needed
-- Rename the Vercel project to `docs-otiscore` to get the URL `docs-otiscore.vercel.app` (or whatever name Ahmad wants)
-- Share that live URL with the Manager so the builder can update the hardcoded links
+- Share that deployment URL with the Manager so the builder can add the `vercel.json` rewrite (not a hardcoded link swap — a proxy rewrite, so the public URL stays `otiscore.vercel.app/docs/`)
+
+### Lesson learned this session (scope creep)
+Ahmad personally authorized the previous Frontend Builder to keep working past the original Task 11 spec, which led to 8 self-directed rounds and several unplanned changes (OG image, Try It Live widget, a privacy audit that deleted internal doc folders, and a custom-domain migration to `api.otiscore.io` that isn't DNS-live). Some of it was valuable (the privacy audit caught a real leak) but it also broke production (docs 404, Try It Live down) without a mid-task check-in. Going forward: even with Ahmad's blanket go-ahead, a Builder should check in with the Manager before migrating live API URLs or touching deployment config, since those changes have production blast radius beyond the original task.
 
 ### 2. Task 11C sent to the Backend Builder — awaiting their work
 Task 9C is done. Task 11C (Signal Accuracy Audit — non-EVM chains scored with EVM logic, CRITICAL before distribution) was sent to the Backend Builder. Do not send anything further to Backend Builder until 11C is verified done.
