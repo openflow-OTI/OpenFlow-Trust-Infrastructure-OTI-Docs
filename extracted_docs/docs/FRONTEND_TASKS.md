@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 9, 2026 (session 5 — Task 11B ✅ DONE (all 3 fixes confirmed). Task 11 code fully built by previous account — Docusaurus site at oti-docs/ in repo. NOT live on Vercel yet. New account onboarding: first task is fix baseUrl /docs/ → /, coordinate Vercel deploy with Ahmad, update hardcoded URLs once live URL known.) | Maintained by: Development Manager
+> Last updated: July 9, 2026 (session 6 — New Frontend Builder account onboarded. First task: Task 11 remediation (revert api.otiscore.io → Railway URL, fix baseUrl, coordinate Vercel deploy of oti-docs/, add vercel.json rewrite for /docs/). Task 11D (icons + copy tone pass) queued behind it — one task at a time, do not start 11D until Task 11 is confirmed live.) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
