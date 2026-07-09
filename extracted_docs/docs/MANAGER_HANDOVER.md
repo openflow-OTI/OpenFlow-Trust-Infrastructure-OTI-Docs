@@ -136,14 +136,31 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. DONE — Task 11B fixes confirmed live
-Task 11B (Whitepaper page at `/whitepaper`) is ✅ DONE. All 3 fixes confirmed live: body text white (Manager-verified via cache-busted screenshot), Roadmap section removed + renumbered (Manager-verified), mobile horizontal-scroll fixed (Ahmad-verified). Task 11 (Developer Docs Site — Docusaurus) has been sent to the Frontend Builder next, along with instructions to mark 11B done in his own local docs.
+### 1. DONE — Task 11B ✅ and Task 11 code complete but NOT live yet
+
+**Task 11B** is ✅ DONE. All 3 fixes confirmed live.
+
+**Task 11** (Developer Docs Site) — code is fully built by the previous Frontend Builder account (hit credit limit). The Docusaurus site lives at `oti-docs/` in the frontend repo. **It is NOT live on Vercel yet.** This is why `otiscore.vercel.app/docs/` returns 404.
+
+**Root cause of the 404 (important — understand before actioning):**
+The previous builder set up a Vite proxy in `vite.config.ts` that forwards `/docs/*` to a local Docusaurus dev server on port 3000. This works in Replit's dev environment. On Vercel, there is no Vite proxy — the `vercel.json` SPA catch-all `{"source":"/(.*)", "destination":"/index.html"}` intercepts `/docs/*`, serves the React app's `index.html`, React router finds no `/docs` route, and renders a 404. The docs were never deployed as a separate Vercel project — that step is still pending.
+
+**What the new Frontend Builder must do first (before any other work):**
+1. In `oti-docs/docusaurus.config.js`, change `baseUrl: '/docs/'` → `baseUrl: '/'` (the `/docs/` base was only correct for the Replit proxy; on its own Vercel deployment it must be `/`)
+2. Confirm Ahmad to push and deploy `oti-docs/` as a separate Vercel project (New Project → same GitHub repo → Root Directory: `oti-docs` → Deploy)
+3. Once Ahmad provides the live Vercel URL, update every hardcoded `https://docs.otiscore.vercel.app` occurrence in the codebase to the real URL
+
+**Ahmad's one-time Vercel action (after the builder fixes baseUrl and pushes):**
+- vercel.com → New Project → import the frontend GitHub repo → set Root Directory to `oti-docs` → Deploy
+- Vercel auto-detects Docusaurus, no config needed
+- Rename the Vercel project to `docs-otiscore` to get the URL `docs-otiscore.vercel.app` (or whatever name Ahmad wants)
+- Share that live URL with the Manager so the builder can update the hardcoded links
 
 ### 2. Task 11C sent to the Backend Builder — awaiting their work
-Task 9C is done. Task 11C (Signal Accuracy Audit — non-EVM chains scored with EVM logic, CRITICAL before distribution) was sent to the Backend Builder in session 4. Do not send anything further to Backend Builder until 11C is verified done.
+Task 9C is done. Task 11C (Signal Accuracy Audit — non-EVM chains scored with EVM logic, CRITICAL before distribution) was sent to the Backend Builder. Do not send anything further to Backend Builder until 11C is verified done.
 
-### 3. Frontend queue — Task 11 now active
-- Task 11 — Developer Docs Site (Docusaurus, closes Phase 4 gate) — sent July 8, 2026. Do not queue anything else for Frontend Builder until this is confirmed done and verified live.
+### 3. Frontend queue — new account, inheriting Task 11 deployment
+New Frontend Builder account being onboarded July 9, 2026. Their first task is completing Task 11 deployment (fix baseUrl, coordinate with Ahmad for Vercel deploy, update hardcoded URLs). Do not queue anything else until Task 11 is confirmed live and verified.
 
 ### 4. Backend queue after Task 11C (in this exact order, one at a time)
 - Tasks 12–15 — Distribution channels (Telegram Bot, Chrome Extension, Widget, Firefox Extension)

@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 8, 2026 (session 4 — Task 11B ✅ DONE. Body text white ✅, Roadmap removed + renumbered ✅ (Manager-verified live), mobile horizontal-scroll fix ✅ (Ahmad-verified live). All 3 fixes confirmed on /whitepaper.) | Maintained by: Development Manager
+> Last updated: July 9, 2026 (session 5 — Task 11B ✅ DONE (all 3 fixes confirmed). Task 11 code fully built by previous account — Docusaurus site at oti-docs/ in repo. NOT live on Vercel yet. New account onboarding: first task is fix baseUrl /docs/ → /, coordinate Vercel deploy with Ahmad, update hardcoded URLs once live URL known.) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
@@ -499,32 +499,35 @@ OTI is positioning itself as infrastructure for enterprises — exchanges, custo
 ### TASK 11 — Developer Docs Site
 **Phase:** 4 — Pre-Distribution
 **Priority:** HIGH — hard dependency before any bot or widget launches
-**Depends on:** Task 5 (weighted signal response, already live in backend) ✅ — unblocked
+**Status: 🟡 CODE COMPLETE — DEPLOYMENT PENDING**
 
-**Why you are doing this:**
-Every bot reply, widget badge, and extension popup that OTI ships will link to a developer docs page. Without it, curious developers hit a dead end and never integrate. This closes out the Phase 4 pre-distribution gate alongside Task 11A (done) and Task 11B (done).
+**Context for the new account inheriting this task:**
+The previous Frontend Builder fully built the Docusaurus site. It lives at `oti-docs/` in the frontend repo and works correctly in the Replit dev environment at port 3000 via a Vite proxy. It is NOT yet live on Vercel. `otiscore.vercel.app/docs/` returns 404 because the main site's `vercel.json` SPA catch-all intercepts `/docs/*` and serves the React app — the docs were never deployed as a separate Vercel project, which is what they need to be.
 
-**What to build:**
-Set up a Docusaurus documentation site for OTI. Deploy it to Vercel on the same account as the frontend (Vercel auto-detects Docusaurus — zero config needed).
+**Your three jobs to complete this task:**
 
-```bash
-npx create-docusaurus@latest oti-docs classic
+**Job 1 — Fix the baseUrl before Ahmad deploys (do this first, immediately):**
+Open `oti-docs/docusaurus.config.js`. Change:
 ```
+baseUrl: '/docs/',
+```
+to:
+```
+baseUrl: '/',
+```
+The `/docs/` base path was only correct for the local Replit proxy environment. On its own Vercel project (the correct deployment target), the docs sit at the root, so `baseUrl` must be `/`. Notify Ahmad when this is done so he can push and deploy.
 
-The docs must cover, in this priority order:
-1. **Getting Started (CRITICAL)** — What OTI is in one paragraph. How to get a free API key. One copy-paste cURL example that works immediately. Link to API Reference.
-2. **API Reference (CRITICAL)** — Every endpoint, every parameter, every response field (use the current weighted signal shape — `score`, `weighted`, `maxWeight` per signal), all error codes.
-3. **Score Explanation (CRITICAL)** — What 0–100 means. What each signal measures. The 5 tier labels (HIGHLY TRUSTED / TRUSTED / CAUTION / SUSPICIOUS / HIGH RISK). How weighted contributions work.
-4. **Supported Chains (IMPORTANT)** — All 15 chains, chain IDs, limitations (BSC/Base/Optimism = 503, txCount cap at 1,000).
-5. **Rate Limits & Plans (IMPORTANT)** — Anonymous = 3/day (or current live value — check the admin panel/API, don't hardcode a stale number), Free plan limits, how to upgrade.
-6. **Code Examples (IMPORTANT)** — JavaScript (fetch), Python (requests), cURL — all copy-paste working examples.
+**Job 2 — Ahmad deploys to Vercel (his action, not yours):**
+Ahmad will: vercel.com → New Project → import the frontend GitHub repo → set Root Directory to `oti-docs` → Deploy. Vercel auto-detects Docusaurus, zero config needed. Ahmad will provide the live URL once it's up.
 
-**Style:** Keep OTI branding — use the locked OTI color system (see Color System section above) wherever Docusaurus theming allows it (primary/accent color, dark mode as default). Footer must say "OpenFlow Labs · openflowlabs.io". Link back to the main site (`otiscore.vercel.app`) from the docs nav.
+**Job 3 — Update all hardcoded URLs once the live URL is known:**
+The codebase currently has `https://docs.otiscore.vercel.app` hardcoded in several places (MarketingNavbar.tsx, Landing.tsx, Whitepaper.tsx, oti-docs/docusaurus.config.js). Once Ahmad gives you the real live URL, do a full search for `docs.otiscore.vercel.app` across the entire repo and replace every occurrence with the real URL. Then notify the Manager.
 
 **Definition of done:**
-- Docusaurus site is live on its own Vercel deployment
+- `baseUrl: '/'` is set in `oti-docs/docusaurus.config.js` ✅ (your action)
+- Docs site is live on its own Vercel deployment (Ahmad's action)
+- All hardcoded `docs.otiscore.vercel.app` occurrences replaced with the real URL ✅ (your action)
 - Getting Started page works — a developer can read it and make their first successful API call within 5 minutes
-- All 6 sections above are present and accurate against the live API (don't guess response shapes — check the real API response)
 - Report the live docs URL back to the Manager before marking done
 
 ---
