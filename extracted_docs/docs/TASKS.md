@@ -4,6 +4,8 @@
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
 >
+> **💰 Tokenomics is finalized — see `TOKENOMICS.md`.** OTI has its own independent token (30,000,000 fixed supply, BSC first, cross-chain later) — separate from the OpenFlow "FLOW" ecosystem token discussed in early planning. Not a Builder task yet; documented for when the presale/token work is scoped as real tasks.
+>
 > **⚠️ CRITICAL — read before assuming anything is "in sync":** Frontend Builder and Backend Builder each work in their OWN separate Replit account/GitHub checkout. Their copies of `FRONTEND_TASKS.md` / `BACKEND_TASKS.md` (and their copy of this file) are physically separate files from the Manager's copy — updating the Manager's copy does NOT update theirs. Every single time a task is confirmed done or a new task is added, the Manager MUST explicitly send that Builder an instruction telling them to update their own copy. Never assume sync happened just because the Manager's file says so.
 
 ---

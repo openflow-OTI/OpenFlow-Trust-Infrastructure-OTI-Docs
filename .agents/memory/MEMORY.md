@@ -1,3 +1,5 @@
 - [Railway Migration Gap](railway-migrations.md) — Railway deploy does NOT auto-run drizzle-kit push; every schema change needs Ahmad to manually run migration against prod DB.
 - [One Task Per Builder Rule](one-task-per-builder.md) — Ahmad's hard rule: never give a Builder more than one active task at a time. Queue the next task only after the current one is confirmed done and verified.
 - [Vercel docs proxy gotchas](vercel-docs-proxy.md) — trailing-slash routes need their own explicit rewrite rule; Docusaurus baseUrl ≠ physical output nesting.
+- [Builder file sync](builder-file-sync.md) — Frontend/Backend Builders hold separate physical copies of task files; Manager must explicitly instruct them to update their own copy every time, never assume sync.
+- [OTI token is independent from FLOW](oti-token-independent.md) — OTI has its own token/tokenomics (see TOKENOMICS.md), deliberately decoupled from OpenFlow's FLOW ecosystem token so OTI's fundraising/growth isn't gated by OpenFlow's timeline.

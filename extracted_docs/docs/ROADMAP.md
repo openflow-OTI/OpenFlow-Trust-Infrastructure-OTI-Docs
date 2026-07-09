@@ -214,7 +214,10 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 |---|---|
 | Developer self-serve portal | Sign up, get API key, choose plan — no Ahmad needed |
 | Pro/Enterprise plan tiers | `plan_configs` table ready, needs new rows + payment checkout |
+| Fiat payments | Stripe — easiest integration, industry standard |
+| Crypto payments | Coinbase Commerce (hosted checkout, low setup) |
 | BSC/Base/Optimism unlock | $49/mo Etherscan Lite — Ahmad's decision |
+| **OTI token + presale** | Finalized design — see `TOKENOMICS.md`. Own independent token (not the OpenFlow "FLOW" ecosystem token), 30,000,000 fixed supply, launching on BSC first, cross-chain later. Not yet scoped into Builder tasks. |
 
 ---
 
