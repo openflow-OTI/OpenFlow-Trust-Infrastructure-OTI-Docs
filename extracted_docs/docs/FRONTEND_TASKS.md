@@ -538,6 +538,8 @@ This is a real, reproducible failure, not a transient Vercel hiccup (confirmed b
 4. If it still fails after a clean lockfile, try running `npm install` locally with the same Node major version Vercel uses (check Vercel project settings → Node.js Version) to reproduce the exact error
 5. Tell Ahmad once you've confirmed a fix and pushed — he'll retry the Vercel import
 
+**Update (still failing after lockfile regen + `--ignore-scripts` diagnostic):** Regenerated lockfile was pushed, redeployed — identical `npm error Exit handler never called!` crash on a new commit. Overriding Vercel's Install Command to `npm install --ignore-scripts` also made no difference (rules out a postinstall script). No `packageManager` field found in root `package.json`. Next diagnostic: run `npm ci` (not `npm install`) inside `oti-docs/` locally — this is what Vercel actually runs under the hood, and is stricter about lockfile/registry consistency than `npm install`, so it may reproduce the exact crash where `npm install` didn't. Report the exact error output if it fails.
+
 **Job 4 — Add a `vercel.json` rewrite so `/docs/` keeps working under the main domain:**
 This is the one approved exception to "never touch vercel.json" — Manager has pre-cleared it. Once Ahmad gives you the docs deployment URL, add a rewrite rule to the main site's `vercel.json`, placed BEFORE the existing SPA catch-all rule (order matters — first match wins):
 ```json
