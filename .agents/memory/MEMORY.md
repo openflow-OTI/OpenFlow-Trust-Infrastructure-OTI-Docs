@@ -1,2 +1,3 @@
 - [Railway Migration Gap](railway-migrations.md) — Railway deploy does NOT auto-run drizzle-kit push; every schema change needs Ahmad to manually run migration against prod DB.
 - [One Task Per Builder Rule](one-task-per-builder.md) — Ahmad's hard rule: never give a Builder more than one active task at a time. Queue the next task only after the current one is confirmed done and verified.
+- [Vercel docs proxy gotchas](vercel-docs-proxy.md) — trailing-slash routes need their own explicit rewrite rule; Docusaurus baseUrl ≠ physical output nesting.
