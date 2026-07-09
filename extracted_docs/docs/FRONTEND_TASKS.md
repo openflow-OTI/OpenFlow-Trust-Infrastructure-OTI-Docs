@@ -538,7 +538,13 @@ This is a real, reproducible failure, not a transient Vercel hiccup (confirmed b
 4. If it still fails after a clean lockfile, try running `npm install` locally with the same Node major version Vercel uses (check Vercel project settings → Node.js Version) to reproduce the exact error
 5. Tell Ahmad once you've confirmed a fix and pushed — he'll retry the Vercel import
 
-**Update (still failing after lockfile regen + `--ignore-scripts` diagnostic):** Regenerated lockfile was pushed, redeployed — identical `npm error Exit handler never called!` crash on a new commit. Overriding Vercel's Install Command to `npm install --ignore-scripts` also made no difference (rules out a postinstall script). No `packageManager` field found in root `package.json`. Next diagnostic: run `npm ci` (not `npm install`) inside `oti-docs/` locally — this is what Vercel actually runs under the hood, and is stricter about lockfile/registry consistency than `npm install`, so it may reproduce the exact crash where `npm install` didn't. Report the exact error output if it fails.
+**Update — root cause found (July 9, 2026):** `npm ci` locally reproduced a clearer error than Vercel's crash: `EUSAGE — Missing: search-insights@2.17.3 from lock file`. `search-insights` is an unmet optional peer dependency pulled in transitively by Docusaurus's Algolia search theme (`@docusaurus/theme-search-algolia` → `@algolia/autocomplete-plugin-algolia-insights`) — Algolia search isn't even configured in `docusaurus.config.js`, so nothing actually needs it. `npm install` silently tolerates the gap; `npm ci` (what Vercel actually runs) does not, and Vercel's error message for this case is just the unhelpful generic "Exit handler never called" crash rather than npm's real `EUSAGE` message.
+
+**Fix (approved by Manager):** Add `search-insights` as an explicit `devDependency` (`^2.17.3`) in `oti-docs/package.json` so npm resolves and locks it properly. Then:
+1. Regenerate `oti-docs/package-lock.json`
+2. Confirm `npm ci` succeeds locally (not just `npm install` — `npm ci` is the real test since it's what Vercel runs)
+3. Confirm `npm run build` still succeeds
+4. Push, notify Ahmad to retry the Vercel deploy
 
 **Job 4 — Add a `vercel.json` rewrite so `/docs/` keeps working under the main domain:**
 This is the one approved exception to "never touch vercel.json" — Manager has pre-cleared it. Once Ahmad gives you the docs deployment URL, add a rewrite rule to the main site's `vercel.json`, placed BEFORE the existing SPA catch-all rule (order matters — first match wins):
