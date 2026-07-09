@@ -1,5 +1,5 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 9, 2026 (session 6 — New Frontend Builder account onboarded. First task: Task 11 remediation (revert api.otiscore.io → Railway URL, fix baseUrl, coordinate Vercel deploy of oti-docs/, add vercel.json rewrite for /docs/). Task 11D (icons + copy tone pass) queued behind it — one task at a time, do not start 11D until Task 11 is confirmed live.) | Maintained by: Development Manager
+> Last updated: July 9, 2026 (session 7 — Task 11 (Developer Docs Site) ✅ CONFIRMED FULLY LIVE, verified by Manager via curl. Builder idle. Task 11D superseded by new Task 11E (full AI-native tell audit — copy/tone + emoji across homepage/docs/whitepaper), scoped but NOT yet sent — confirm priority with Ahmad first.) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 
@@ -499,7 +499,13 @@ OTI is positioning itself as infrastructure for enterprises — exchanges, custo
 ### TASK 11 — Developer Docs Site
 **Phase:** 4 — Pre-Distribution
 **Priority:** HIGH — hard dependency before any bot or widget launches
-**Status: 🟡 CODE COMPLETE — DEPLOYMENT + REMEDIATION PENDING**
+**Status: ✅ DONE — CONFIRMED FULLY LIVE July 9, 2026.** Manager verified via curl: `otiscore.vercel.app/docs`, `/docs/` (trailing slash), and `/docs/api-reference` all return 200 with correct Docusaurus content. Standalone deployment at `https://oti-docs.vercel.app/` is also live. Do not reopen Jobs 1–4 below unless something regresses — they are historical record of how this was fixed, kept for reference only.
+
+**Final state (for reference — do not redo):**
+- `oti-docs` Vercel project runs on **pnpm**, not npm (switched after `npm ci`'s `EUSAGE` fix still hit a deterministic Vercel/npm-CLI-itself defect across 3 fix attempts — see Job 3 history below for the diagnostic trail). Do not switch this project back to npm.
+- `docusaurus.config.js`: `baseUrl: '/docs/'` (NOT `'/'`) + `docs.routeBasePath: ''` (NOT `'/'`) — this exact pairing is required for the docs to route correctly under a `/docs/` proxy prefix while still working as a standalone site. Getting this wrong (routeBasePath `'/'` + non-root baseUrl) breaks the root/"Getting Started" page specifically.
+- Main site `vercel.json` has three separate docs rewrite rules ahead of the SPA catch-all: `/docs`, `/docs/`, and `/docs/:path*`. All three are required — a wildcard alone misses the bare trailing-slash request.
+- All `api.otiscore.io` references were reverted to the working Railway backend URL (Job 2 below, completed) — still needs a final live re-check that "Try It Live" actually calls Railway post-redeploy (open item, see TASKS.md).
 
 **Context for the new account inheriting this task:**
 Ahmad gave the previous Frontend Builder open-ended go-ahead on this task, so the scope grew well beyond the original spec across 8 self-directed rounds. Below is the FULL list of what was actually built, so you know exactly what exists and what's left broken. Read this whole section before touching anything.
@@ -563,24 +569,27 @@ Do not remove or reorder the existing SPA catch-all rule below it. Test that `ot
 
 ---
 
-### TASK 11D — Replace emoji icons with a real icon set + copy tone pass
+### TASK 11E — Full "AI-native tell" audit: copy, tone, and emoji across homepage, docs, and whitepaper
 **Phase:** 4 — Pre-Distribution
-**Priority:** MEDIUM — do after Task 11 deployment fixes, before wider distribution
-**Depends on:** none, can run independently of Task 11's deployment work
+**Priority:** HIGH — Ahmad raised this directly, July 9, 2026
+**Depends on:** none, can run independently of other work
+**Status: NOT YET SENT — scoped only.** This supersedes and absorbs the older, narrower "Task 11D" (which only covered homepage emoji). Do not send this to the Builder until Ahmad confirms it takes priority over checking in on Task 11C.
 
-**Why you are doing this:**
-Ahmad's read (and Manager agrees after review): the Trust Signals and Use Cases sections on the homepage use raw emoji as icons (🕐📊🪙🔗⏱ and 💱🏦🖼🎮🗳🔐📡🛠). This was actually in the Manager's original Task 11A spec, not a builder invention — but for a product selling into exchanges, custody platforms, and DeFi protocols, emoji icons read as consumer/hobby-project rather than enterprise infrastructure. Manager reviewed the live homepage and whitepaper Executive Summary directly and found the actual prose (headline, sub-headline, How It Works copy, whitepaper Section 01) reads clean and professional — the AI/emoji impression is concentrated in these two icon-grid sections specifically, not systemic across all copy.
+**Why this exists (supersedes Task 11D):**
+The original Task 11D scope only covered emoji icons in the homepage's Trust Signals and Use Cases sections. Ahmad has since asked for something broader: a full sweep across ALL THREE public surfaces — homepage, docs site, AND whitepaper — for anything that reads as AI-generated rather than deliberately written/designed. This includes but is not limited to emoji.
 
-**What to build:**
-1. Replace all emoji icons in the Trust Signals (5-card) and Use Cases (9-tile) sections on the homepage with a consistent icon set (Lucide or Heroicons — pick one, use it everywhere) styled in mint (`#00e5a0`) on the locked dark theme. Do not introduce a new icon library if one is already installed in the repo — check first.
-2. Do a full read-through of the Whitepaper (`/whitepaper`, all 13 sections) and the Docusaurus docs site copy specifically looking for generic AI-pattern phrasing (overly hedged corporate language, repetitive sentence structures, buzzword stacking without specifics). Flag anything found to the Manager with the exact sentence and section before rewriting — Manager will confirm which to change.
-3. Do NOT touch the homepage hero, "How It Works," or whitepaper Executive Summary copy — Manager has already reviewed these live and confirmed they read fine as-is.
+**What to build (once this task prompt is finalized and sent):**
+1. **Copy/tone audit** — full read-through of homepage, whitepaper (all sections), and docs site copy, flagging generic AI-pattern phrasing (overly hedged corporate language, repetitive sentence structures, buzzword stacking without specifics) on ALL THREE surfaces, not just whitepaper/docs as the old 11D scope had it. Flag findings to the Manager with exact sentence + location before rewriting anything.
+2. **Emoji audit** — check for raw emoji used as icons or in copy anywhere across the homepage, docs, and whitepaper (previous 11D only looked at the homepage's Trust Signals/Use Cases grids — this must be site-wide). Replace with a consistent icon set (Lucide or Heroicons — check what's already installed before adding a new library) in mint (`#00e5a0`) where icons are needed.
+3. **Any other AI tell** — visual or textual — flagged during the read-through, reported to the Manager before changing.
 
-**Definition of done:**
-- No raw emoji characters remain as icons anywhere on the marketing site, whitepaper, or docs
-- Icon set is consistent and uses the locked mint color
-- List of flagged AI-sounding sentences (if any) sent to the Manager before any docs/whitepaper copy is rewritten
-- Screenshot of updated Trust Signals and Use Cases sections submitted to Manager
+**Note:** The Manager previously reviewed the homepage hero, "How It Works," and whitepaper Executive Summary copy directly and found them clean — but re-check everything fresh under this broader mandate rather than assuming those findings still hold, since Ahmad's ask has expanded in scope.
+
+**Definition of done (draft — confirm with Manager before starting):**
+- No raw emoji remain anywhere on the marketing site, whitepaper, or docs unless deliberately kept and approved
+- Icon set (if used) is consistent and uses the locked mint color
+- Full list of flagged AI-sounding phrasing across all three surfaces sent to the Manager before any rewriting
+- Screenshots/diffs of all changed sections submitted to Manager for review
 
 ---
 

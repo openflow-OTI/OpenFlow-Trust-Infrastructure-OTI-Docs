@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 8, 2026 (session 4 — Task 11B (Whitepaper) built and live but NOT done: 3 fixes sent back to Frontend Builder (body text color, mobile horizontal scroll, remove Roadmap section). Task 11C sent to Backend Builder — awaiting their work.)
+> Last updated: July 9, 2026 (session 5 — Task 11 (Developer Docs Site) CONFIRMED FULLY LIVE: `otiscore.vercel.app/docs`, `/docs/` and `/docs/api-reference` all verified 200 with correct Docusaurus content via curl. Task 11D superseded/expanded into a new task: full "AI-native tell" audit across homepage, docs, and whitepaper — not yet scoped/sent. Task 11C still with Backend Builder, awaiting their work.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -34,7 +34,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | New account (July 8, 2026) — previous account hit credit limit, new account imported | Task 8B ✅, 8C ✅, 8D ✅, 8E ✅, 11A ✅, 11B ✅ all done/live/verified. Whitepaper at `/whitepaper` complete: white body text, no mobile horizontal scroll, Roadmap section removed and renumbered. Idle, awaiting next task. |
+| Frontend Builder | New account (July 8, 2026) — previous account hit credit limit, new account imported | Task 8B ✅, 8C ✅, 8D ✅, 8E ✅, 11A ✅, 11B ✅, 11 ✅ all done/live/verified. Docs site fully live at `otiscore.vercel.app/docs/` (see Task 11 section below). Idle, awaiting next task — do not send anything new until Ahmad confirms priority between Task 11E (AI-tell audit, see below) and Task 11C follow-up. |
 | Backend Builder | Active | Task 9C fully done and verified. Task 11C (Signal Accuracy Audit) sent — in progress, not yet reviewed. |
 | Development Manager | This account | Writes prompts, reviews PRs, owns roadmap |
 
@@ -68,6 +68,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - ✅ Task 8D — Homepage visual polish shipped: white placeholder/example-link text, "Try an example" border rebuilt as a GPU-cheap transform-based animation (was a paint-triggering `@property`/conic-gradient causing jank), corrected oversized/zoom sizing, improved spacing and typographic hierarchy. Verified live by Ahmad via screen recording July 8, 2026.
 - ✅ Task 8E — Mobile pinch/double-tap zoom fixed: viewport meta set to `maximum-scale=5, minimum-scale=1` (accessibility-conscious compromise, not a full zoom lock) plus a `touch-action: manipulation` CSS backstop for iOS double-tap. Confirmed working smoothly across homepage, results page, and admin dashboard on mobile; desktop zoom unaffected. Verified by Ahmad, July 8, 2026.
 - ✅ Task 11A — Marketing homepage live at `/` (Hero, chain row, How It Works, Trust Signals, Use Cases, Get the API, Find Us/Integrations, footer); scoring tool live unchanged at `/score`. Brand consistency confirmed (locked color system, shared components, logo matches `/score` exactly). Verified live by Manager via fresh cache-busted screenshot + JS bundle inspection, and by Ahmad directly, July 8, 2026.
+- ✅ Task 11 — Developer Docs Site fully live, July 9, 2026. Standalone Docusaurus site at `https://oti-docs.vercel.app/` (pnpm-based build — npm was abandoned after a real Vercel/npm CLI defect, see Lessons below), proxied onto the main site via `vercel.json` rewrites under `/docs/`. Manager verified via curl: `otiscore.vercel.app/docs`, `/docs/` (trailing slash), and `/docs/api-reference` all return 200 with correct Docusaurus content. Full debugging arc (npm→pnpm switch, baseUrl/routeBasePath conflict, trailing-slash rewrite gap) documented in Lessons Learned section below. Still open: re-verify the "Try It Live" widget calls the real Railway backend (API URLs were reverted earlier but never re-checked live after the redeploys).
 
 **ADMIN_SECRET status:**
 - Ahmad set `ADMIN_SECRET` in Railway Variables
@@ -98,6 +99,8 @@ id, api_key, plan, owner_address, created_at, expires_at, updated_at
 **NO `status` column. NO `email` column.** All backend handlers use raw SQL. Never use Drizzle ORM selects on this table — they will crash with "column does not exist".
 
 **Known open issues:**
+- 🟡 "AI-native tell" audit not yet scoped/sent — full pass needed across homepage, docs site, AND whitepaper: copy/tone (remove AI-generated-sounding phrasing), emoji usage (not just Trust Signals/Use Cases — audit everywhere), and any other visual/textual tell. This supersedes and absorbs the old Task 11D scope. Ahmad flagged this directly July 9, 2026 — treat as high priority, but still respect one-task-per-Builder rule.
+- 🟡 "Try It Live" widget on docs site — not re-verified against the real Railway backend since the Task 11 redeploys.
 - 🟡 Non-EVM signal accuracy — Bitcoin/Solana/TON/Tron/Sui scored with EVM logic (Task 11C — CRITICAL before distribution)
 - 🟡 Satoshi genesis wallet shows incorrect age — may be stale cache, flush and retest
 - 🟡 BSC/Base/Optimism return 503 — waiting on Ahmad's Etherscan Lite ($49/mo) decision
@@ -136,35 +139,33 @@ The Signal Accuracy Audit was originally labelled "Task 12" by mistake — renam
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. DONE — Task 11B ✅ and Task 11 code complete but NOT live yet
+### 1. DONE — Task 11B ✅ and Task 11 ✅ fully live and verified
 
 **Task 11B** is ✅ DONE. All 3 fixes confirmed live.
 
-**Task 11** (Developer Docs Site) — code is fully built by the previous Frontend Builder account (hit credit limit). The Docusaurus site lives at `oti-docs/` in the frontend repo. **It is NOT live on Vercel yet.** This is why `otiscore.vercel.app/docs/` returns 404.
+**Task 11** (Developer Docs Site) is ✅ DONE — fully live and verified July 9, 2026. Full arc for reference:
+- Original 404 root cause: the Vite dev proxy in `vite.config.ts` only works in Replit's dev environment; on Vercel the SPA catch-all intercepted `/docs/*` before the docs were ever deployed as their own project.
+- npm install on the standalone `oti-docs` Vercel project hit a real npm-CLI-on-Vercel defect (deterministic "Exit handler never called!" failure across three independent fix attempts) — resolved by switching the project from npm to pnpm (deleted lockfile/node_modules, generated `pnpm-lock.yaml`). This is a permanent choice — do not switch `oti-docs` back to npm.
+- `docusaurus.config.js`: `baseUrl` set to `/docs/`, `docs.routeBasePath` set to `''` (not `'/'`) — this exact combination is required; see Lessons Learned below for why routeBasePath `'/'` breaks the root page.
+- Main site `vercel.json` has three rewrite rules for the docs proxy: `/docs`, `/docs/` (trailing slash — this one was missed initially and caused a lingering false-negative), and `/docs/:path*`, all before the SPA catch-all. This was a Manager-approved one-line exception to "never touch vercel.json."
+- Standalone deployment lives at `https://oti-docs.vercel.app/`; public-facing URL is `https://otiscore.vercel.app/docs/`. Two separate Vercel projects for the same GitHub repo (main site root, `oti-docs` with Root Directory = `oti-docs`) — intentional, do not consolidate.
+- Verified live via curl July 9, 2026: `/docs`, `/docs/`, and `/docs/api-reference` all return 200 with correct Docusaurus content.
 
-**Root cause of the 404 (important — understand before actioning):**
-The previous builder set up a Vite proxy in `vite.config.ts` that forwards `/docs/*` to a local Docusaurus dev server on port 3000. This works in Replit's dev environment. On Vercel, there is no Vite proxy — the `vercel.json` SPA catch-all `{"source":"/(.*)", "destination":"/index.html"}` intercepts `/docs/*`, serves the React app's `index.html`, React router finds no `/docs` route, and renders a 404. The docs were never deployed as a separate Vercel project — that step is still pending.
+**Still open before the whole docs initiative is closed:**
+1. Re-verify "Try It Live" widget calls the real Railway backend (not yet re-checked live after the redeploys).
+2. NEW — Task 11E: full "AI-native tell" audit across homepage, docs, AND whitepaper (copy/tone, emoji everywhere, any other AI-generated tell). This supersedes the old Task 11D (which only covered Trust Signals/Use Cases emoji). Ahmad raised this directly July 9, 2026 — scope it into a proper task prompt and send per the one-task-per-Builder rule; do not send until Ahmad confirms priority vs. checking in on Task 11C.
 
-**What the new Frontend Builder must do first (before any other work):**
-1. In `oti-docs/docusaurus.config.js`, change `baseUrl: '/docs/'` → `baseUrl: '/'` (the `/docs/` base was only correct for the Replit proxy; on its own Vercel deployment it must be `/`)
-2. Confirm Ahmad to push and deploy `oti-docs/` as a separate Vercel project (New Project → same GitHub repo → Root Directory: `oti-docs` → Deploy)
-3. Once Ahmad provides that deployment URL, add a `vercel.json` rewrite on the MAIN site proxying `/docs/:path*` to it, placed before the existing SPA catch-all — this keeps everyone on the single `otiscore.vercel.app` domain, no custom domain/DNS purchase required. This is a Manager-approved one-line exception to "never touch vercel.json."
-4. Revert all `api.otiscore.io` references (added during scope creep, DNS not live) back to the working Railway backend URL — fixes "Try It Live" immediately, no DNS dependency
-5. Task 11D added (July 9, 2026): replace emoji icons in Trust Signals/Use Cases with a real icon set, and do a copy tone pass on whitepaper/docs for AI-sounding phrasing — queued after Task 11 deployment fixes
+### Lesson learned this session (scope creep — historical, resolved)
+Ahmad personally authorized the previous Frontend Builder to keep working past the original Task 11 spec, which led to 8 self-directed rounds and several unplanned changes (OG image, Try It Live widget, a privacy audit that deleted internal doc folders, and a custom-domain migration to `api.otiscore.io` that isn't DNS-live). Some of it was valuable (the privacy audit caught a real leak) but it also broke production (docs 404, Try It Live down) without a mid-task check-in. All of this has since been remediated and Task 11 is now fully live. Going forward: even with Ahmad's blanket go-ahead, a Builder should check in with the Manager before migrating live API URLs or touching deployment config, since those changes have production blast radius beyond the original task.
 
-**Ahmad's one-time Vercel action (after the builder fixes baseUrl and pushes):**
-- vercel.com → New Project → import the frontend GitHub repo → set Root Directory to `oti-docs` → Deploy
-- Vercel auto-detects Docusaurus, no config needed
-- Share that deployment URL with the Manager so the builder can add the `vercel.json` rewrite (not a hardcoded link swap — a proxy rewrite, so the public URL stays `otiscore.vercel.app/docs/`)
-
-### Lesson learned this session (scope creep)
-Ahmad personally authorized the previous Frontend Builder to keep working past the original Task 11 spec, which led to 8 self-directed rounds and several unplanned changes (OG image, Try It Live widget, a privacy audit that deleted internal doc folders, and a custom-domain migration to `api.otiscore.io` that isn't DNS-live). Some of it was valuable (the privacy audit caught a real leak) but it also broke production (docs 404, Try It Live down) without a mid-task check-in. Going forward: even with Ahmad's blanket go-ahead, a Builder should check in with the Manager before migrating live API URLs or touching deployment config, since those changes have production blast radius beyond the original task.
+### Lesson learned this session (Vercel/Docusaurus docs proxy debugging)
+Full detail in the Manager's persistent memory (`vercel-docs-proxy.md` topic) — summary: (1) Vercel rewrites treat `/docs` and `/docs/` as distinct routes, a wildcard `/docs/:path*` rule does not cover the bare trailing-slash case, always test all three forms via curl; (2) Docusaurus's `baseUrl` only changes link prefixes/router basename, not physical build output folder structure — don't assume a hosting platform's directory settings are misconfigured before checking the actual local `build/` folder structure.
 
 ### 2. Task 11C sent to the Backend Builder — awaiting their work
 Task 9C is done. Task 11C (Signal Accuracy Audit — non-EVM chains scored with EVM logic, CRITICAL before distribution) was sent to the Backend Builder. Do not send anything further to Backend Builder until 11C is verified done.
 
-### 3. Frontend queue — new account, inheriting Task 11 deployment
-New Frontend Builder account being onboarded July 9, 2026. Their first task is completing Task 11 deployment (fix baseUrl, coordinate with Ahmad for Vercel deploy, update hardcoded URLs). Do not queue anything else until Task 11 is confirmed live and verified.
+### 3. Frontend queue — Task 11 fully closed, Builder idle
+Frontend Builder is idle as of July 9, 2026. Next candidate task is 11E (AI-tell audit, see above) — write the task prompt and confirm priority with Ahmad before sending, since he raised it directly and it's broader than anything previously scoped.
 
 ### 4. Backend queue after Task 11C (in this exact order, one at a time)
 - Tasks 12–15 — Distribution channels (Telegram Bot, Chrome Extension, Widget, Firefox Extension)
@@ -225,9 +226,10 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 - Task 11A (Marketing Homepage at `/`, scoring tool moved intact to `/score`) is ✅ DONE. Manager double-checked live via cache-busted screenshot + JS bundle inspection after an initial false alarm from a stale first check — genuinely live and brand-consistent. Confirmed by Ahmad directly too.
 - The entire Task 8 frontend redesign arc (8, 8B, 8C, 8D, 8E) plus Task 11A are now closed out. Frontend Builder is free for the next task.
 - Task 11B (Whitepaper) is ✅ DONE — all 3 fixes confirmed live (white body text, no mobile horizontal scroll, Roadmap removed + renumbered).
-- Task 11 (Developer Docs Site — Docusaurus) sent to Frontend Builder July 8, 2026 — IN PROGRESS, not yet reviewed/verified.
-- Task 11C (Signal Accuracy Audit) status with Backend Builder needs confirming — check whether it was actually sent.
-- One task at a time per Builder — do not send anything after Task 11 to Frontend Builder until it's verified done; do not send anything after 11C to Backend Builder until 11C is verified done.
+- Task 11 (Developer Docs Site — Docusaurus) is ✅ DONE — confirmed fully live July 9, 2026 (see "Next Things" section above for full arc and verification detail).
+- Task 11C (Signal Accuracy Audit) is with the Backend Builder, in progress, not yet reviewed.
+- NEW Task 11E (AI-native tell audit — homepage/docs/whitepaper copy, tone, emoji) is scoped but NOT yet sent to any Builder — confirm priority with Ahmad first.
+- One task at a time per Builder — do not send Task 11E to Frontend Builder without Ahmad's priority confirmation; do not send anything after 11C to Backend Builder until 11C is verified done.
 
 **Rule before ending ANY Manager session:**
 1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md

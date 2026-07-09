@@ -1,5 +1,5 @@
 # OTI — Master Task Queue
-> Last updated: July 8, 2026 (session 4 — Task 11B live but not done, 3 fixes sent to Frontend Builder; Task 11C sent to Backend Builder, awaiting their work) | Maintained by: Development Manager
+> Last updated: July 9, 2026 (session 5 — Task 11 (Developer Docs Site) ✅ CONFIRMED FULLY LIVE, verified via curl on `/docs`, `/docs/`, `/docs/api-reference`. Task 11D superseded by new Task 11E (AI-native tell audit — homepage/docs/whitepaper copy, tone, emoji), scoped but not yet sent. Task 11C still with Backend Builder, awaiting their work.) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
@@ -20,7 +20,7 @@
 
 | Role | Status | Notes |
 |---|---|---|
-| Frontend Builder | New account (July 8, 2026) — previous account hit credit limit, new account imported | Task 11B ✅ DONE — Whitepaper live at `/whitepaper`, all 3 fixes confirmed (body text white, mobile horizontal scroll eliminated, Roadmap section removed + renumbered). Idle, awaiting next task. |
+| Frontend Builder | New account (July 8, 2026) — previous account hit credit limit, new account imported | Task 11B ✅ DONE, Task 11 ✅ DONE (Developer Docs Site fully live, verified July 9, 2026). Idle, awaiting next task — do not send Task 11E (AI-tell audit) until Ahmad confirms priority. |
 | Backend Builder | Active | Task 9C done ✅. Task 11C (Signal Accuracy Audit — CRITICAL) sent, in progress. |
 
 ---
@@ -713,7 +713,7 @@ Mustapha is the co-founder of OpenFlow and works alongside Ahmad in building the
 | Resource | Link |
 |---|---|
 | Score a Wallet | `https://otiscore.vercel.app/score` |
-| API Documentation | `https://docs.otiscore.vercel.app` (use `#` with "Coming soon" tooltip until Task 11 is live) |
+| API Documentation | `https://otiscore.vercel.app/docs/` — live (Task 11 ✅ done, confirmed July 9, 2026) |
 | GitHub | `[Ahmad to provide — public frontend repo URL]` |
 | Telegram Bot | `[Ahmad to provide — Telegram bot invite link, available after Task 12 ships]` (use `#` + "Coming soon" tooltip until then) |
 | Discord Bot | `[Ahmad to provide — Discord bot invite link, available after Task 13 ships]` (use `#` + "Coming soon" tooltip until then) |
@@ -756,17 +756,23 @@ Mustapha is the co-founder of OpenFlow and works alongside Ahmad in building the
 
 **Definition of done:** Docusaurus site is live on Vercel. Getting Started page works — a developer can read it and make their first API call within 5 minutes.
 
-**Status update (July 9, 2026):** Content is code-complete (all 6 sections built, API values live-verified). Ahmad authorized open-ended follow-on work, which also added: an OG image, a "Try It Live" widget, a privacy audit that removed leaked internal doc references, and a migration of API URLs to a not-yet-live custom domain (`api.otiscore.io`). This broke production: `/docs/` 404s on Vercel (SPA catch-all intercepts it — docs were never deployed as their own Vercel project) and "Try It Live" fails (DNS for `api.otiscore.io` isn't live). Fix plan: revert API URLs to the working Railway URL, deploy `oti-docs/` as its own Vercel project, then add a `vercel.json` rewrite (`/docs/:path*` → that deployment, ordered before the SPA catch-all) so the public URL stays `otiscore.vercel.app/docs/` with no custom domain needed. Full detail in FRONTEND_TASKS.md Task 11.
+**Status: ✅ DONE — confirmed fully live July 9, 2026.** Full remediation arc: reverted scope-creep custom-domain migration (`api.otiscore.io` → back to working Railway URL); switched `oti-docs` Vercel project from npm to pnpm after a real, deterministic Vercel/npm CLI defect ("Exit handler never called!") survived three independent config fixes; set `docusaurus.config.js` `baseUrl: '/docs/'` + `docs.routeBasePath: ''` (this exact combination required — `routeBasePath: '/'` breaks the root page under a non-root baseUrl); added three `vercel.json` rewrite rules on the main site (`/docs`, `/docs/`, `/docs/:path*` — all three needed, a wildcard rule alone does not cover the bare trailing-slash case) proxying to the standalone `https://oti-docs.vercel.app/` deployment. Manager verified live via curl: `otiscore.vercel.app/docs`, `/docs/`, and `/docs/api-reference` all return 200 with correct content. Still open: re-verify "Try It Live" widget hits the real Railway backend post-redeploy (not yet re-checked).
 
 ---
 
-### TASK 11D — Replace emoji icons with a real icon set + copy tone pass
+### TASK 11E — Full "AI-native tell" audit: copy, tone, and emoji across homepage, docs, and whitepaper
 **Owner:** Frontend Builder
 **Phase:** 4 — Pre-Distribution
-**Priority:** Medium — after Task 11 deployment fixes
-**Added:** July 9, 2026
+**Priority:** High — Ahmad raised this directly
+**Added:** July 9, 2026 (supersedes and absorbs the narrower Task 11D scope)
+**Status:** Scoped, NOT yet sent to a Builder — confirm priority with Ahmad first (vs. checking in on Task 11C)
 
-Homepage Trust Signals and Use Cases sections use raw emoji as icons (from the original Task 11A spec) — reads as unpolished for an enterprise sales motion. Replace with a proper icon set (Lucide/Heroicons) in mint. Also do a read-through of the whitepaper and docs copy for AI-sounding phrasing and flag findings to the Manager before rewriting. See FRONTEND_TASKS.md Task 11D for full spec.
+Full audit across all three surfaces — homepage, docs site, AND whitepaper — for anything that reads as AI-generated rather than a deliberately designed product site:
+1. **Copy/tone** — read through every page's writing for AI-sounding boilerplate phrasing; flag and rewrite.
+2. **Emoji usage** — audit and replace/remove everywhere it appears (not just Trust Signals/Use Cases, which was the original narrower Task 11D scope) with a proper icon set (Lucide/Heroicons) in mint where icons are still needed.
+3. **Any other AI tell** — visual or textual, flagged during the read-through.
+
+Write a full task prompt before sending to the Builder — this has not been drafted yet, only scoped at a high level.
 
 ---
 
@@ -778,8 +784,8 @@ Before any distribution channel (Tasks 12–15) is assigned, confirm ALL of the 
 - [x] Task 5 — Weighted signal response in API ✅
 - [ ] Task 9 — Admin panel UI live on Vercel
 - [x] Task 11A — Marketing homepage live at `/`, scoring tool at `/score` ✅
-- [ ] Task 11 — Developer docs site live on Vercel (code-complete, deployment/remediation pending — see status update above)
-- [ ] Task 11D — Emoji icons replaced, copy tone pass done
+- [x] Task 11 — Developer docs site live on Vercel ✅ (confirmed July 9, 2026 — see status update above)
+- [ ] Task 11E — AI-native tell audit done (copy/tone + emoji, homepage/docs/whitepaper) — supersedes Task 11D
 - [ ] Ahmad: Rename Vercel project to `oti` in dashboard (Project Settings → General → Project Name)
 - [ ] Ahmad: Sign up for Crisp.chat (free), provide Website ID to Frontend Builder
 - [ ] Ahmad: Create Tally.so feedback form (free), provide embed snippet to Frontend Builder
