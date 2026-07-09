@@ -80,9 +80,11 @@ These are **not** a second fixed round. They happen only when OTI genuinely need
 - **Initial pool size: $8,000 total** ($4,000 BNB/USDT + $4,000 worth of OTI, 200,000 tokens).
 - The remaining 2,800,000 OTI in the Liquidity bucket stays reserved, unpaired, ready to be added to the pool as capital becomes available.
 
-### 5.2 Actual Circulating Supply & Market Cap at Launch
+### 5.2 The 10x Ratio — a Running Rule, Not a Fixed Launch Number
 
-At the instant of listing, the only tokens actually unlocked and tradeable are:
+**Rule: market cap should track at roughly 10× the liquidity pool's value, on an ongoing basis — not a one-time target hit exactly on day one.** As the pool grows (Section 5.3) and circulating supply grows (via vesting unlocks each month), both sides of the ratio move together. Launch-day numbers are whatever they naturally are; the 10x rule is the benchmark used to judge if liquidity is keeping pace as supply unlocks, not a number to force via an artificial launch price or an oversized TGE unlock.
+
+**Actual launch-day numbers, for reference:**
 
 | Source | OTI |
 |---|---|
@@ -92,17 +94,18 @@ At the instant of listing, the only tokens actually unlocked and tradeable are:
 
 - **Circulating market cap at launch:** 275,000 × $0.02 = **$5,500**
 - **Liquidity pool value:** $8,000
-- **Liquidity-to-market-cap ratio at launch: ~1.45x** — the pool is actually worth *more* than the entire circulating market cap, which is about as deep as day-one liquidity can realistically get. This comfortably satisfies the goal of "enough liquidity" without overpromising an FDV-based ratio that a $10k raise can't fund.
-- For reference, FDV (price × full 30,000,000 supply) is $600,000 — but this is not the launch market cap; it only becomes real market cap gradually as vesting unlocks the remaining buckets over the following 36 months.
+- At launch, the pool is actually worth *more* than circulating market cap (ratio favors liquidity, not the 10x-cap-to-pool direction) — this is expected and fine: it means day one is maximally safe from a slippage standpoint. The 10x rule becomes the operative check later, as vesting unlocks push circulating supply (and therefore market cap) up faster than the pool grows on its own.
+- For reference, FDV (price × full 30,000,000 supply) is $600,000 — not the launch market cap; it's the ceiling market cap only reaches once all vesting completes in month 36.
 
-### 5.3 Growing the Pool Over Time
+### 5.3 Growing the Pool Over Time — Keeping Pace with the 10x Rule
 
-As vesting unlocks more tokens each month (Section 3) and circulating supply grows, the pool should grow to keep pace:
+As vesting unlocks more tokens each month (Section 3), circulating supply and market cap rise. The pool should be topped up to keep market cap from drifting past ~10x the pool's value:
 
 - **From post-listing discount sale proceeds:** 30% of every future discount sale's raised capital is earmarked for liquidity top-ups (paired with unpaired OTI from the reserved Liquidity bucket).
-- **From API revenue:** none of the revenue distribution (Section 6) is earmarked for liquidity by default — this keeps the two funding sources cleanly separated. If liquidity growth stalls, this can be revisited.
+- **From API revenue:** none of the revenue distribution (Section 6) is earmarked for liquidity by default — this keeps the two funding sources cleanly separated. If the 10x ratio starts slipping (market cap growing much faster than the pool), this should be revisited.
+- **Monitoring:** Ahmad/Manager should recheck the ratio each time a discount sale happens or a significant vesting milestone passes, and adjust the liquidity top-up accordingly.
 
-**Bottom line:** at launch, liquidity actually exceeds circulating market cap — a strong starting position — with an explicit, funded mechanism to keep adding to the pool as more tokens vest into circulation over the following 3 years.
+**Bottom line:** liquidity starts deep relative to launch-day market cap, and the 10x market-cap-to-pool ratio is the ongoing rule used to keep pace as vesting unlocks more circulating supply over the following 3 years — not a number engineered into the launch price itself.
 
 ---
 
