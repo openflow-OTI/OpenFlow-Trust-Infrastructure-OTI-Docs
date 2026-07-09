@@ -524,8 +524,19 @@ Open `oti-docs/docusaurus.config.js`. Change `baseUrl: '/docs/'` to `baseUrl: '/
 **Job 2 — Revert the API domain migration:**
 Search the entire repo for `api.otiscore.io` and replace every occurrence with the working Railway backend URL (the one in use before this migration). This immediately fixes "Try It Live" without needing any DNS work. Do this in code — do not touch `vercel.json` for this step, it's a plain string revert.
 
-**Job 3 — Ahmad deploys `oti-docs/` as its own Vercel project (his action, not yours):**
-Ahmad will: vercel.com → New Project → import the frontend GitHub repo → set Root Directory to `oti-docs` → Deploy. Vercel auto-detects Docusaurus, zero config needed. He'll share the resulting `*.vercel.app` deployment URL with you.
+**Job 3 — Ahmad deploys `oti-docs/` as its own Vercel project (his action, not yours) — BLOCKED, needs your help:**
+Ahmad set Root Directory to `oti-docs`, Vercel correctly auto-detected Docusaurus (v2+), but the build fails every time (including on retry, same commit) with:
+```
+npm error Exit handler never called! This is an error with npm itself.
+```
+This is a real, reproducible failure, not a transient Vercel hiccup (confirmed by identical failure on redeploy). It happens during `npm install` inside `oti-docs/`. Most likely cause: `oti-docs/package-lock.json` is out of sync with `oti-docs/package.json` (a dependency — e.g. the Try It Live widget — was added without regenerating the lockfile), or a `packageManager`/`engines` mismatch between the repo root and `oti-docs/`.
+
+**Please do this before Ahmad tries deploying again:**
+1. `cd oti-docs`, delete `package-lock.json` and `node_modules`, run `npm install` fresh, confirm it installs cleanly and `npm run build` succeeds locally
+2. Commit the regenerated `package-lock.json`
+3. Check `oti-docs/package.json` for an `engines` field that might conflict with the repo root's — Vercel logged a warning about `"engines": {"node": ">=20.0"}` before the error; confirm this isn't pointing at an unavailable Node version on Vercel's build image
+4. If it still fails after a clean lockfile, try running `npm install` locally with the same Node major version Vercel uses (check Vercel project settings → Node.js Version) to reproduce the exact error
+5. Tell Ahmad once you've confirmed a fix and pushed — he'll retry the Vercel import
 
 **Job 4 — Add a `vercel.json` rewrite so `/docs/` keeps working under the main domain:**
 This is the one approved exception to "never touch vercel.json" — Manager has pre-cleared it. Once Ahmad gives you the docs deployment URL, add a rewrite rule to the main site's `vercel.json`, placed BEFORE the existing SPA catch-all rule (order matters — first match wins):
