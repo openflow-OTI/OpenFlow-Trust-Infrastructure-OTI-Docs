@@ -48,8 +48,11 @@ Fixed supply is a deliberate trust signal: no bucket can be silently expanded, a
 | Target raise | $10,000 |
 | Price | $0.02 per OTI |
 | Tokens sold | 500,000 OTI (≈1.7% of total supply) |
-| Vesting | 36-month monthly linear, from listing date |
+| TGE unlock | **15% (75,000 OTI) unlocked immediately at listing** |
+| Vesting (remainder) | Remaining 85% (425,000 OTI) — 36-month monthly linear, from listing date |
 | Accepted currency | BNB / USDT on BSC |
+
+**Why a small TGE unlock:** without it, the only tokens circulating at the instant of listing would be the Liquidity pool's own OTI side — leaving almost no real market beyond the pool itself. A 15% unlock gives presale buyers some immediate liquidity (rewarding early support) while keeping 85% locked to a 3-year drip, so there's no large day-one dump risk.
 
 This is a deliberately small, single public round — there is no separate private/KYC'd round, since Ahmad does not currently have private investors lined up. All buyers go through the same public terms.
 
@@ -66,31 +69,40 @@ These are **not** a second fixed round. They happen only when OTI genuinely need
 
 ---
 
-## 5. Initial Liquidity & Liquidity-to-Market-Cap Ratio
+## 5. Initial Liquidity & Circulating Market Cap
 
-**Why this ratio matters:** a token's initial DEX liquidity pool determines how much can be bought or sold before the price swings sharply (slippage). A common industry rule of thumb is to target liquidity pool value at roughly **10–20% of fully diluted valuation (FDV)** for a reasonably tradeable token. Below that, even small trades cause large price swings; that erodes early buyer trust.
-
-**FDV at listing price:** 30,000,000 OTI × $0.02 = **$600,000 FDV**.
-
-**The honest constraint:** the pre-listing round only raises $10,000 total. Fully pairing the entire 3,000,000-token Liquidity bucket at $0.02/token would require $60,000 of matching BNB/USDT — far more capital than this raise produces. Rather than promise a healthy ratio the business cannot yet afford, the plan below is scaled to what's actually raised, with an explicit path to grow it over time.
+**Why this section matters:** a token's initial DEX liquidity pool determines how much can be bought or sold before the price swings sharply (slippage). What matters for a healthy launch is not FDV (a hypothetical "if all 30M tokens were unlocked" number) but the ratio of **liquidity pool value to actual circulating market cap** — the real, currently-tradeable tokens. The goal here is simple: **have enough liquidity relative to what's actually circulating that the pool isn't a shallow, easily-drained puddle.**
 
 ### 5.1 Initial Launch Pool (day one)
 
 - **$4,000** of the $10,000 raised is allocated to seed liquidity on the BNB/USDT side (the remaining $6,000 goes to immediate operating costs — see Section 6).
 - That **$4,000 in BNB/USDT** is paired with an equal **$4,000 worth of OTI** from the Liquidity bucket → 200,000 OTI (at $0.02/token).
 - **Initial pool size: $8,000 total** ($4,000 BNB/USDT + $4,000 worth of OTI, 200,000 tokens).
-- **Initial liquidity-to-FDV ratio: ~1.3%** ($8,000 / $600,000) — thin, well below the healthy 10–20% target. This is expected and disclosed upfront, not hidden: a $10k raise cannot bootstrap deep liquidity on day one, and pretending otherwise would be misleading to early buyers.
 - The remaining 2,800,000 OTI in the Liquidity bucket stays reserved, unpaired, ready to be added to the pool as capital becomes available.
 
-### 5.2 Growing the Pool Toward the Healthy Target
+### 5.2 Actual Circulating Supply & Market Cap at Launch
 
-A fixed share of future capital is directed at deepening liquidity until the 10–20% FDV target is reached:
+At the instant of listing, the only tokens actually unlocked and tradeable are:
 
-- **From post-listing discount sale proceeds:** 30% of every future discount sale's raised capital is earmarked for liquidity top-ups (paired with unpaired OTI from the reserved Liquidity bucket), until the pool reaches at least 10% of FDV at the time.
+| Source | OTI |
+|---|---|
+| Liquidity pool (OTI side) | 200,000 |
+| Pre-listing sale TGE unlock (15% of 500,000) | 75,000 |
+| **Total circulating supply at launch** | **275,000** |
+
+- **Circulating market cap at launch:** 275,000 × $0.02 = **$5,500**
+- **Liquidity pool value:** $8,000
+- **Liquidity-to-market-cap ratio at launch: ~1.45x** — the pool is actually worth *more* than the entire circulating market cap, which is about as deep as day-one liquidity can realistically get. This comfortably satisfies the goal of "enough liquidity" without overpromising an FDV-based ratio that a $10k raise can't fund.
+- For reference, FDV (price × full 30,000,000 supply) is $600,000 — but this is not the launch market cap; it only becomes real market cap gradually as vesting unlocks the remaining buckets over the following 36 months.
+
+### 5.3 Growing the Pool Over Time
+
+As vesting unlocks more tokens each month (Section 3) and circulating supply grows, the pool should grow to keep pace:
+
+- **From post-listing discount sale proceeds:** 30% of every future discount sale's raised capital is earmarked for liquidity top-ups (paired with unpaired OTI from the reserved Liquidity bucket).
 - **From API revenue:** none of the revenue distribution (Section 6) is earmarked for liquidity by default — this keeps the two funding sources cleanly separated. If liquidity growth stalls, this can be revisited.
-- Once the 10–20% FDV target is reached and sustained, liquidity top-ups from discount sales can be reduced or stopped, and proceeds redirected fully to operations/team/treasury per Section 6.
 
-**Bottom line:** OTI launches with thin but real, fully-disclosed liquidity, and has an explicit, funded mechanism to grow it — rather than either overpromising day-one depth it can't afford, or ignoring the problem.
+**Bottom line:** at launch, liquidity actually exceeds circulating market cap — a strong starting position — with an explicit, funded mechanism to keep adding to the pool as more tokens vest into circulation over the following 3 years.
 
 ---
 
