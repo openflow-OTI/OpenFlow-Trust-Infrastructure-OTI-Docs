@@ -76,11 +76,11 @@ These are **not** a second fixed round. They happen only when OTI genuinely need
 
 ### 5.1 Initial Launch Pool (day one)
 
-- $8,000 of the $10,000 raised is allocated to seed liquidity (the remaining $2,000 goes to immediate operating costs — see Section 6).
-- $8,000 in BNB/USDT is paired with an equal $8,000 worth of OTI from the Liquidity bucket → 400,000 OTI (at $0.02/token).
-- **Initial pool size: ~$16,000 total** (400,000 OTI + $8,000 BNB/USDT).
-- **Initial liquidity-to-FDV ratio: ~2.7%** ($16,000 / $600,000) — well below the healthy 10–20% target. This is expected and disclosed upfront, not hidden: a $10k raise cannot bootstrap deep liquidity on day one, and pretending otherwise would be misleading to early buyers.
-- The remaining 2,600,000 OTI in the Liquidity bucket stays reserved, unpaired, ready to be added to the pool as capital becomes available.
+- **$4,000** of the $10,000 raised is allocated to seed liquidity on the BNB/USDT side (the remaining $6,000 goes to immediate operating costs — see Section 6).
+- That **$4,000 in BNB/USDT** is paired with an equal **$4,000 worth of OTI** from the Liquidity bucket → 200,000 OTI (at $0.02/token).
+- **Initial pool size: $8,000 total** ($4,000 BNB/USDT + $4,000 worth of OTI, 200,000 tokens).
+- **Initial liquidity-to-FDV ratio: ~1.3%** ($8,000 / $600,000) — thin, well below the healthy 10–20% target. This is expected and disclosed upfront, not hidden: a $10k raise cannot bootstrap deep liquidity on day one, and pretending otherwise would be misleading to early buyers.
+- The remaining 2,800,000 OTI in the Liquidity bucket stays reserved, unpaired, ready to be added to the pool as capital becomes available.
 
 ### 5.2 Growing the Pool Toward the Healthy Target
 
