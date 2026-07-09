@@ -1,8 +1,10 @@
 # OTI — Master Task Queue
-> Last updated: July 9, 2026 (session 5 — Task 11 (Developer Docs Site) ✅ CONFIRMED FULLY LIVE, verified via curl on `/docs`, `/docs/`, `/docs/api-reference`. Task 11D superseded by new Task 11E (AI-native tell audit — homepage/docs/whitepaper copy, tone, emoji), scoped but not yet sent. Task 11C still with Backend Builder, awaiting their work.) | Maintained by: Development Manager
+> Last updated: July 9, 2026 (session 6 — full audit/sync pass: removed duplicate Task 11C block, moved it next to Task 11E for readability, renamed the misleading "Queue — Not Started" section header since it contained many already-✅ tasks, added the builder-copies-don't-auto-sync warning. No task status changed. Task 11C still with Backend Builder, awaiting their work. Task 11E scoped, not yet sent.) | Maintained by: Development Manager
 > **Manager:** This is your master record — add all new tasks here first, then instruct Builders.
 > **Builders:** You also update this file — but only when the Manager explicitly tells you to (marking a task done or adding a new task). Never update it on your own initiative.
 > Never let this file go stale.
+>
+> **⚠️ CRITICAL — read before assuming anything is "in sync":** Frontend Builder and Backend Builder each work in their OWN separate Replit account/GitHub checkout. Their copies of `FRONTEND_TASKS.md` / `BACKEND_TASKS.md` (and their copy of this file) are physically separate files from the Manager's copy — updating the Manager's copy does NOT update theirs. Every single time a task is confirmed done or a new task is added, the Manager MUST explicitly send that Builder an instruction telling them to update their own copy. Never assume sync happened just because the Manager's file says so.
 
 ---
 
@@ -168,7 +170,7 @@ Critical production bug found and fixed during testing — every API request usi
 
 ---
 
-## 🔴 Queue — Not Started (Build In This Exact Order)
+## 📜 Detailed Task Records (full prompts + context — many below are already ✅ done; check each task's own Status line, don't assume by section title)
 
 ---
 
@@ -776,46 +778,6 @@ Write a full task prompt before sending to the Builder — this has not been dra
 
 ---
 
----
-## ⛔ PHASE 4 GATE — All items below depend on this being complete first
-
-Before any distribution channel (Tasks 12–15) is assigned, confirm ALL of the following are done:
-- [x] Task 3 — Admin auth live on Railway ✅
-- [x] Task 5 — Weighted signal response in API ✅
-- [ ] Task 9 — Admin panel UI live on Vercel
-- [x] Task 11A — Marketing homepage live at `/`, scoring tool at `/score` ✅
-- [x] Task 11 — Developer docs site live on Vercel ✅ (confirmed July 9, 2026 — see status update above)
-- [ ] Task 11E — AI-native tell audit done (copy/tone + emoji, homepage/docs/whitepaper) — supersedes Task 11D
-- [ ] Ahmad: Rename Vercel project to `oti` in dashboard (Project Settings → General → Project Name)
-- [ ] Ahmad: Sign up for Crisp.chat (free), provide Website ID to Frontend Builder
-- [ ] Ahmad: Create Tally.so feedback form (free), provide embed snippet to Frontend Builder
-- [ ] Internal bot API key created via admin panel (Ahmad does this)
-- [ ] Widget shared key created via admin panel (Ahmad does this)
-
-**No distribution task starts until every item above is checked.**
-
----
-
-### TASK 12 — Telegram Bot
-**Owner:** Backend Builder
-**Phase:** 5 — Distribution (first channel)
-**Priority:** High
-**Depends on:** Phase 4 Gate fully complete (all items above checked)
-
-See ROADMAP.md Phase 5, Channel 1 for full technical spec, file structure, deployment instructions, and environment variables needed.
-
----
-
-### TASK 13 — Discord Bot
-**Owner:** Backend Builder
-**Phase:** 5 — Distribution (second channel)
-**Priority:** High
-**Depends on:** Phase 4 Gate fully complete. Can be built in parallel with Task 12 if Backend Builder capacity allows — both are standalone processes and do not conflict with each other.
-
-See ROADMAP.md Phase 5, Channel 2 for full technical spec.
-
----
-
 ### TASK 11C — Backend: Signal Accuracy Audit & Cross-Chain Fix
 **Owner:** Backend Builder
 **Phase:** Pre-Distribution (must be done before Phase 5 launches)
@@ -860,6 +822,46 @@ The 5 scoring signals were designed with EVM chains in mind. Bitcoin, Solana, TO
 - Non-applicable signals are either redistributed or scored neutral — never 0 by default
 - All 15 supported chains tested with at least one known wallet
 - Results documented in a short test log committed to the repo
+
+---
+
+---
+## ⛔ PHASE 4 GATE — All items below depend on this being complete first
+
+Before any distribution channel (Tasks 12–15) is assigned, confirm ALL of the following are done:
+- [x] Task 3 — Admin auth live on Railway ✅
+- [x] Task 5 — Weighted signal response in API ✅
+- [ ] Task 9 — Admin panel UI live on Vercel
+- [x] Task 11A — Marketing homepage live at `/`, scoring tool at `/score` ✅
+- [x] Task 11 — Developer docs site live on Vercel ✅ (confirmed July 9, 2026 — see status update above)
+- [ ] Task 11E — AI-native tell audit done (copy/tone + emoji, homepage/docs/whitepaper) — supersedes Task 11D
+- [ ] Ahmad: Rename Vercel project to `oti` in dashboard (Project Settings → General → Project Name)
+- [ ] Ahmad: Sign up for Crisp.chat (free), provide Website ID to Frontend Builder
+- [ ] Ahmad: Create Tally.so feedback form (free), provide embed snippet to Frontend Builder
+- [ ] Internal bot API key created via admin panel (Ahmad does this)
+- [ ] Widget shared key created via admin panel (Ahmad does this)
+
+**No distribution task starts until every item above is checked.**
+
+---
+
+### TASK 12 — Telegram Bot
+**Owner:** Backend Builder
+**Phase:** 5 — Distribution (first channel)
+**Priority:** High
+**Depends on:** Phase 4 Gate fully complete (all items above checked)
+
+See ROADMAP.md Phase 5, Channel 1 for full technical spec, file structure, deployment instructions, and environment variables needed.
+
+---
+
+### TASK 13 — Discord Bot
+**Owner:** Backend Builder
+**Phase:** 5 — Distribution (second channel)
+**Priority:** High
+**Depends on:** Phase 4 Gate fully complete. Can be built in parallel with Task 12 if Backend Builder capacity allows — both are standalone processes and do not conflict with each other.
+
+See ROADMAP.md Phase 5, Channel 2 for full technical spec.
 
 ---
 

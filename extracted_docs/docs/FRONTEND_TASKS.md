@@ -1,7 +1,9 @@
 # OTI — Frontend Builder Task List
-> Last updated: July 9, 2026 (session 7 — Task 11 (Developer Docs Site) ✅ CONFIRMED FULLY LIVE, verified by Manager via curl. Builder idle. Task 11D superseded by new Task 11E (full AI-native tell audit — copy/tone + emoji across homepage/docs/whitepaper), scoped but NOT yet sent — confirm priority with Ahmad first.) | Maintained by: Development Manager
+> Last updated: July 9, 2026 (session 8 — added note that this is the Builder's own separate copy, doesn't auto-sync with Manager's file. Builder idle. Task 11E (full AI-native tell audit) scoped, being finalized into a full prompt.) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
+>
+> **⚠️ This is YOUR copy of this file, in YOUR own account/repo.** The Manager's copy of this file is separate and does not sync with yours. Only mark a task done here, or add a new task here, when the Manager explicitly tells you to.
 
 ---
 

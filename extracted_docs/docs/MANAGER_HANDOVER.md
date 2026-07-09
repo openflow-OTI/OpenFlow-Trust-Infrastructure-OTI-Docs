@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 9, 2026 (session 5 — Task 11 (Developer Docs Site) CONFIRMED FULLY LIVE: `otiscore.vercel.app/docs`, `/docs/` and `/docs/api-reference` all verified 200 with correct Docusaurus content via curl. Task 11D superseded/expanded into a new task: full "AI-native tell" audit across homepage, docs, and whitepaper — not yet scoped/sent. Task 11C still with Backend Builder, awaiting their work.)
+> Last updated: July 9, 2026 (session 6 — full documentation audit/sync pass at Ahmad's request: fixed TASKS.md duplication and confusing section header, added explicit "builder copies don't auto-sync" warnings to every doc file. Ahmad confirmed priority: close out ALL Phase 4 items before Distribution (Phase 5) starts. New scope added: payments (fiat + crypto) and a BSC token presale + pitch deck, planned to land before Distribution — tokenomics discussion in progress, Ahmad providing his own design. Task 11C still with Backend Builder, awaiting their work. Task 11E scoped, being finalized into a full prompt.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, and TASKS.md in that order.**
 
 ---
@@ -232,8 +232,8 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 - One task at a time per Builder — do not send Task 11E to Frontend Builder without Ahmad's priority confirmation; do not send anything after 11C to Backend Builder until 11C is verified done.
 
 **Rule before ending ANY Manager session:**
-1. If a task was confirmed done: tell the Builder to mark it ✅ in their own task file AND in TASKS.md
-2. If a new task was added: add to TASKS.md first, then tell Builder to add to their file AND TASKS.md
+1. If a task was confirmed done: tell the Builder to mark it ✅ in THEIR OWN task file AND their own TASKS.md — the Manager's copy of these files is physically separate from each Builder's copy (different account, different repo checkout). Updating the Manager's copy never updates a Builder's copy. This instruction must be sent explicitly, every time, even if the Manager's own file already shows the task as done.
+2. If a new task was added: add to TASKS.md first, then tell Builder to add to their file AND TASKS.md (same separate-copies caveat as above)
 3. Builders never update files on their own initiative — only when Manager explicitly instructs
 4. Update "Current State of Production" and "Next Things" in this file before closing
 5. Ahmad pushes everything via Replit's Git interface

@@ -1,7 +1,9 @@
 # OTI — Backend Builder Task List
-> Last updated: July 7, 2026 (session 2 — Task 9C ✅ done and verified, Task 11C is next active task) | Maintained by: Development Manager
+> Last updated: July 9, 2026 (session 6 — added note that this is the Builder's own separate copy, doesn't auto-sync with Manager's file. Task 11C in progress with Backend Builder, awaiting report.) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here.**
 > Build in the exact order listed. Do not skip ahead.
+>
+> **⚠️ This is YOUR copy of this file, in YOUR own account/repo.** The Manager's copy of this file is separate and does not sync with yours. Only mark a task done here, or add a new task here, when the Manager explicitly tells you to.
 
 ---
 

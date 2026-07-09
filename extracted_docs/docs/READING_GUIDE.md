@@ -4,6 +4,14 @@
 
 ---
 
+## ⚠️ Builders keep their own separate copies — nothing auto-syncs
+
+Frontend Builder and Backend Builder each work in their own Replit account, against their own GitHub checkout. When they extract the OTI docs zip, they get their OWN physical copies of `TASKS.md`, `FRONTEND_TASKS.md`/`BACKEND_TASKS.md`, etc. — these are separate files from the Manager's copies, not shared/live documents.
+
+**This means:** the Manager marking a task ✅ in the Manager's own `TASKS.md` (or `FRONTEND_TASKS.md`/`BACKEND_TASKS.md`) does absolutely nothing to the Builder's copy. Every time a task is confirmed done, or a new task is added, the Manager must send the Builder an explicit instruction telling them to update their own copy of the relevant file(s). Never assume a Builder's file is in sync just because the Manager's file says so.
+
+---
+
 ## By Role
 
 ### 🧑‍💼 Manager (reads on first day of new account)
