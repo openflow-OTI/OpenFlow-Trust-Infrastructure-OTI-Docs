@@ -36,78 +36,23 @@ MVP is complete when:
 
 ---
 
-## PHASE 0 — SECURITY 🔴 MUST SHIP FIRST
-**Owner: Backend Builder | Status: Not started**
+## ✅ COMPLETED (foundation work — no longer active phases)
 
-| Task | Description |
-|---|---|
-| Admin auth | Add `ADMIN_SECRET` header check to ALL `/api/admin/*` routes. Anyone on the internet can currently create/delete API keys and flag wallets. This blocks everything else. |
+- **Security** (Backend) — Admin routes locked behind `ADMIN_SECRET` header check.
+- **Bug fixes** (Backend + Frontend) — Score history moved to DB, signal scores return weighted values, signal bars display weighted contributions, `subscriptions.updated_at` column added, Bitcoin wallet-age parsing bug fixed, txCount shows "1,000+" cap.
+- **Operational tooling** (Frontend) — Homepage/UI polish, logo fix, admin panel UI, dynamic rate-limit display, API health status dot.
+- **Frontend redesign** (Frontend) — Results page and homepage redesigned to the black + mint standard, with score tier labels (HIGHLY TRUSTED → HIGH RISK), weighted signal bars, "Report this wallet" placeholder (activates in Phase 2, WOR).
 
----
-
-## PHASE 1 — BUG FIXES 🔴
-**Owner: Backend Builder + Frontend Builder | Status: Not started**
-
-| Task | Owner | Description |
-|---|---|---|
-| History → DB | Backend | `GET /api/score/:address/history` must query `chain_scores` table, not in-memory store. **Urgent: bots will generate real query volume — losing that history is a business intelligence loss.** |
-| Signal scores → weighted | Backend | API response `signals` object must include `score`, `weighted`, `maxWeight` per signal. Required by frontend fix, bots, and any developer integration. |
-| Signal bars → weighted display | Frontend | Update bars to use `weighted/maxWeight` for fill width and display `weighted/maxWeight` as label. Depends on backend change. |
-| subscriptions updatedAt | Backend | Add `updated_at` column to `subscriptions` table via migration. Required before Admin UI ships. |
-| Bitcoin wallet age fix | Backend | Fix timestamp parsing bug in `bitcoin.ts` — returns `walletAgedays: 5` instead of correct value. |
-| txCount cap indicator | Frontend | Display "1,000+" when `txCount >= 1000`. |
+Full historical detail for all of the above lives in TASKS.md — this roadmap only tracks what's still ahead.
 
 ---
 
-## PHASE 2 — OPERATIONAL (Partially Done)
-**Owner: Frontend Builder | Status: 🟡 Tasks 1–2 complete**
-
-| Task | Status | Description |
-|---|---|---|
-| Task 1 — UI polish | ✅ Done | Homepage title, back button, chain icons, dead CSS, isKnownChain guard |
-| Task 2 — Logo fix | ✅ Done | Logo.tsx → img tag, generateScoreCard uses loadImage() |
-| Admin panel UI | 🔴 Not started | `/admin` route, URL-only. Needs: key management, plan configs, usage stats, cache flush, query history. Secured by ADMIN_SECRET. **Required before bots launch.** |
-| Dynamic rate limit display | 🔴 Not started | Replace hardcoded "3 per day" with live API value |
-| API health status dot | 🔴 Not started | Connect existing `useHealth` hook to navbar status indicator |
-
----
-
-## PHASE 3 — FRONTEND REDESIGN 🔴 MVP Requirement
-**Owner: Frontend Builder | Status: Not started**
-
-Ahmad loves: black + mint color scheme, chain selector. Everything else needs redesign.
-
-**Results page (priority):**
-- Wallet address: truncate middle with copy button (`0xAb58...eC9B`)
-- Score tier label below gauge (see tiers below)
-- Signal bars: `weighted/maxWeight` fill + `weighted/maxWeight` label (e.g. "25/25", "4/20")
-- Visual separation between sections — card/panel structure
-- Share button: larger, more prominent
-- "Report this wallet" placeholder link (for WOR system, Phase 5)
-- Footer
-
-**Homepage:**
-- Better use of space below the form card
-- Logo: higher-res asset (current JPG at 34px is blurry)
-- Footer
-
-**Score tier labels:**
-| Score | Label | Color |
-|---|---|---|
-| 85–100 | HIGHLY TRUSTED | Mint green |
-| 65–84 | TRUSTED | Light green |
-| 45–64 | CAUTION | Amber |
-| 25–44 | SUSPICIOUS | Orange |
-| 0–24 | HIGH RISK | Red |
-
----
-
-## PHASE 4 — PRE-DISTRIBUTION REQUIREMENTS
+## PHASE 1 — PRE-DISTRIBUTION REQUIREMENTS
 **Owner: Both Builders | Status: Not started — must complete before any distribution channel launches**
 
 These are prerequisites. Every bot reply, widget badge, and extension popup links back to OTI. Without a front door and a docs page, that traffic converts to nothing.
 
-### 4A — Marketing Homepage (front door — first priority)
+### 1A — Marketing Homepage (front door — first priority)
 **Not a separate site.** The existing Vercel app becomes the front door. The current scoring tool moves to `/score`. The homepage at `/` becomes a professional marketing page. One URL, one Vercel project, two purposes.
 
 Domain is already live at `otiscore.vercel.app` ✅ (confirmed July 5, 2026). `oti.vercel.app` was already claimed by another Vercel project. Medium-term: point a real domain at this project when acquired.
@@ -125,12 +70,12 @@ Domain is already live at `otiscore.vercel.app` ✅ (confirmed July 5, 2026). `o
 
 Platform: Static site (Next.js or plain HTML + Tailwind). Deploy to Vercel free tier. Custom domain: `oti.app` if Ahmad owns it, otherwise Vercel subdomain until domain is confirmed.
 
-### 4B — Developer Docs Site
+### 1B — Developer Docs Site
 Docusaurus on Vercel. Every bot/widget links to `oti.app/api` or `docs.oti.app`. Without this, developer curiosity hits a dead end.
 
-Covers: Getting Started, API Reference (with weighted signal shape from Task 5), Score Explanation, Supported Chains, Rate Limits, Code Examples (JS + Python + cURL).
+Covers: Getting Started, API Reference (with the weighted signal shape shipped in the bug-fix phase), Score Explanation, Supported Chains, Rate Limits, Code Examples (JS + Python + cURL).
 
-### 4C — Operational Keys (Ahmad does this, not a Builder)
+### 1C — Operational Keys (Ahmad does this, not a Builder)
 - Create internal bot API key via admin panel (high daily limit, not the anonymous key)
 - Create widget shared key with a `widget` plan tier
 - CORS is already open globally — no changes needed
@@ -143,8 +88,8 @@ Covers: Getting Started, API Reference (with weighted signal shape from Task 5),
 
 ---
 
-## PHASE 5 — WALLET OWNERSHIP REGISTRY (WOR)
-**Owner: Backend Builder + Frontend Builder | Status: Not started — does NOT depend on Phase 4 Gate, can run in parallel**
+## PHASE 2 — WALLET OWNERSHIP REGISTRY (WOR)
+**Owner: Backend Builder + Frontend Builder | Status: Not started — does NOT depend on Phase 1 Gate, can run in parallel**
 
 Ahmad's flagship trust feature. Users pre-register wallet ownership via off-chain EIP-191 signing + passkey. If wallet is compromised, owner connects wallet + enters passkey → instant 0-score flag. No admin review. No blockchain. Fully automated.
 
@@ -163,7 +108,7 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 
 ---
 
-## PHASE 6 — MONETIZATION INFRASTRUCTURE
+## PHASE 3 — MONETIZATION INFRASTRUCTURE
 **Owner: Both Builders | Status: Planned — infrastructure partially ready**
 
 | Feature | Notes |
@@ -177,12 +122,12 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 
 ---
 
-## PHASE 7 — GROWTH FEATURES
+## PHASE 4 — GROWTH FEATURES
 **Status: Future**
 
 | Feature | Notes |
 |---|---|
-| Score history UI | DB accumulating data, endpoint needs Phase 1 fix first |
+| Score history UI | DB accumulating data (fix already shipped — see Completed section) |
 | Multi-chain wallet comparison | Same wallet scored across multiple chains |
 | Wallet portfolio view | `wallet_links` table infrastructure already built |
 | Webhook alerts | Notify integrators when a watched wallet is compromised |
@@ -190,10 +135,10 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 
 ---
 
-## PHASE 8 — DISTRIBUTION CHANNELS (bots, widget, extension) 🔒 GATED — LAST PHASE
-**Owner: Backend Builder (bots + widget) + separate repo (extension) | Status: Not started — begins only after Phase 4 Gate is fully checked off**
+## PHASE 5 — DISTRIBUTION CHANNELS (bots, widget, extension) 🔒 GATED — LAST PHASE
+**Owner: Backend Builder (bots + widget) + separate repo (extension) | Status: Not started — begins only after Phase 1 Gate is fully checked off**
 
-This is the only phase gated behind Phase 4 (marketing homepage, docs site, operational keys). Every bot reply, widget badge, and extension popup links back to those pages — launching before they exist wastes the traffic. Everything else (WOR, monetization, growth) ships first; distribution channels are the final step before public launch.
+This is the only phase gated behind Phase 1 (marketing homepage, docs site, operational keys). Every bot reply, widget badge, and extension popup links back to those pages — launching before they exist wastes the traffic. Everything else (WOR, monetization, growth) ships first; distribution channels are the final step before public launch.
 
 Source: OTI Full Distribution & Technical Development Strategy (Founder's Playbook)
 

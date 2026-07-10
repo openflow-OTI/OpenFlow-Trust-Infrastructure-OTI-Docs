@@ -185,7 +185,7 @@ Critical production bug found and fixed during testing — every API request usi
 - Wallet address truncated (0xAb58...eC9B) with one-click copy button; chain icon + name displayed above
 - Share button — native OS share sheet (navigator.share) with clipboard fallback
 - Save as Image — 3× scale PNG (1920×2580px), chain-color ring arc, tier label, mirrors live UI exactly
-- "⚑ Report this wallet" ghost link in mint — placeholder for WOR system (Phase 5)
+- "⚑ Report this wallet" ghost link in mint — placeholder for WOR system (Phase 2)
 - Footer: "© 2026 OpenFlow Labs · openflowlabs.io"
 - Full color theme upgrade to OTI deep-space palette (see Color System below)
 - Verified live on Vercel by Manager — July 7, 2026
@@ -395,7 +395,7 @@ Move the current homepage (wallet address form + results) to the `/score` route.
 - CTA: "Read the Docs" → `#` placeholder
 
 **7. Find Us / Integrations**
-Row of icons with labels: Telegram, Discord, Chrome Extension, Firefox Extension — all `#` placeholder links until Phase 8 channels are live.
+Row of icons with labels: Telegram, Discord, Chrome Extension, Firefox Extension — all `#` placeholder links until Phase 5 channels are live.
 
 **8. Footer**
 - Left: OTI spiral logo (small) + "© 2026 OpenFlow Labs"
@@ -782,7 +782,7 @@ Write a full task prompt before sending to the Builder — this has not been dra
 
 ### TASK 11C — Backend: Signal Accuracy Audit & Cross-Chain Fix
 **Owner:** Backend Builder
-**Phase:** Pre-Distribution (must be done before Phase 8 launches)
+**Phase:** Pre-Distribution (must be done before Phase 5 launches)
 **Priority:** CRITICAL — signals are the core product; wrong data destroys trust
 **Depends on:** Task 11B (do this last in pre-distribution, signals must be accurate before bots drive traffic)
 **Status: 🟡 SENT** — sent to Backend Builder July 8, 2026 (session 4), in progress, not yet reviewed.
@@ -851,9 +851,9 @@ Before any distribution channel (Tasks 12–15) is assigned, confirm ALL of the 
 **Owner:** Backend Builder
 **Phase:** 5 — Distribution (first channel)
 **Priority:** High
-**Depends on:** Phase 4 Gate fully complete (all items above checked)
+**Depends on:** Phase 1 Gate fully complete (all items above checked)
 
-See ROADMAP.md Phase 8, Channel 1 for full technical spec, file structure, deployment instructions, and environment variables needed.
+See ROADMAP.md Phase 5, Channel 1 for full technical spec, file structure, deployment instructions, and environment variables needed.
 
 ---
 
@@ -861,9 +861,9 @@ See ROADMAP.md Phase 8, Channel 1 for full technical spec, file structure, deplo
 **Owner:** Backend Builder
 **Phase:** 5 — Distribution (second channel)
 **Priority:** High
-**Depends on:** Phase 4 Gate fully complete. Can be built in parallel with Task 12 if Backend Builder capacity allows — both are standalone processes and do not conflict with each other.
+**Depends on:** Phase 1 Gate fully complete. Can be built in parallel with Task 12 if Backend Builder capacity allows — both are standalone processes and do not conflict with each other.
 
-See ROADMAP.md Phase 8, Channel 2 for full technical spec.
+See ROADMAP.md Phase 5, Channel 2 for full technical spec.
 
 ---
 
@@ -871,9 +871,9 @@ See ROADMAP.md Phase 8, Channel 2 for full technical spec.
 **Owner:** Backend Builder
 **Phase:** 5 — Distribution (third channel)
 **Priority:** High
-**Depends on:** Phase 4 Gate fully complete (widget key needed + docs site must exist for the attribution link)
+**Depends on:** Phase 1 Gate fully complete (widget key needed + docs site must exist for the attribution link)
 
-See ROADMAP.md Phase 8, Channel 3 for full technical spec.
+See ROADMAP.md Phase 5, Channel 3 for full technical spec.
 
 ---
 
@@ -881,6 +881,6 @@ See ROADMAP.md Phase 8, Channel 3 for full technical spec.
 **Owner:** Backend Builder (separate GitHub repo: `oti-firefox-extension`)
 **Phase:** 5 — Distribution (fourth channel)
 **Priority:** Medium
-**Depends on:** Phase 4 Gate fully complete. This is a separate repo — create it fresh, no relation to the backend repo.
+**Depends on:** Phase 1 Gate fully complete. This is a separate repo — create it fresh, no relation to the backend repo.
 
-See ROADMAP.md Phase 8, Channel 4 for full technical spec.
+See ROADMAP.md Phase 5, Channel 4 for full technical spec.
