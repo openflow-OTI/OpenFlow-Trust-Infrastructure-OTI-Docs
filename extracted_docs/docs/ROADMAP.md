@@ -163,10 +163,37 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 
 ---
 
-## PHASE 6 — DISTRIBUTION CHANNELS (bots, widget, extension) 🔒 GATED
+## PHASE 6 — MONETIZATION INFRASTRUCTURE
+**Owner: Both Builders | Status: Planned — infrastructure partially ready**
+
+| Feature | Notes |
+|---|---|
+| Developer self-serve portal | Sign up, get API key, choose plan — no Ahmad needed |
+| Pro/Enterprise plan tiers | `plan_configs` table ready, needs new rows + payment checkout |
+| Fiat payments | Stripe — easiest integration, industry standard |
+| Crypto payments | Coinbase Commerce (hosted checkout, low setup) |
+| BSC/Base/Optimism unlock | $49/mo Etherscan Lite — Ahmad's decision |
+| **OTI token + presale** | Finalized design — see `TOKENOMICS.md`. Own independent token (not the OpenFlow "FLOW" ecosystem token), 30,000,000 fixed supply, launching on BSC first, cross-chain later. Not yet scoped into Builder tasks. |
+
+---
+
+## PHASE 7 — GROWTH FEATURES
+**Status: Future**
+
+| Feature | Notes |
+|---|---|
+| Score history UI | DB accumulating data, endpoint needs Phase 1 fix first |
+| Multi-chain wallet comparison | Same wallet scored across multiple chains |
+| Wallet portfolio view | `wallet_links` table infrastructure already built |
+| Webhook alerts | Notify integrators when a watched wallet is compromised |
+| Enterprise exchange path | Compliance screening, withdrawal risk scoring — see Playbook Section 16 |
+
+---
+
+## PHASE 8 — DISTRIBUTION CHANNELS (bots, widget, extension) 🔒 GATED — LAST PHASE
 **Owner: Backend Builder (bots + widget) + separate repo (extension) | Status: Not started — begins only after Phase 4 Gate is fully checked off**
 
-This is the only phase gated behind Phase 4 (marketing homepage, docs site, operational keys). Every bot reply, widget badge, and extension popup links back to those pages — launching before they exist wastes the traffic.
+This is the only phase gated behind Phase 4 (marketing homepage, docs site, operational keys). Every bot reply, widget badge, and extension popup links back to those pages — launching before they exist wastes the traffic. Everything else (WOR, monetization, growth) ships first; distribution channels are the final step before public launch.
 
 Source: OTI Full Distribution & Technical Development Strategy (Founder's Playbook)
 
@@ -206,33 +233,6 @@ Community user sees bot reply → Shares score card (OTI branding)
 → Developer discovers OTI → Visits dev docs → Gets free API key → Integrates
 → Business sees API usage → Reaches out for enterprise contract
 ```
-
----
-
-## PHASE 7 — MONETIZATION INFRASTRUCTURE
-**Owner: Both Builders | Status: Planned — infrastructure partially ready**
-
-| Feature | Notes |
-|---|---|
-| Developer self-serve portal | Sign up, get API key, choose plan — no Ahmad needed |
-| Pro/Enterprise plan tiers | `plan_configs` table ready, needs new rows + payment checkout |
-| Fiat payments | Stripe — easiest integration, industry standard |
-| Crypto payments | Coinbase Commerce (hosted checkout, low setup) |
-| BSC/Base/Optimism unlock | $49/mo Etherscan Lite — Ahmad's decision |
-| **OTI token + presale** | Finalized design — see `TOKENOMICS.md`. Own independent token (not the OpenFlow "FLOW" ecosystem token), 30,000,000 fixed supply, launching on BSC first, cross-chain later. Not yet scoped into Builder tasks. |
-
----
-
-## PHASE 8 — GROWTH FEATURES
-**Status: Future**
-
-| Feature | Notes |
-|---|---|
-| Score history UI | DB accumulating data, endpoint needs Phase 1 fix first |
-| Multi-chain wallet comparison | Same wallet scored across multiple chains |
-| Wallet portfolio view | `wallet_links` table infrastructure already built |
-| Webhook alerts | Notify integrators when a watched wallet is compromised |
-| Enterprise exchange path | Compliance screening, withdrawal risk scoring — see Playbook Section 16 |
 
 ---
 
