@@ -143,8 +143,30 @@ Covers: Getting Started, API Reference (with weighted signal shape from Task 5),
 
 ---
 
-## PHASE 5 — DISTRIBUTION CHANNELS
-**Owner: Backend Builder (bots + widget) + separate repo (extension) | Status: Not started — begins after Phase 4**
+## PHASE 5 — WALLET OWNERSHIP REGISTRY (WOR)
+**Owner: Backend Builder + Frontend Builder | Status: Not started — does NOT depend on Phase 4 Gate, can run in parallel**
+
+Ahmad's flagship trust feature. Users pre-register wallet ownership via off-chain EIP-191 signing + passkey. If wallet is compromised, owner connects wallet + enters passkey → instant 0-score flag. No admin review. No blockchain. Fully automated.
+
+Even if the attacker has the private keys, they don't have the pre-registered passkey. This is the differentiator.
+
+**What needs to be built:**
+| Component | Owner |
+|---|---|
+| `wallet_ownership` DB table | Backend |
+| `POST /api/wallet/register` | Backend |
+| `POST /api/report/compromised` | Backend |
+| EIP-191 signature verification | Backend |
+| Registration UI (wallet connect + sign + passkey) | Frontend |
+| Report UI (wallet connect + passkey + submit) | Frontend |
+| `wallet_links` routes (links existing table to WOR) | Backend |
+
+---
+
+## PHASE 6 — DISTRIBUTION CHANNELS (bots, widget, extension) 🔒 GATED
+**Owner: Backend Builder (bots + widget) + separate repo (extension) | Status: Not started — begins only after Phase 4 Gate is fully checked off**
+
+This is the only phase gated behind Phase 4 (marketing homepage, docs site, operational keys). Every bot reply, widget badge, and extension popup links back to those pages — launching before they exist wastes the traffic.
 
 Source: OTI Full Distribution & Technical Development Strategy (Founder's Playbook)
 
@@ -184,26 +206,6 @@ Community user sees bot reply → Shares score card (OTI branding)
 → Developer discovers OTI → Visits dev docs → Gets free API key → Integrates
 → Business sees API usage → Reaches out for enterprise contract
 ```
-
----
-
-## PHASE 6 — WALLET OWNERSHIP REGISTRY (WOR)
-**Owner: Backend Builder + Frontend Builder | Status: Not started — post-distribution**
-
-Ahmad's flagship trust feature. Users pre-register wallet ownership via off-chain EIP-191 signing + passkey. If wallet is compromised, owner connects wallet + enters passkey → instant 0-score flag. No admin review. No blockchain. Fully automated.
-
-Even if the attacker has the private keys, they don't have the pre-registered passkey. This is the differentiator.
-
-**What needs to be built:**
-| Component | Owner |
-|---|---|
-| `wallet_ownership` DB table | Backend |
-| `POST /api/wallet/register` | Backend |
-| `POST /api/report/compromised` | Backend |
-| EIP-191 signature verification | Backend |
-| Registration UI (wallet connect + sign + passkey) | Frontend |
-| Report UI (wallet connect + passkey + submit) | Frontend |
-| `wallet_links` routes (links existing table to WOR) | Backend |
 
 ---
 
