@@ -1,5 +1,5 @@
 # OTI — Product Roadmap
-> Last updated: July 5, 2026 | Maintained by: Development Manager
+> Last updated: July 10, 2026 (session 8 — full rewrite for consistency with the new `FIXES.md` file; no strategic changes, phase structure unchanged from the July 5 reorganization) | Maintained by: Development Manager
 > Source document: OTI Full Distribution & Technical Development Strategy (Founder's Playbook, July 2026)
 
 ---
@@ -25,73 +25,55 @@
 **MVP = the core product is secure, correct, and presentable to potential partners.**
 
 MVP is complete when:
-1. ✅ 15 chains scoring correctly
+1. ✅ 15 chains scoring correctly (non-EVM accuracy audit still in progress — see `FIXES.md` BF10)
 2. ✅ API key + quota system working
 3. ✅ Score sharing (PNG card) working
-4. ⬜ Admin endpoints are secured (security — blocker)
-5. ⬜ Score history served from database, not memory (correctness)
-6. ⬜ Signal scores return weighted values in API response (correctness)
-7. ⬜ Signal bars display weighted contributions on frontend (correctness)
-8. ⬜ Results page redesigned to professional standard (presentability)
+4. ✅ Admin endpoints secured
+5. ✅ Score history served from database, not memory
+6. ✅ Signal scores return weighted values in API response
+7. ✅ Signal bars display weighted contributions on frontend
+8. ✅ Results page redesigned to professional standard
+
+MVP's core build is complete. What remains before it's fully trustworthy for distribution is correctness work — tracked as fixes, not roadmap items. See `FIXES.md`.
 
 ---
 
-## ✅ COMPLETED (foundation work — no longer active phases)
+## ✅ Completed Foundation Work
 
-- **Security** (Backend) — Admin routes locked behind `ADMIN_SECRET` header check.
-- **Bug fixes** (Backend + Frontend) — Score history moved to DB, signal scores return weighted values, signal bars display weighted contributions, `subscriptions.updated_at` column added, Bitcoin wallet-age parsing bug fixed, txCount shows "1,000+" cap.
-- **Operational tooling** (Frontend) — Homepage/UI polish, logo fix, admin panel UI, dynamic rate-limit display, API health status dot.
-- **Frontend redesign** (Frontend) — Results page and homepage redesigned to the black + mint standard, with score tier labels (HIGHLY TRUSTED → HIGH RISK), weighted signal bars, "Report this wallet" placeholder (activates in Phase 2, WOR).
-
-Full historical detail for all of the above lives in TASKS.md — this roadmap only tracks what's still ahead.
+The original scoring engine, API key system, score sharing, security hardening, and full frontend redesign (results page + homepage, black/mint visual system) are all live in production. Every bug found and fixed along the way — from the admin auth gap to Bitcoin's wallet-age bug to the anonymous-limit cache sync issue — is logged in `FIXES.md`, not here. This roadmap only tracks what's still ahead to build.
 
 ---
 
 ## PHASE 1 — PRE-DISTRIBUTION REQUIREMENTS
-**Owner: Both Builders | Status: Not started — must complete before any distribution channel launches**
+**Owner: Both Builders | Status: ✅ Core pages done — one operational item and one open fix remain (see below)**
 
 These are prerequisites. Every bot reply, widget badge, and extension popup links back to OTI. Without a front door and a docs page, that traffic converts to nothing.
 
-### 1A — Marketing Homepage (front door — first priority)
-**Not a separate site.** The existing Vercel app becomes the front door. The current scoring tool moves to `/score`. The homepage at `/` becomes a professional marketing page. One URL, one Vercel project, two purposes.
+### 1A — Marketing Homepage ✅ DONE
+Live at `otiscore.vercel.app`. The scoring tool moved to `/score`; `/` is now a professional marketing page (Hero, How It Works, Trust Signals, Use Cases, Get the API, Find Us/Integrations, footer) sharing the same Vercel project and brand system as the scoring app.
 
-Domain is already live at `otiscore.vercel.app` ✅ (confirmed July 5, 2026). `oti.vercel.app` was already claimed by another Vercel project. Medium-term: point a real domain at this project when acquired.
+### 1B — Developer Docs Site ✅ DONE
+Docusaurus site, live at `otiscore.vercel.app/docs/` (proxied from a standalone `oti-docs` Vercel project). Covers Getting Started, API Reference (weighted signal shape), Score Explanation, Supported Chains, Rate Limits, and code examples in JS/Python/cURL.
 
-| Section | Content |
-|---|---|
-| Hero | What OTI is + "Try It Now" CTA → scoring app |
-| How It Works | 5 signals, 15 chains, 0–100 score explained simply |
-| Use Cases | Exchanges, DeFi, NFT marketplaces, payment processors |
-| Get the API | Free tier CTA + link to developer docs |
-| Integrations | Telegram bot invite, Discord server link, browser extension store badges |
-| Social links | Twitter/X, LinkedIn, Telegram community, Discord — in footer |
-| Chat support | Crisp.chat (free tier — live chat widget embedded in site, async inbox) |
-| Feedback form | Tally.so (free — "Report a bug / Request a feature / Contact sales") |
+### 1C — Whitepaper ✅ DONE
+Live at `/whitepaper`, sharing the homepage's nav/footer and brand system.
 
-Platform: Static site (Next.js or plain HTML + Tailwind). Deploy to Vercel free tier. Custom domain: `oti.app` if Ahmad owns it, otherwise Vercel subdomain until domain is confirmed.
-
-### 1B — Developer Docs Site
-Docusaurus on Vercel. Every bot/widget links to `oti.app/api` or `docs.oti.app`. Without this, developer curiosity hits a dead end.
-
-Covers: Getting Started, API Reference (with the weighted signal shape shipped in the bug-fix phase), Score Explanation, Supported Chains, Rate Limits, Code Examples (JS + Python + cURL).
-
-### 1C — Operational Keys (Ahmad does this, not a Builder)
+### 1D — Operational Keys (Ahmad, not a Builder) — OPEN
 - Create internal bot API key via admin panel (high daily limit, not the anonymous key)
 - Create widget shared key with a `widget` plan tier
 - CORS is already open globally — no changes needed
 
-| Task | Owner | Why it's blocking |
-|---|---|---|
-| Marketing website | Frontend Builder | All distribution channels point here. Without it, the bots link to the scoring app which has no marketing context. |
-| Developer docs site | Frontend Builder | Every bot reply links to the docs. Without docs, zero developer conversions. |
-| Bot key + widget key | Ahmad (via admin panel) | Bots and widget need dedicated high-limit keys before launch. |
+### Still open before this phase fully closes
+- `FIXES.md` BF10 — non-EVM signal accuracy (critical, in progress with Backend Builder)
+- `FIXES.md` BF11 — re-verify "Try It Live" docs widget hits the real Railway backend
+- `FIXES.md` FF17 — "AI-native tell" cleanup across homepage/docs/whitepaper (open, high priority)
 
 ---
 
 ## PHASE 2 — WALLET OWNERSHIP REGISTRY (WOR)
-**Owner: Backend Builder + Frontend Builder | Status: Not started — does NOT depend on Phase 1 Gate, can run in parallel**
+**Owner: Backend Builder + Frontend Builder | Status: Not started — does NOT depend on Phase 1 closing, can run in parallel**
 
-Ahmad's flagship trust feature. Users pre-register wallet ownership via off-chain EIP-191 signing + passkey. If wallet is compromised, owner connects wallet + enters passkey → instant 0-score flag. No admin review. No blockchain. Fully automated.
+Ahmad's flagship trust feature. Users pre-register wallet ownership via off-chain EIP-191 signing + passkey. If a wallet is compromised, the owner connects the wallet + enters the passkey → instant 0-score flag. No admin review. No blockchain. Fully automated.
 
 Even if the attacker has the private keys, they don't have the pre-registered passkey. This is the differentiator.
 
@@ -118,7 +100,7 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 | Fiat payments | Stripe — easiest integration, industry standard |
 | Crypto payments | Coinbase Commerce (hosted checkout, low setup) |
 | BSC/Base/Optimism unlock | $49/mo Etherscan Lite — Ahmad's decision |
-| **OTI token + presale** | Finalized design — see `TOKENOMICS.md`. Own independent token (not the OpenFlow "FLOW" ecosystem token), 30,000,000 fixed supply, launching on BSC first, cross-chain later. Not yet scoped into Builder tasks. |
+| **OTI token + presale** | Finalized design — see `TOKENOMICS.md`. Own independent token (not the OpenFlow "FLOW" ecosystem token), 30,000,000 fixed supply, launching on BSC first, cross-chain later. Price/liquidity design intentionally deferred — do not reconstruct. Not yet scoped into Builder tasks. |
 
 ---
 
@@ -127,7 +109,7 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 
 | Feature | Notes |
 |---|---|
-| Score history UI | DB accumulating data (fix already shipped — see Completed section) |
+| Score history UI | DB already accumulating data |
 | Multi-chain wallet comparison | Same wallet scored across multiple chains |
 | Wallet portfolio view | `wallet_links` table infrastructure already built |
 | Webhook alerts | Notify integrators when a watched wallet is compromised |
@@ -136,7 +118,7 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 ---
 
 ## PHASE 5 — DISTRIBUTION CHANNELS (bots, widget, extension) 🔒 GATED — LAST PHASE
-**Owner: Backend Builder (bots + widget) + separate repo (extension) | Status: Not started — begins only after Phase 1 Gate is fully checked off**
+**Owner: Backend Builder (bots + widget) + separate repo (extension) | Status: Not started — begins only after Phase 1 fully closes**
 
 This is the only phase gated behind Phase 1 (marketing homepage, docs site, operational keys). Every bot reply, widget badge, and extension popup links back to those pages — launching before they exist wastes the traffic. Everything else (WOR, monetization, growth) ships first; distribution channels are the final step before public launch.
 
