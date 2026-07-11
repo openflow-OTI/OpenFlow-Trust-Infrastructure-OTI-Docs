@@ -65,6 +65,18 @@
 ### BF12 — Railway Deploys Don't Auto-Run Migrations 🔴 OPEN (optional)
 **Priority:** Low, small effort, not urgent. Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && build && start` — it does **not** run `drizzle-kit push`. Every schema change currently needs Ahmad to manually run the migration against the Railway production DB after deploying (this is how BF3 above was applied). Optional fix: add `drizzle-kit push` to `railway.json`'s `buildCommand` (a one-line change — NOT to `nixpacks.toml`, which stays sacred). Not yet assigned; only worth doing if Ahmad wants to remove the manual step.
 
+### BF13 — DB Never Used as Cache Source — Scores Expire on Every Restart 🔴 OPEN — HIGH PRIORITY
+**Priority:** High — directly impacts scale and trust accuracy. Discovered July 11, 2026 via full codebase audit. The DB (`chain_scores` table) is write-only from the cache's perspective — it receives every new score but is never consulted when answering a request. The only cache is a 500-entry in-memory LRU with a 5-minute TTL that is wiped on every Railway restart. Fix: make the score route check the DB first — if a score exists for that wallet+chain within the last 30 days, return it immediately without calling any external API. Ahmad's decision: 30-day validity, admin panel control over the rescore period (so Ahmad can force wallet rescores on a rolling daily basis, not all at once), keep the highest recorded score in sync. This fix is the single biggest lever for handling scale — the majority of repeat requests will never touch external APIs once it is in place.
+
+### BF14 — Dead In-Memory History Write Still Running After BF6 🔴 OPEN
+**Priority:** Low, small effort. BF6 fixed the history endpoint to read from the `chain_scores` DB table — but `recordHistory()` (lib/history.ts) is still being called on every fresh score, writing to an in-memory Map that nothing reads anymore. It is dead code burning memory on every request. Fix: remove the `recordHistory()` call from the score route and delete or archive `lib/history.ts`.
+
+### BF15 — Compromised Wallet DB Check Runs on Every Request Including Cache Hits 🔴 OPEN
+**Priority:** Medium. The compromised-wallet SELECT against the DB runs before the cache check — meaning even a fully cached request pays for a DB round-trip every single time. Under high load this becomes a constant unnecessary DB tax. Fix: move the compromised-wallet check after the cache check, or maintain a small in-memory set of compromised addresses that refreshes periodically (fast lookup, no DB call per request).
+
+### BF16 — Chain Routing Duplicated Across 4+ Files — No Central Registry 🔴 OPEN
+**Priority:** Medium — not urgent now but becomes a real bug risk as new chains are added. Discovered July 11, 2026. Chain routing logic (which fetcher to call for which chain) is a raw if/else block copy-pasted independently in: `score.ts` (routing), `score.ts` (validateRequest), `detect.ts` (auto-detection), `chainFamily.ts` (persistence), and likely `routes/chains.ts`. Adding one new chain today requires editing 4–5 files by hand and keeping them in sync manually. Fix: consolidate into a single chain registry (config map) that all four locations import from — one place to add a chain, everything else derives from it automatically.
+
 ---
 
 ## Frontend Fixes
