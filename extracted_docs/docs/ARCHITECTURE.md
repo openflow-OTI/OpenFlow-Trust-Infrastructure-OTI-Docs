@@ -1,6 +1,7 @@
 # OTI — Architecture Ground Truth
 > Last updated: July 5, 2026 | Maintained by: Development Manager
 > **This file is the source of truth for every piece of infrastructure in OTI. All Builders and all new Manager accounts must read this before touching anything.**
+> **After reading this file, read `DECISIONS.md` — it explains why things are built the way they are. This file says what; DECISIONS.md says why.**
 
 ---
 

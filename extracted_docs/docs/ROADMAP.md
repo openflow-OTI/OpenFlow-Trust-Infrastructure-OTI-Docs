@@ -25,7 +25,7 @@
 **MVP = the core product is secure, correct, and presentable to potential partners.**
 
 MVP is complete when:
-1. ✅ 15 chains scoring correctly (non-EVM accuracy audit still in progress — see `FIXES.md` BF10)
+1. ⚠️ Chain scoring — real working count is currently 12, not 15. Scroll/Sepolia/Holesky not implemented (BF23); Fantom points to wrong network (BF22). EVM chains also have pagination and data-accuracy gaps (BF24–BF27). Full diagnostic in FIXES.md. Must be resolved before Phase 1 closes.
 2. ✅ API key + quota system working
 3. ✅ Score sharing (PNG card) working
 4. ✅ Admin endpoints secured

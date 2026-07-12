@@ -22,12 +22,14 @@ Frontend Builder and Backend Builder each work in their own Replit account, agai
 | `ROADMAP.md` | Third — the full strategic picture |
 | `TASKS.md` | Fourth — genuine new-build tasks, what to assign right now |
 | `FIXES.md` | Fifth — open/in-progress bug fixes and cleanup, per Builder |
+| `DECISIONS.md` | Sixth — why things exist the way they do; read before treating anything as a bug |
 
 ### 🛠️ Frontend Builder (reads on first day)
 | File | When |
 |---|---|
 | `BUILDER_ONBOARDING.md` | First — how the team works, rules, sacred files |
 | `ARCHITECTURE.md` | Second — what everything is before touching anything |
+| `DECISIONS.md` | Third — why things are built the way they are; read before touching anything flagged here |
 | `FRONTEND_TASKS.md` | Then — your dedicated new-build task list with full prompts and context |
 | `FIXES.md` | Then — check the Frontend Fixes section for your current active item, if any |
 | `ROADMAP.md` | Optional — useful context but not required before building |
@@ -37,6 +39,7 @@ Frontend Builder and Backend Builder each work in their own Replit account, agai
 |---|---|
 | `BUILDER_ONBOARDING.md` | First — how the team works, rules, sacred files |
 | `ARCHITECTURE.md` | Second — what everything is before touching anything |
+| `DECISIONS.md` | Third — why things are built the way they are; read before touching anything flagged here |
 | `BACKEND_TASKS.md` | Then — your dedicated new-build task list with full prompts and context |
 | `FIXES.md` | Then — check the Backend Fixes section for your current active item, if any |
 | `ROADMAP.md` | Optional — useful context but not required before building |
@@ -50,6 +53,7 @@ Frontend Builder and Backend Builder each work in their own Replit account, agai
 | `MANAGER_HANDOVER.md` | Manager | Before EVERY Manager session ends (especially before credits run out) |
 | `TASKS.md` | Manager (adds new tasks) + Builder (marks ✅ or adds new task — only when Manager explicitly says so) | Every time a new-build task's status changes or a new one is assigned |
 | `FIXES.md` | Manager (adds new fixes) + Builder (marks ✅ or adds new fix — only when Manager explicitly says so) | Every time a fix's status changes or a new one is raised |
+| `DECISIONS.md` | Manager only — Builders never write to this file | When a new decision is confirmed, a PENDING ANSWER comes back, or a status changes |
 | `BACKEND_TASKS.md` | Backend Builder — only when Manager explicitly tells them to | Marking a task done OR adding a new task — never without Manager instruction |
 | `FRONTEND_TASKS.md` | Frontend Builder — only when Manager explicitly tells them to | Marking a task done OR adding a new task — never without Manager instruction |
 | `ROADMAP.md` | Manager | When major scope decisions change, new phases added, MVP criteria change |
@@ -64,6 +68,8 @@ Frontend Builder and Backend Builder each work in their own Replit account, agai
 **`TASKS.md`** — the master list of genuine new-build tasks: new pages, new systems, new features. Every task across both roles, all phases, full context. The Manager adds new tasks here first. Builders also update this file — but only when the Manager explicitly tells them to (marking a task ✅ or adding a newly assigned task).
 
 **`FIXES.md`** — the master list of bug fixes, corrections, hardening passes, and cleanup/polish work — anything that repairs or refines something already built, rather than building something new. Split into a Backend section and a Frontend section, each numbered smallest/quickest fix first. Kept deliberately separate from `TASKS.md` so the task list only shows forward-building work.
+
+**`DECISIONS.md`** — the reasoning behind why things exist the way they do. Not what the code does (that's `ARCHITECTURE.md`), but why it was built that way — confirmed decisions, known technical limitations, and items pending a Builder answer. Manager-write, Builder-read. Before treating any observed behavior as a bug, check here first. Never updated by a Builder.
 
 **`BACKEND_TASKS.md`** — the Backend Builder's new-build task list. Only backend tasks, in order, with the "why" explained. This is the Backend Builder's working document — check `FIXES.md` too for anything assigned to them there.
 

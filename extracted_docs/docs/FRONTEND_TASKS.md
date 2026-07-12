@@ -1,6 +1,7 @@
 # OTI — Frontend Builder Task List
 > Last updated: July 10, 2026 (session 8 — full rewrite. Bug fixes, cleanup, and polish work moved out to `FIXES.md` — including the former Task 11E, now FF17 there. This file now only lists genuine new-build tasks.) | Maintained by: Development Manager
-> **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here. Read `FIXES.md` too — FF17 (AI-native tell cleanup) is your likely next item, pending Ahmad's priority call.**
+> **This file contains your tasks only. Read BUILDER_ONBOARDING.md, ARCHITECTURE.md, and DECISIONS.md before starting anything here. Read `FIXES.md` too — FF17 (AI-native tell cleanup) is your likely next item, pending Ahmad's priority call.**
+> **`DECISIONS.md` documents why certain things exist the way they do — read it before touching any chain logic, scoring display, or address validation code. You never update DECISIONS.md yourself.**
 > Build in the exact order listed. Some tasks have hard dependencies — do not start them until the dependency is confirmed merged and deployed.
 >
 > **⚠️ This is YOUR copy of this file, in YOUR own account/repo.** The Manager's copy of this file is separate and does not sync with yours. Only mark a task done here, or add a new task here, when the Manager explicitly tells you to.

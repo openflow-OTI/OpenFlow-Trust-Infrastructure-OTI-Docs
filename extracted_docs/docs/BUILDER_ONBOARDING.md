@@ -124,6 +124,10 @@ The frontend uses auto-generated types from the backend's OpenAPI spec. If you c
 
 If the `docs/` folder is not present in your environment, locate the **OTI docs** zip file in the project root, extract it, and you will find all the docs files inside.
 
+Read in this order: `BUILDER_ONBOARDING.md` (this file) → `ARCHITECTURE.md` → `DECISIONS.md` → your dedicated task file → `FIXES.md`.
+
+**`DECISIONS.md` is mandatory reading before you write any code.** It records why certain things exist the way they do — confirmed design choices, known API limitations, and behaviors that look like bugs but are not. If your task or fix touches anything documented there, read the relevant entry first. Never update `DECISIONS.md` yourself — it is Manager-write only. If you discover a reason for something that isn't documented, report it to the Manager.
+
 Read the task prompt from the Manager carefully. If anything is unclear, ask the Manager before writing code — it's much easier to clarify upfront than to rebuild after.
 
 Good luck.

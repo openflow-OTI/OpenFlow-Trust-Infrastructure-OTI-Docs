@@ -7,6 +7,8 @@ Full context, current state, and task queue live in:
 - `extracted_docs/docs/ARCHITECTURE.md` — codebase/infra ground truth
 - `extracted_docs/docs/ROADMAP.md` — product vision and phases
 - `extracted_docs/docs/TASKS.md` — master task queue
+- `extracted_docs/docs/FIXES.md` — all open bug fixes and cleanup, split by Builder
+- `extracted_docs/docs/DECISIONS.md` — why things exist the way they do; Manager-write, Builder-read
 
 ## User preferences
 

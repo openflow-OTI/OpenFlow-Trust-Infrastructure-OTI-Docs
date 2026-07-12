@@ -1,6 +1,7 @@
 # OTI — Backend Builder Task List
 > Last updated: July 10, 2026 (session 8 — full rewrite. Bug fixes/hardening/audits moved out to `FIXES.md`; this file now only lists genuine new-build tasks. Task 11C, the Signal Accuracy Audit, moved to `FIXES.md` as BF10 — it corrects existing scoring behavior rather than building something new — but it is still your active, in-progress item; nothing changes about its priority or status, only which file documents it.) | Maintained by: Development Manager
-> **This file contains your tasks only. Read BUILDER_ONBOARDING.md and ARCHITECTURE.md before starting anything here. Read `FIXES.md` too — it has your current active item.**
+> **This file contains your tasks only. Read BUILDER_ONBOARDING.md, ARCHITECTURE.md, and DECISIONS.md before starting anything here. Read `FIXES.md` too — it has your current active item.**
+> **`DECISIONS.md` is especially important before touching any scoring, data-fetching, or chain-handling code — it explains why certain behaviors exist and which ones must not be changed without Ahmad's approval. You never update DECISIONS.md yourself.**
 > Build in the exact order listed. Do not skip ahead.
 >
 > **⚠️ This is YOUR copy of this file, in YOUR own account/repo.** The Manager's copy is separate and does not sync with yours. Only mark a task done here, or add a new task here, when the Manager explicitly tells you to.

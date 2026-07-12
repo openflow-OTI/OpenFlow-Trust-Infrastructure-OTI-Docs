@@ -1,6 +1,6 @@
 # OTI — Manager Handover Document
-> Last updated: July 11, 2026 (session 9 — full architectural discussion with Ahmad before sending BF10. Key decisions made: (1) Bitcoin weight redistribution confirmed — Token Holding and Smart Contract Interactions display as honest 0, their combined 40% weight redistributed proportionally to the 3 remaining signals (Wallet Age 41.7%, Tx Count 33.3%, Timing 25%), Bitcoin only. (2) DB-backed score cache confirmed — DB becomes the primary cache source, 30-day validity, admin panel controls rescore period on a rolling daily basis, highest score kept in sync (BF13). (3) No API versioning needed — no existing subscribers, fix in place. (4) Four new fixes added to FIXES.md: BF13 (DB cache), BF14 (dead recordHistory write), BF15 (compromised wallet check on cache hits), BF16 (chain routing registry). BF10 prompt finalised and sent to Backend Builder. Frontend Builder still idle awaiting FF17 priority call.)
-> **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TASKS.md, and FIXES.md in that order.**
+> Last updated: July 12, 2026 (session 10 — full diagnostic audit of all 15 chains received from Backend Builder. Key findings: Fantom chain ID bug (scoring Sonic/146 instead of Fantom Opera/250), Scroll/Sepolia/Holesky not implemented despite being listed as supported (real working chain count = 12), EVM chains have same pagination bug BF10 fixed for non-EVM, EVM rate-limit errors cache as false zero scores, 6 existing behaviors may be intentional (WHY questionnaire sent to Builder). DECISIONS.md created — records confirmed decisions vs. technical limitations vs. pending-answer items. BF22–BF32 added to FIXES.md. BF10 still not done (BF17/BF18/BF19 outstanding). Whitepaper additions draft at docs/whitepaper-additions-draft.md — held until backend fully verified.)
+> **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TASKS.md, FIXES.md, and DECISIONS.md in that order.**
 > **⚠️ Read `TOKENOMICS.md` before touching anything token-related — price/liquidity sections were deliberately removed at Ahmad's request. Do not add them back or estimate them yourself.**
 
 ---
@@ -55,10 +55,17 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Full black/mint visual redesign live across scoring app, homepage, and whitepaper (see the locked color system in `FRONTEND_TASKS.md`)
 
 **What's still open before Phase 1 (pre-distribution) fully closes** — full detail in `FIXES.md`:
-- BF10 — non-EVM signal accuracy ✅ DONE July 12, 2026
+- BF10 — signal accuracy audit (still open — BF17/BF18/BF19 not yet fixed; full diagnostic now complete, BF22–BF32 added)
 - BF11 — re-verify "Try It Live" docs widget hits the real Railway backend
+- BF22 — Fantom chain ID bug (critical — one-line fix, blocking Fantom accuracy)
+- BF23 — Scroll/Sepolia/Holesky listed as supported but not implemented (real chain count = 12, not 15)
+- BF24 — EVM pagination missing on all 7 working EVM chains
+- BF25 — EVM rate-limit errors cached as false zero scores
+- BF26–BF32 — additional accuracy and validation issues found in diagnostic (see FIXES.md)
 - FF17 — AI-native tell cleanup across homepage/docs/whitepaper (open, high priority, not yet sent)
-- Whitepaper + FAQ update — full product flow A-Z, chain accuracy details post-BF10, FAQ (Frontend Builder task, content planning in progress)
+- Whitepaper + FAQ update — draft ready at docs/whitepaper-additions-draft.md; NOT sent to Frontend Builder until backend is fully verified correct
+
+**⚠️ Chain count across ALL public materials is wrong:** docs, whitepaper, and UI all say 15 chains. Real working count is 12. Scroll, Sepolia, Holesky are not implemented. Fantom is querying the wrong network. This must be corrected before any public-facing update ships.
 
 **ADMIN_SECRET status:** Ahmad set `ADMIN_SECRET` in Railway Variables. Admin Panel login at `otiscore.vercel.app/admin` confirmed working.
 
@@ -100,19 +107,27 @@ Ahmad's directive: bug fixes/cleanup/polish are not tasks. Create `FIXES.md`, mo
 | All Manager replies to Ahmad in copy boxes | Ahmad's preference — he pastes them to Builders |
 | Fixes are never folded into tasks or given task numbers — they live in `FIXES.md` | Ahmad's explicit correction, July 10, 2026 |
 | Price/liquidity design intentionally absent from `TOKENOMICS.md` | Deferred by Ahmad, decide later, do not reconstruct |
+| DECISIONS.md is Manager-write, Builder-read — Builders never update it | Ahmad's direction, July 12, 2026 — before treating any behavior as a bug, check DECISIONS.md first |
+| Whitepaper additions held until backend fully verified | Content draft exists; publishing wrong technical claims would be worse than publishing nothing |
 
 ---
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. Check in with Backend Builder on `FIXES.md` BF10
-Signal Accuracy Audit — sent July 8, 2026, in progress, not yet reviewed. This is the single most important open item; nothing else goes to Backend Builder until it's verified done. Definition of done is in `FIXES.md` BF10.
+### 1. Wait for WHY answers from Backend Builder (DECISIONS.md D10–D15)
+WHY questionnaire sent this session. Builder is explaining the reasoning behind: EVM pagination cap, EVM token holdings from transfer history, Tron/Solana `to`=self address, TON Jetton inference, rate-limit error caching, Sui object diversity. Once answers arrive, update DECISIONS.md entries (D10–D15) with confirmed status — INTENTIONAL / TECHNICAL LIMITATION / REVISIT — then and only then scope the fix prompts. Do not treat any of these as confirmed bugs until statuses are updated.
 
-### 2. Get Ahmad's priority call on `FIXES.md` FF17
-AI-native tell cleanup across homepage, docs, and whitepaper — scoped, not yet sent. Confirm with Ahmad whether this should go to Frontend Builder now or wait, and whether it should be split into three smaller passes (homepage / docs / whitepaper) rather than one large one.
+### 2. Once WHY answers are in — scope and send BF22 + BF23 first
+BF22 (Fantom chain ID, one-line fix) and BF23 (remove Scroll/Sepolia/Holesky from all docs and UI) are confirmed bugs with no ambiguity. BF22 goes to Backend Builder; BF23 requires both Backend Builder (remove from chain schema/enum) and Frontend Builder (remove from UI chain selector and docs site). Coordinate both. Chain count across all materials drops from 15 to 12.
 
-### 3. Once BF10 and FF17 are clear, move to Phase 5 gate check
-Phase 1 (pre-distribution requirements) is otherwise fully built. Once BF10, BF11, and FF17 are all resolved, confirm with Ahmad that Phase 1 is closed before starting any Phase 5 (distribution channel) task — Tasks 12–15 in `TASKS.md`.
+### 3. Continue backend fix queue (BF17, BF18, BF19, BF24, BF25 in priority order)
+BF17, BF18, BF19 are blocking BF10 sign-off. After those, BF24 (EVM pagination) and BF25 (rate-limit error caching) are next highest priority. One active item at a time per Builder — Ahmad's hard rule.
+
+### 4. Once all backend fixes verified live — finalise whitepaper additions
+Whitepaper additions draft is at docs/whitepaper-additions-draft.md. Update the signal applicability table and chain count once all fixes are confirmed. Then send to Frontend Builder as their next task.
+
+### 5. Get Ahmad's priority call on FF17 (Frontend Builder is idle)
+AI-native tell cleanup across homepage, docs, and whitepaper — scoped, not yet sent. Frontend Builder is waiting. This can run in parallel with backend fix work since they are fully independent.
 
 ### Lesson learned (scope creep during Task 11 — historical, resolved)
 Ahmad personally authorized a previous Frontend Builder to keep working past the original Task 11 spec, leading to 8 self-directed rounds and some unplanned production breakage (docs 404, "Try It Live" pointed at a non-existent custom domain). Some of the extra work was valuable (a privacy audit caught a real leak), but it shipped without a mid-task check-in. Fully remediated; Task 11 is now live. Going forward: even with a blanket go-ahead, a Builder should check in with the Manager before migrating live API URLs or touching deployment config — those changes have production blast radius beyond the original task.
@@ -140,6 +155,7 @@ When credits exhaust → Ahmad pushes to GitHub via Replit's Git interface → o
 - `docs/ROADMAP.md` — all planned features with status
 - `docs/TASKS.md` — master list of genuine new-build tasks
 - `docs/FIXES.md` — master list of bug fixes, corrections, hardening, and cleanup, split by Builder
+- `docs/DECISIONS.md` — why things exist the way they do; confirmed decisions, technical limitations, pending answers. Manager-write, Builder-read. Check before treating anything as a bug.
 - `docs/BACKEND_TASKS.md` / `docs/FRONTEND_TASKS.md` — each Builder's dedicated task file
 - `docs/BUILDER_ONBOARDING.md` — onboarding for each Builder role
 - `docs/READING_GUIDE.md` — who reads which file and when
@@ -166,7 +182,8 @@ Builders do not receive docs via email or file download. The **OTI docs zip file
 3. Read `docs/ROADMAP.md` — strategic context
 4. Read `docs/TASKS.md` — every genuine build task, current queue
 5. Read `docs/FIXES.md` — every open/in-progress fix, per Builder
-6. Jump straight to "Next Things the Manager Must Do" above and start from step 1
+6. Read `docs/DECISIONS.md` — why things exist the way they do; check before treating any behavior as a bug
+7. Jump straight to "Next Things the Manager Must Do" above and start from step 1
 
 **Rule before ending ANY Manager session:**
 1. If a task or fix was confirmed done: tell the Builder to mark it ✅ in THEIR OWN copy of the relevant file AND their own `TASKS.md`/`FIXES.md` — the Manager's copy is physically separate from each Builder's copy (different account, different repo checkout). Updating the Manager's copy never updates a Builder's copy. Send this instruction explicitly, every time.
