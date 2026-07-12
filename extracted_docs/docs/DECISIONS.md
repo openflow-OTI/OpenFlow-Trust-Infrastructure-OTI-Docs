@@ -118,47 +118,47 @@ The following behaviors were observed in the July 12, 2026 diagnostic audit. Bef
 ---
 
 ### D10 — EVM Transaction Fetch Is Capped at a Single Page (1,000 / 500 / 500)
-**Status:** PENDING ANSWER
+**Status:** REVISIT — confirmed as a bug, not a deliberate rate-limit safeguard
 **What the code does:** EVM chains fetch a single page: 1,000 native transactions, 500 token transfers, 500 internal transactions, oldest-first, no pagination loop. Active wallets (e.g. vitalik.eth) are silently truncated.
-**Question sent to Builder:** Was this a deliberate decision (rate-limit protection, API cost control) or the first thing that worked?
-**Why this matters before fixing:** If it was deliberate rate-limit protection, fixing it needs a pagination strategy with rate-limit awareness — not just a loop. If it was an oversight, the BF10-style pagination fix applies directly.
+**Live test evidence (July 12, 2026):** Sequential pagination (8 requests, no delay) completed cleanly at ~1.2 req/s. Concurrent fire of 15 requests hit Etherscan's real throttle — a hard **3 requests/second** cap — not the single-page cap currently coded. Separately, Etherscan enforces its own hard ceiling of **10,000 total records** reachable via `page × offset` on this endpoint, regardless of pacing. There is no evidence the 1,000-cap was chosen for rate-limit protection — the real constraints (3 req/s, 10k-record ceiling) are far more generous than what the code currently uses.
+**Fix scope:** Paginate up to Etherscan's real ceiling (10 pages at offset=1000), respecting the 3 req/s throttle. For vitalik.eth specifically, no signal score changed when the cap was lifted (all affected signals were already saturated), but this cannot be assumed for less active wallets sitting mid-tier — the current cap risks under-scoring them. Tracked for a fix prompt in `FIXES.md`.
 
 ---
 
 ### D11 — EVM Token Holdings Computed From Transfer History, Not Real Balance
-**Status:** PENDING ANSWER
+**Status:** REVISIT — confirmed as a bug via live counterfactual
 **What the code does:** Token holding diversity on EVM chains counts distinct contract addresses in the `tokentx` transfer event log. A wallet that received and fully sent away 100 tokens still shows high token diversity.
-**Question sent to Builder:** Was this a deliberate simplification (one API call vs. many balance calls), an API limitation, or an oversight?
-**Why this matters before fixing:** Real balance queries require either individual `tokenbalance` calls per token (expensive) or a multicall contract (complex). If the Builder knows a cleaner approach exists, that shapes the fix. If it was purely an oversight, we scope the replacement method.
+**Live test evidence (July 12, 2026):** On vitalik.eth, 11 of 236 transfer-log tokens (including MKR, TheDAO) were verified via Etherscan's `tokenbalance` action to have a real current balance of **0**, yet still count as "held." For this specific wallet the tier didn't shift (236 vs. 225 both land in the same `≥20` tier), but a constructed counterfactual using the same 11 confirmed-zero tokens showed an **80-point delta on the signal (16 points overall)** between the current transfer-log method and a real-balance check. This is a genuine, quantified inaccuracy, not a hypothetical one.
+**Fix scope:** Etherscan's `tokenbalance` action gives a real balance per token/address — confirmed working live. Per-token calls at scale need a batching/rate-limit-aware approach (see D10's confirmed 3 req/s ceiling). Tracked for a fix prompt in `FIXES.md`.
 
 ---
 
 ### D12 — Tron and Solana Transactions Use the Wallet's Own Address as `to` Field
-**Status:** PENDING ANSWER
+**Status:** REVISIT — confirmed as a straightforward bug
 **What the code does:** For Tron and Solana, the transaction shaping code sets `to: walletAddress` (self-referential) rather than the actual contract/program address. This collapses smart contract diversity to ≤1 for any wallet.
-**Question sent to Builder:** Was this a deliberate simplification to keep a consistent data shape across chains, or was there no straightforward way to extract the real counterpart address at the time?
-**Why this matters before fixing:** If the real program ID / contract address is accessible in the raw API response, this is a straightforward data extraction fix. If it requires a separate API call per transaction, the approach changes significantly.
+**Live test evidence (July 12, 2026):** Solana's raw `getTransaction` response exposes real, distinct `programId` values directly in `transaction.message.instructions[]`. Tron's raw transaction detail exposes `toAddress`, `contractData.contract_address`, and `trigger_info.parameter._to` — all real, distinct from the wallet's own address. The real counterparty data is present and directly extractable in both cases; the current code simply never reads these fields.
+**Fix scope:** Pure data-extraction fix — no additional API calls needed for either chain. Tracked for a fix prompt in `FIXES.md`.
 
 ---
 
 ### D13 — TON Jetton Holdings Inferred From Outgoing Messages
-**Status:** PENDING ANSWER (likely Technical Limitation)
+**Status:** TECHNICAL LIMITATION (confirmed) — resolution path under active discussion, do not close
 **What the code does:** TON token holdings are inferred by examining outgoing Jetton-related message destinations rather than querying actual current balances.
-**Question sent to Builder:** Did Toncenter v2 have no direct owner→Jetton-holdings endpoint at the time? Is Toncenter v3 or tonapi.io now available and usable?
-**Note:** The diagnostic audit report already states "Toncenter v2 has no such direct endpoint" — this is likely a TECHNICAL LIMITATION that is now resolved by newer API versions. Status will likely move to REVISIT once confirmed.
+**Confirmed:** Toncenter v2 genuinely has no direct owner→Jetton-holdings endpoint — this is a real technical limitation, not an oversight.
+**Why this is not simply closed:** Ahmad's explicit direction — inferring holdings from outgoing messages only can still produce inaccurate ("lying") scores (e.g. a wallet that sent away all its Jettons may still read as holding them, or vice versa), so this cannot just be filed away as an accepted limitation. Next step: evaluate Toncenter v3 and tonapi.io, both of which expose real Jetton balance endpoints, as a replacement data source before deciding how to proceed. Manager + Ahmad to decide the replacement approach once the current bug-fix round (D9-D12, D14) is complete.
 
 ---
 
 ### D14 — EVM Rate-Limit Errors Cached as Legitimate Zero-Activity Scores
-**Status:** PENDING ANSWER
-**What the code does:** When Etherscan returns a `NOTOK` (rate-limit) response, the fetcher treats it as "no data" and the result — score 0, txCount 0 — gets written to cache as a real score for up to 5 minutes. Confirmed live on Polygon and Linea.
-**Question sent to Builder:** Was caching error states a deliberate "fail fast, don't hammer a down API" design choice, or was this an oversight in the non-array result check?
-**Why this matters:** If deliberate, the fix needs to preserve the intent while not writing false data (e.g. cache a "try again" state, not a zero score). If an oversight, the fix is simply: throw on non-array / NOTOK responses, never cache them.
+**Status:** REVISIT — confirmed as a bug, reproducible on demand
+**What the code does:** When Etherscan returns a `NOTOK` (rate-limit) response, the fetcher treats it as "no data" and the result — score 0, txCount 0 — gets written to cache as a real score.
+**Live test evidence (July 12, 2026):** A single concurrent burst across 7 chains hit the false-zero pattern on 4 of 6 Etherscan-backed chains (ethereum, polygon, arbitrum, fantom, linea all affected; avalanche threw an error instead of swallowing). Re-querying the affected chains returned `"cached":true` with the identical degraded score — the response shape is indistinguishable from a real cache hit (no `error`/`stale`/`degraded` flag). A client cannot tell a real zero-activity wallet from a rate-limit-corrupted one. No evidence of a deliberate "fail fast" design anywhere in the response handling.
+**Fix scope:** Never cache a `NOTOK`/non-array response. Throw or retry instead of treating it as legitimate zero-activity data. Tracked for a fix prompt in `FIXES.md`.
 
 ---
 
 ### D15 — Sui Token Diversity Counts All Owned Object Types, Not Just Coins
-**Status:** PENDING ANSWER
+**Status:** REVISIT (proposed) — recommend product call from Ahmad, not a pure bug
 **What the code does:** `suix_getOwnedObjects` returns all owned Move objects. The code counts distinct object types as "token diversity" — including NFTs and capability objects, not just `Coin<T>` types.
-**Question sent to Builder:** Was this a deliberate "total asset diversity" measure, or was the intent always to count coins specifically and the all-objects approach was an approximation?
-**Why this matters:** If deliberate, the signal measures something real (total portfolio diversity). If an oversight, switching to `suix_getAllCoins` gives a cleaner coin-specific count. Either answer is defensible — we just need to know which was intended.
+**Live test evidence (July 12, 2026):** On a real mixed-holdings wallet, the current method (single 50-item page of `suix_getOwnedObjects`) scored diversity 100 (9 distinct types incl. NFTs, hit the page cap). A coin-only method (`suix_getAllCoins`, fully paginated) found 19 real distinct coin types → tier 80, a 20-point signal delta. But at matched shallow pagination depth, coin-only collapsed to just 1 type (many individual SUI coin objects filled the single page before any other coin type appeared) → tier 20, an 80-point delta in the *opposite* direction. **The shallow single-page cap is a bug regardless of which scope is chosen** — it needs full pagination either way.
+**Why this needs Ahmad, not just a fix:** The signal is named "Token Holding Behavior," which argues for coins-only (NFTs are not tokens in the fungible sense). But no evidence anywhere suggests the all-objects approach was deliberate "total portfolio diversity" design either — it reads as an approximation, not a documented choice. Recommend Ahmad confirm scope (coins-only vs. total-asset diversity) before a fix prompt is written; the pagination-depth bug is unconditionally fixable in either case.
