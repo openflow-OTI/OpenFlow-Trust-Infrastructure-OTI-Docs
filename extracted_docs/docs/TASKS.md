@@ -41,7 +41,7 @@ Docusaurus site covering Getting Started, API Reference (weighted signal shape),
 
 ## 🔴 Active Queue
 
-Nothing is currently queued as a new-build task for either Builder. **Backend Builder** is mid-way through `FIXES.md` BF10 (Signal Accuracy Audit) — a correctness fix, not a new build, so it lives there, but it remains the active item and nothing new goes to Backend Builder until it's verified done. **Frontend Builder** is idle, awaiting Ahmad's priority call on `FIXES.md` FF17 (AI-native tell cleanup) versus starting the next real task below.
+Nothing is currently queued as a new-build task for either Builder. **Backend Builder** — BF10 is done (✅ July 12, 2026); the follow-on diagnostic audit produced BF17–BF32 in `FIXES.md`, all confirmed bugs/limitations. A new Backend Builder has been onboarded (prior one ran out of credit) and is starting on BF22 (Fantom chain ID — critical, single-line fix), working down the confirmed list. **Frontend Builder** is idle, awaiting Ahmad's priority call on `FIXES.md` FF17 (AI-native tell cleanup) versus starting the next real task below.
 
 ---
 
