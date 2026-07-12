@@ -102,12 +102,13 @@ This file records the reasoning behind how OTI was built — not what the code d
 
 ---
 
-### D9 — Fantom Chain ID Points to Sonic (146 Instead of 250)
-**Status:** REVISIT — confirmed as a bug, not an intentional decision
-**What the code does:** `CHAIN_ID.fantom = "146"` — queries Sonic Mainnet data and labels it as Fantom Opera.
-**Why this happened:** Unknown — likely a data entry error at the time the chain was added. Chain ID 146 is Sonic Mainnet; Fantom Opera is chain ID 250. No intentional reason to query Sonic under the Fantom label has been identified.
-**Confirmed as bug by:** Diagnostic audit, July 12, 2026 (BF22)
-**Fix:** Change `CHAIN_ID.fantom` from `"146"` to `"250"`. Single-line change. Tracked in FIXES.md as BF22.
+### D9 — "Fantom" Chain Entry Rebranded to Sonic (Chain ID Stays 146)
+**Status:** INTENTIONAL (resolved) — was a mislabeling bug, now fixed by rebranding the entry rather than repointing the chain ID
+**What the code did before the fix:** `CHAIN_ID.fantom = "146"` — queried Sonic Mainnet data and labeled it Fantom Opera.
+**Why this happened:** Data entry error when the chain was added — 146 is Sonic Mainnet, not Fantom Opera (250).
+**Live-verification finding (July 12, 2026, BF22):** Switching to the "correct" Fantom Opera chain ID (250) does not work — Etherscan V2's chainlist (64 chains) no longer includes Fantom Opera under any chain ID; Fantom migrated/rebranded to Sonic and Etherscan V2 only serves the Sonic entry (146). Fantom's legacy standalone explorer domain (ftmscan.com) no longer resolves at all. Real, distinct Fantom Opera data is not obtainable from our data source.
+**Ahmad's decision (July 12, 2026):** Rename the chain entry itself from `"fantom"` to `"sonic"`, keep chain ID 146. This scores real data (Sonic Mainnet, which is what Fantom Opera became) under its real, current name instead of either lying about the label (old bug) or dropping the chain entirely.
+**Fix:** In `etherscan.ts`, rename the `fantom` key throughout `CHAIN_ID` and the reverse lookup table to `sonic` (chain ID stays `"146"`). Update any chain name strings/labels/docs surfaced to API callers (e.g. `/api/chains`, response `chain` field) from "Fantom"/"Fantom Opera" to "Sonic"/"Sonic Mainnet". Tracked in FIXES.md as BF22.
 
 ---
 
