@@ -77,10 +77,19 @@
 ### BF16 — Chain Routing Duplicated Across 4+ Files — No Central Registry 🔴 OPEN
 **Priority:** Medium — not urgent now but becomes a real bug risk as new chains are added. Discovered July 11, 2026. Chain routing logic (which fetcher to call for which chain) is a raw if/else block copy-pasted independently in: `score.ts` (routing), `score.ts` (validateRequest), `detect.ts` (auto-detection), `chainFamily.ts` (persistence), and likely `routes/chains.ts`. Adding one new chain today requires editing 4–5 files by hand and keeping them in sync manually. Fix: consolidate into a single chain registry (config map) that all four locations import from — one place to add a chain, everything else derives from it automatically.
 
-### BF17 — Solana & Tron Contract Interaction Scoring Uses Activity Proxy, Not Real Program Diversity 🔴 OPEN
+### BF17 — Tron Smart Contract Score Returns 20/20 From a Single Transaction 🔴 OPEN — HIGH
+**Priority:** High — discovered during BF10 live result review, July 12, 2026. A Tron wallet with 1 smart-contract transaction scored a perfect 20/20 on Smart Contract Interactions. One transaction should not produce a maximum score — this indicates the scoring is still using a proxy metric (e.g. raw transaction volume) rather than true contract diversity. Fix: verify and correct how Tron contract interaction diversity is computed; 20/20 must require meaningful contract breadth, not a single interaction.
+
+### BF18 — Sui Wallet Age Returns 0 for Wallets That Have Only Received Tokens 🔴 OPEN — HIGH
+**Priority:** High — discovered during BF10 live result review, July 12, 2026. A Sui wallet with 50 unique token holdings scored 0 days wallet age and 0 transactions. In Sui, tokens/coins can be transferred to an address without the recipient signing any transaction — but the wallet still appeared on-chain at the point of first receipt. Wallet age must reflect when the address first appeared on-chain (first inbound OR outbound activity), not only when it first signed a transaction. Fix: update Sui wallet age calculation to include first inbound transaction timestamp.
+
+### BF19 — TON Address Validation Rejecting Valid EQ-Format Addresses 🔴 OPEN — HIGH
+**Priority:** High — discovered July 12, 2026. A valid TON address beginning with "EQ" was rejected by the frontend validator with the message "Doesn't look like a valid TON address (starts with EQ or UQ, 48 characters total)" — despite correctly starting with EQ. The validation regex or length check has a bug that rejects some legitimate EQ/UQ-format addresses. Fix: audit and correct the TON address validation logic in both frontend (validateAddress.ts) and backend to ensure all valid user-friendly TON addresses are accepted.
+
+### BF20 — Solana & Tron Contract Interaction Scoring Uses Activity Proxy, Not Real Program Diversity 🔴 OPEN
 **Priority:** Medium. Discovered and documented during BF10 audit, July 12, 2026. Solana and Tron contract interaction scores currently fall back to an activity-volume proxy (total transaction count used as a stand-in) rather than true per-program/contract diversity scoring. Real data is being used — nothing is fabricated — but the signal is imprecise: a wallet doing thousands of simple token transfers scores the same as one actively using DeFi protocols. Fix: implement proper per-program diversity scoring for Solana (unique programs interacted with) and per-contract diversity for Tron (unique contract addresses called).
 
-### BF18 — TON Jetton (Token) Holdings Inferred From Outgoing Messages, Not a Real Holdings Query 🔴 OPEN
+### BF21 — TON Jetton (Token) Holdings Inferred From Outgoing Messages, Not a Real Holdings Query 🔴 OPEN
 **Priority:** Medium. Discovered and documented during BF10 audit, July 12, 2026. TON token holdings are currently inferred by counting outgoing Jetton-related messages rather than querying the wallet's actual Jetton balances directly. This can miscount holdings for wallets that have received but not sent tokens, or overcount for wallets that have sent tokens they no longer hold. Fix: replace with a direct Jetton holdings query against the Toncenter API (or TON Center v3 if available) to return the wallet's actual current token balances.
 
 ---
