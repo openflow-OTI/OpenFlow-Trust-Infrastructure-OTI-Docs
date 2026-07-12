@@ -41,7 +41,7 @@
 ### BF9 — Plan Limit Enforcement Hardening ✅
 **Fixed:** July 7, 2026. A production-wide bug was found during testing: every API request using a valid key was silently returning raw HTML 500 since launch, caused by a Drizzle ORM schema mismatch (a `status` column defined in the repo's schema but missing from the actual Railway DB). Fixed across four call sites — `apiKeyAuth.ts`, `score.ts` (compromised-wallet check), and both the DELETE and PATCH handlers in `admin.ts` — all switched from Drizzle ORM to raw SQL for this table. Verified live: free plan correctly 429s on the 3rd daily request, enterprise (unlimited) never 429s, PATCH edits confirmed persisting.
 
-### BF10 — Signal Accuracy Audit & Cross-Chain Fix 🟡 IN PROGRESS — CRITICAL
+### BF10 — Signal Accuracy Audit & Cross-Chain Fix ✅ DONE — July 12, 2026
 **Status:** Sent to Backend Builder July 8, 2026, in progress, not yet reviewed. This is the largest and highest-priority fix on the backend list — treat it as the current active item, nothing else goes to Backend Builder until it's verified done.
 
 **The problem:** the 5 scoring signals were designed around EVM chains. Bitcoin, Solana, TON, Tron, and Sui have fundamentally different data models — no ERC-20 tokens, no internal transactions, no smart contracts in the EVM sense — but are currently being scored with EVM-specific logic, producing wrong and misleading results for every single non-EVM wallet. Confirmed examples: the Satoshi genesis wallet (`1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa`) scores ~51 days wallet age when the correct answer is 5,700+ days; Bitcoin wallets score 0/20 on Token Holding because ERC-20 tokens don't exist on Bitcoin; Bitcoin wallets show a fabricated "1 smart-contract tx" despite Bitcoin having no smart contracts.
@@ -76,6 +76,12 @@
 
 ### BF16 — Chain Routing Duplicated Across 4+ Files — No Central Registry 🔴 OPEN
 **Priority:** Medium — not urgent now but becomes a real bug risk as new chains are added. Discovered July 11, 2026. Chain routing logic (which fetcher to call for which chain) is a raw if/else block copy-pasted independently in: `score.ts` (routing), `score.ts` (validateRequest), `detect.ts` (auto-detection), `chainFamily.ts` (persistence), and likely `routes/chains.ts`. Adding one new chain today requires editing 4–5 files by hand and keeping them in sync manually. Fix: consolidate into a single chain registry (config map) that all four locations import from — one place to add a chain, everything else derives from it automatically.
+
+### BF17 — Solana & Tron Contract Interaction Scoring Uses Activity Proxy, Not Real Program Diversity 🔴 OPEN
+**Priority:** Medium. Discovered and documented during BF10 audit, July 12, 2026. Solana and Tron contract interaction scores currently fall back to an activity-volume proxy (total transaction count used as a stand-in) rather than true per-program/contract diversity scoring. Real data is being used — nothing is fabricated — but the signal is imprecise: a wallet doing thousands of simple token transfers scores the same as one actively using DeFi protocols. Fix: implement proper per-program diversity scoring for Solana (unique programs interacted with) and per-contract diversity for Tron (unique contract addresses called).
+
+### BF18 — TON Jetton (Token) Holdings Inferred From Outgoing Messages, Not a Real Holdings Query 🔴 OPEN
+**Priority:** Medium. Discovered and documented during BF10 audit, July 12, 2026. TON token holdings are currently inferred by counting outgoing Jetton-related messages rather than querying the wallet's actual Jetton balances directly. This can miscount holdings for wallets that have received but not sent tokens, or overcount for wallets that have sent tokens they no longer hold. Fix: replace with a direct Jetton holdings query against the Toncenter API (or TON Center v3 if available) to return the wallet's actual current token balances.
 
 ---
 

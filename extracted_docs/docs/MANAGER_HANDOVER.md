@@ -55,9 +55,10 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Full black/mint visual redesign live across scoring app, homepage, and whitepaper (see the locked color system in `FRONTEND_TASKS.md`)
 
 **What's still open before Phase 1 (pre-distribution) fully closes** — full detail in `FIXES.md`:
-- BF10 — non-EVM signal accuracy audit (CRITICAL, in progress with Backend Builder)
+- BF10 — non-EVM signal accuracy ✅ DONE July 12, 2026
 - BF11 — re-verify "Try It Live" docs widget hits the real Railway backend
-- FF17 — AI-native tell cleanup across homepage/docs/whitepaper (open, high priority, not yet sent — needs Ahmad's priority confirmation)
+- FF17 — AI-native tell cleanup across homepage/docs/whitepaper (open, high priority, not yet sent)
+- Whitepaper + FAQ update — full product flow A-Z, chain accuracy details post-BF10, FAQ (Frontend Builder task, content planning in progress)
 
 **ADMIN_SECRET status:** Ahmad set `ADMIN_SECRET` in Railway Variables. Admin Panel login at `otiscore.vercel.app/admin` confirmed working.
 
