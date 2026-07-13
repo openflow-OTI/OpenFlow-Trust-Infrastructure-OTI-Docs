@@ -114,6 +114,9 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 | Wallet portfolio view | `wallet_links` table infrastructure already built |
 | Webhook alerts | Notify integrators when a watched wallet is compromised |
 | Enterprise exchange path | Compliance screening, withdrawal risk scoring — see Playbook Section 16 |
+| **Bot / suspicious-wallet behavioral detection** | Deliberately deferred, Ahmad, July 13, 2026 — see note below. Not scoped, not assigned. |
+
+**Note on bot/suspicious-wallet detection:** Ahmad identified this as arguably the system's primary intended use case — flagging bots, mixers/wash-trading patterns, and suspected-malicious wallets from on-chain behavior — but it currently does not exist at all; the system scores any syntactically valid address the same way regardless of behavioral red flags. This is a full new design (new signal(s) and/or a distinct classification layer), not a bug fix, and is explicitly set aside for now. Do not start scoping this until Ahmad reopens it — current priority is finishing real-data/signal-accuracy correctness work (`FIXES.md`) first.
 
 ---
 
