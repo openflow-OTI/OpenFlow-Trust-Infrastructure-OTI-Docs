@@ -113,6 +113,14 @@ This file records the reasoning behind how OTI was built — not what the code d
 
 ---
 
+### D16 — No Signal Value May Be Estimated, Inferred, or Guessed — Only Real On-Chain Data or an Honest Hard Cap
+**Status:** INTENTIONAL — standing policy, applies to all past and future signal work
+**What this means:** Every number a signal reports (transaction count, contract diversity, wallet age, token holdings, timing patterns — on any chain) must come directly from real on-chain data. It is never acceptable to guess, infer from a loosely-related proxy, default to a placeholder, or otherwise produce a number "off the top of the head" that looks plausible but isn't verified against the chain itself. The only exception is a genuine hard cap imposed by the chain/data source itself (e.g. a provider's page-size or rate limit) — and even then, the cap must be disclosed/documented, not silently presented as the true value.
+**Why:** Confirmed by Ahmad, July 13, 2026, directly triggered by the Tron contract-diversity investigation: Backend's own initial "641 contract interactions" verification for a test wallet turned out to be fabricated — a classification bug counted native resource-delegation operations as smart-contract calls. The number looked convincing and passed a first verification pass, but wasn't real. This is the exact failure mode the policy exists to prevent: a signal must never look right without being right.
+**Implications for fixes:** Before reporting a signal fix as verified, the Builder must show the raw on-chain data source proving the number, not just a plausible-looking API response. Applies retroactively — any previously "verified" fix should be treated as unconfirmed if its verification did not check the actual raw transaction/contract-type data behind the number. This is a standing review bar for the Manager to apply to every future Builder report, not a one-time fix.
+
+---
+
 ## Pending Answers — Awaiting Builder Response
 
 The following behaviors were observed in the July 12, 2026 diagnostic audit. Before treating them as bugs, the Builder has been asked to explain the reasoning. Do not assign fix prompts for these items until the Manager has reviewed the answers and updated the entries below.
