@@ -42,7 +42,7 @@
 **Fixed:** July 7, 2026. A production-wide bug was found during testing: every API request using a valid key was silently returning raw HTML 500 since launch, caused by a Drizzle ORM schema mismatch (a `status` column defined in the repo's schema but missing from the actual Railway DB). Fixed across four call sites — `apiKeyAuth.ts`, `score.ts` (compromised-wallet check), and both the DELETE and PATCH handlers in `admin.ts` — all switched from Drizzle ORM to raw SQL for this table. Verified live: free plan correctly 429s on the 3rd daily request, enterprise (unlimited) never 429s, PATCH edits confirmed persisting.
 
 ### BF10 — Signal Accuracy Audit & Cross-Chain Fix ✅ DONE — July 12, 2026
-**Status:** Sent to Backend Builder July 8, 2026, in progress, not yet reviewed. This is the largest and highest-priority fix on the backend list — treat it as the current active item, nothing else goes to Backend Builder until it's verified done.
+**Status:** Audit and initial fix pass completed and verified July 12, 2026. Remaining chain-specific issues surfaced by this audit were split out into their own tracked items (BF17–BF34 below) rather than left bundled here — this entry covers the original 5-signal audit and Bitcoin redistribution fix only.
 
 **The problem:** the 5 scoring signals were designed around EVM chains. Bitcoin, Solana, TON, Tron, and Sui have fundamentally different data models — no ERC-20 tokens, no internal transactions, no smart contracts in the EVM sense — but are currently being scored with EVM-specific logic, producing wrong and misleading results for every single non-EVM wallet. Confirmed examples: the Satoshi genesis wallet (`1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa`) scores ~51 days wallet age when the correct answer is 5,700+ days; Bitcoin wallets score 0/20 on Token Holding because ERC-20 tokens don't exist on Bitcoin; Bitcoin wallets show a fabricated "1 smart-contract tx" despite Bitcoin having no smart contracts.
 
@@ -129,8 +129,9 @@
 ### BF30 — Bitcoin P2WSH Address Format Rejected by Validator 🔴 OPEN — LOW
 **Priority:** Low. Discovered during full diagnostic audit, July 12, 2026. The Bitcoin address validator covers P2PKH (`1...`), P2SH (`3...`), P2WPKH bech32 (`bc1q...`, 38–39 chars after prefix), and P2TR taproot (`bc1p...`). P2WSH (pay-to-witness-script-hash, used for multisig) is also a valid bech32 `bc1q` address — but with a 32-byte script hash rather than a 20-byte key hash, making the address longer (59 characters after the `bc1q` prefix). The current regex's length range does not cover this form, so valid P2WSH addresses are rejected. Fix: extend the bech32 regex to accept the longer P2WSH length (62 chars total for `bc1q` + 59 chars).
 
-### BF31 — TON Raw Address Format Rejected by Validator 🔴 OPEN — LOW
+### BF31 — TON Raw Address Format Rejected by Validator ✅
 **Priority:** Low. Discovered during full diagnostic audit, July 12, 2026. The TON backend validator accepts user-friendly format addresses (EQ/UQ/kQ/0Q, 48 chars) but rejects the "raw" format (`workchain:hex64`, e.g. `0:83dfd552...`) which is commonly displayed by explorers and wallets as an alternate representation of the same address. Fix: extend the TON validator to also accept the raw `0:hex64` and `-1:hex64` (masterchain) formats.
+**Fixed:** July 12, 2026. `isTonAddress` in `toncenter.ts` extended to accept raw `workchain:hex64` format alongside EQ/UQ/kQ/0Q. Backend independently derived and verified two real, live TON addresses (EQ and UQ forms) against Toncenter to confirm correctness on genuine data.
 
 ### BF32 — Tron Hex Address Format Rejected by Validator 🔴 OPEN — LOW
 **Priority:** Low. Discovered during full diagnostic audit, July 12, 2026. The Tron validator accepts only the standard base58check format (`T` + 33 chars). Tron also has an internal hex format (`41` + 40 hex chars, 42 chars total) used by some tools and APIs. This format is less commonly seen by end users but is a valid Tron address representation. Fix: extend the Tron validator to also accept the `41`-prefixed hex format.
@@ -186,6 +187,18 @@
 
 ### FF16 — Whitepaper Rendering Issues ✅
 **Fixed:** July 8, 2026. Three issues found during Manager's live verification of the whitepaper page: (1) body/paragraph text was rendering in the dimmed grey token instead of white — fixed, section numbers stay mint; (2) mobile horizontal scroll/shift — fixed, now fits one column at 375px; (3) Ahmad requested the Roadmap section be removed from the whitepaper entirely — removed, all following sections/TOC renumbered sequentially.
+
+### FF18 — Fantom → Sonic Rename Across Frontend, Docs, and Whitepaper ✅
+**Fixed:** July 12, 2026. Companion to backend BF22 (Fantom Opera migrated/rebranded to Sonic under Etherscan V2, chain ID stays 146). Renamed "Fantom"/"Fantom Opera" → "Sonic"/"Sonic Mainnet" throughout `chains.ts`, `ChainIcon.tsx`, swapped `fantom.svg` → `sonic.svg`, `schema.gen.ts`, `Whitepaper.tsx`, and the docs site (`api-reference.md`, `supported-chains.md`). Verified live.
+
+### FF19 — Sui and TON "Try It Live" Example Addresses Were Invalid/Wrong Wallet ✅
+**Fixed:** July 12, 2026. Docs site `WalletScorer.jsx` example addresses were bad: the Sui example used an EVM address (Vitalik's) instead of a real Sui address, and the TON example was a stale/broken 47-character address unparseable by Toncenter (not a validator bug — confirmed dead example data). Replaced with two real, live-verified wallets: Sui `0xac5bceec1b789ff840d7d4e6ce4ce61c90d190a7f8c4f4ddf0bff6ee2413c33c` (scores 91, Highly Trusted) and TON `EQAOobN5eCwKmqhNV-l_TLePKHharXyh2-tFaYrNP14Ew5aK` (373 real transactions). Verified live.
+
+### FF20 — TON Address Validator Rejected Standard (`+/`) Base64 Variant ✅
+**Fixed:** July 12, 2026. `validateAddress.ts` only accepted the URL-safe base64 character set for TON EQ/UQ addresses, rejecting otherwise-valid addresses using the standard `+/` variant. Regex widened to accept both. Verified live.
+
+### FF21 — Docs Site Vercel Build Config Broken for Subproject ✅
+**Fixed:** July 12, 2026. `oti-docs/vercel.json` build configuration fixed so the docs subproject builds/deploys correctly on Vercel. Verified live.
 
 ### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper 🔴 OPEN — HIGH PRIORITY
 **Raised by Ahmad:** July 9, 2026. The largest open frontend fix — a full read-through of all three public-facing surfaces (marketing homepage, developer docs site, whitepaper) for anything that reads as AI-generated rather than a deliberately designed product site:
