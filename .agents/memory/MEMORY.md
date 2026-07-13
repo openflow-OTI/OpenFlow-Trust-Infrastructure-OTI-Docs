@@ -5,3 +5,5 @@
 - [OTI token is independent from FLOW](oti-token-independent.md) — OTI has its own token/tokenomics (see TOKENOMICS.md), deliberately decoupled from OpenFlow's FLOW ecosystem token so OTI's fundraising/growth isn't gated by OpenFlow's timeline.
 - [OTI token price & liquidity deferred](oti-token-price-liquidity-deferred.md) — price/liquidity pool design intentionally stripped from TOKENOMICS.md; team decides later, don't reconstruct or re-add without Ahmad reopening it.
 - [Signal-first scoring QA](signal-first-scoring-qa.md) — Ahmad's preferred test method: sweep one signal across all chains before moving to the next, not chain-by-chain; this is how BF33/BF34 were found.
+- [Builder onboarding secrets gap](builder-onboarding-secrets-gap.md) — new Builder Replit environments start with zero API keys; all secrets must be manually re-added each time a Builder is replaced/recreated.
+</content>
