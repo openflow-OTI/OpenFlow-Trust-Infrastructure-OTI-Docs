@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 13, 2026 (session 11 — handover due to Manager credit exhaustion, mid-batch. Closed a large consolidated backend fix batch: BF18, BF24, BF25, BF27, BF29, BF30, BF32, BF34, BF35, BF37 all confirmed fixed with real live evidence. BF33 (contract diversity, 4 chains) closed. BF36 resolved by product decision (score all address types, no gatekeeping). Two items sent back to Backend Builder and awaiting response: BF26 (needs a real token-only test wallet, not code inspection) and BF21 (fix looks right but was verified against a cached response, needs a fresh non-cached re-check). DO NOT mark BF26/BF21 closed until the Builder's next reply comes back with real evidence — see "Next Things" below.)
+> Last updated: July 13, 2026 (session 12 — BF26 and BF21 both closed with real D16-compliant evidence. BF26: token-only wallet `0x238a2bbc89e402df5a4513687c0bb7dbff6676aa` confirmed zero native txs, walletAgedays 22 from tokentx fallback, cached:false. BF21: fresh wallet `EQAj-peZGPH-cC25EAv4Q-h8cBXszTmkch6ba6wXC8BM4xdo`, tonapi.io count 45 = Railway uniqueTokens 45, cached:false. **BF10 signal-accuracy audit fully complete — all child items closed.** Milestone flagged to Ahmad. Next: await Ahmad's priority call on BF23 (chain count) and FF17 (Frontend Builder).)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TASKS.md, FIXES.md, and DECISIONS.md in that order.**
 > **⚠️ Read `TOKENOMICS.md` before touching anything token-related — price/liquidity sections were deliberately removed at Ahmad's request. Do not add them back or estimate them yourself.**
 > **⚠️ D16 (evidence rule, non-negotiable): no signal value or test result may ever be estimated or guessed — only real on-chain data or a disclosed hard cap. This applies retroactively too: if a Builder reports something "verified" via code-reading only (no live wallet, no real API response), it is NOT verified. Send it back. This is exactly what happened with BF26 this session and why it's still open.
@@ -56,10 +56,10 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Full black/mint visual redesign live across scoring app, homepage, and whitepaper (see the locked color system in `FRONTEND_TASKS.md`)
 - BF10 (non-EVM signal accuracy audit) is now effectively DONE — all its child items (BF17/BF18/BF19/BF20/BF28/BF33 and this session's BF24/BF25/BF27/BF29/BF30/BF32/BF34/BF35/BF37) are closed with live evidence. Only BF26 and BF21 remain (see below) before the whole signal-accuracy effort can be signed off as complete.
 
-**What's still open right now — only 2 backend items, both awaiting the Builder's reply:**
-- **BF26** (EVM wallet age = 0 for token-only wallets) — sent back to Backend Builder because their "verification" was code inspection only, no real wallet tested. Waiting on them to find a real token-only address (e.g. an airdrop-only EOA) and re-test live.
-- **BF21** (TON Jetton holdings via tonapi.io) — fix looks correct but was verified against a *cached* Railway response, breaking from the fresh-test standard used everywhere else in the batch. Waiting on a fresh, non-cached re-check.
-- A combined follow-up prompt covering both was already sent to the Backend Builder this session (see chat log for exact wording) — **do not resend or duplicate it**; just wait for their reply and grade it against D16.
+**What's still open right now — backend signal-accuracy audit is COMPLETE:**
+- **BF26** ✅ Closed July 13, 2026 — token-only wallet `0x238a2bbc89e402df5a4513687c0bb7dbff6676aa`, walletAgedays 22 from tokentx fallback, cached:false, exact match.
+- **BF21** ✅ Closed July 13, 2026 — fresh wallet `EQAj-peZGPH-cC25EAv4Q-h8cBXszTmkch6ba6wXC8BM4xdo`, tonapi.io 45 = Railway uniqueTokens 45, cached:false, exact match.
+- **BF10 signal-accuracy audit is fully complete.** All child items (BF17–BF37, minus won't-fix BF36 and still-unassigned BF11/BF23) closed with live evidence.
 
 **What's still open beyond those two** — full detail in `FIXES.md`:
 - BF11 — re-verify "Try It Live" docs widget hits the real Railway backend (never assigned, still open)
@@ -119,18 +119,13 @@ Ahmad's directive: bug fixes/cleanup/polish are not tasks. Create `FIXES.md`, mo
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. Grade the Backend Builder's reply on BF26 + BF21 (this is what you're waiting for right now)
-A combined follow-up prompt is already sent, asking for: (a) BF26 — a real token-only test wallet (empty `txlist`, real `tokentx`) with actual Railway output showing non-zero wallet age; (b) BF21 — a fresh, non-cached re-verification of the TON Jetton fix. When the reply comes in:
-- Apply D16 strictly: code inspection, a description of what the code "should do," or a cached response does NOT count as evidence. Only a real address + real raw API response + real Railway response counts.
-- If BF26 still has no real wallet, send it back again — do not accept "couldn't find one, but logically it should work."
-- If BF21 is still cached, send it back again for a fresh call.
-- Once both are genuinely verified, update `FIXES.md`: flip BF26 to ✅ with the evidence, flip BF21's header from "FIX REPORTED — PENDING FRESH VERIFICATION" to ✅, and add the fresh evidence line.
-- Only after BOTH close should you queue this Backend Builder's next item — remember the hard one-task-at-a-time rule.
+### 1. ✅ DONE — BF26 + BF21 closed, BF10 signal-accuracy audit complete (July 13, 2026)
+Both items graded against D16 and closed with real evidence. BF10 milestone flagged to Ahmad.
 
-### 2. Once BF26 + BF21 close — the whole BF10 signal-accuracy audit is done
-This is a real milestone: every child item (BF17–BF37, minus the won't-fix BF36 and the still-unassigned BF11/BF23) will be closed. Tell Ahmad explicitly when this happens — it's worth flagging as "signal accuracy audit fully complete."
+### 2. ✅ DONE — BF10 milestone confirmed complete
+Every child item (BF17–BF37, minus won't-fix BF36 and still-unassigned BF11/BF23) closed with live evidence.
 
-### 3. Then pick the next backend item — likely candidates, in rough priority
+### 3. Pick the next backend item — likely candidates, in rough priority
 - **BF23** — Scroll/Sepolia/Holesky removal from docs/UI (chain count 15→12 everywhere) — confirmed bug, no ambiguity, ready to scope now if Ahmad wants it before the milestone above closes.
 - **BF11** — re-verify "Try It Live" docs widget hits real Railway backend — small, never assigned.
 - Doc sweep — stale "Fantom" mentions in README/CHANGELOG/ARCHITECTURE/TASKS (non-functional, cosmetic, low priority).
