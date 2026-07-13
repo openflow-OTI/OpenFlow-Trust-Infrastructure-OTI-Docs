@@ -1,7 +1,8 @@
 # OTI — Manager Handover Document
-> Last updated: July 12, 2026 (session 10 — full diagnostic audit of all 15 chains received from Backend Builder. Key findings: Fantom chain ID bug (scoring Sonic/146 instead of Fantom Opera/250), Scroll/Sepolia/Holesky not implemented despite being listed as supported (real working chain count = 12), EVM chains have same pagination bug BF10 fixed for non-EVM, EVM rate-limit errors cache as false zero scores, 6 existing behaviors may be intentional (WHY questionnaire sent to Builder). DECISIONS.md created — records confirmed decisions vs. technical limitations vs. pending-answer items. BF22–BF32 added to FIXES.md. BF10 still not done (BF17/BF18/BF19 outstanding). Whitepaper additions draft at docs/whitepaper-additions-draft.md — held until backend fully verified.)
+> Last updated: July 13, 2026 (session 11 — handover due to Manager credit exhaustion, mid-batch. Closed a large consolidated backend fix batch: BF18, BF24, BF25, BF27, BF29, BF30, BF32, BF34, BF35, BF37 all confirmed fixed with real live evidence. BF33 (contract diversity, 4 chains) closed. BF36 resolved by product decision (score all address types, no gatekeeping). Two items sent back to Backend Builder and awaiting response: BF26 (needs a real token-only test wallet, not code inspection) and BF21 (fix looks right but was verified against a cached response, needs a fresh non-cached re-check). DO NOT mark BF26/BF21 closed until the Builder's next reply comes back with real evidence — see "Next Things" below.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TASKS.md, FIXES.md, and DECISIONS.md in that order.**
 > **⚠️ Read `TOKENOMICS.md` before touching anything token-related — price/liquidity sections were deliberately removed at Ahmad's request. Do not add them back or estimate them yourself.**
+> **⚠️ D16 (evidence rule, non-negotiable): no signal value or test result may ever be estimated or guessed — only real on-chain data or a disclosed hard cap. This applies retroactively too: if a Builder reports something "verified" via code-reading only (no live wallet, no real API response), it is NOT verified. Send it back. This is exactly what happened with BF26 this session and why it's still open.
 
 ---
 
@@ -37,8 +38,8 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
 | Frontend Builder | Active, idle | All build tasks (8, 8B, 9, 11A, 11B, 11) done and verified live. Awaiting Ahmad's priority call on `FIXES.md` FF17 (AI-native tell cleanup) before receiving a new item. |
-| Backend Builder | Active | Mid-way through `FIXES.md` BF10 (Signal Accuracy Audit) — sent July 8, 2026, in progress, not yet reviewed. Nothing new goes to them until it's verified done. |
-| Development Manager | This account | Writes prompts, reviews PRs, owns roadmap and docs |
+| Backend Builder | Active — **this is the SECOND Backend Builder** (first hit its usage limit mid-batch and was replaced; onboarded fresh, zero pre-existing secrets, re-onboarded via full BUILDER_ONBOARDING.md + D16 walkthrough). Currently has exactly ONE active item outstanding: a combined follow-up covering BF26 (real test wallet needed) and BF21 (fresh non-cached re-check needed). Do not send anything else until both come back with real evidence. | |
+| Development Manager | Previous account exhausted credits mid-session, July 13, 2026 — this handover exists because of that, not because work was paused deliberately. | Writes prompts, reviews PRs, owns roadmap and docs |
 
 ---
 
@@ -53,17 +54,19 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Score caching, compromised-wallet denylist with red banner UI
 - Admin Panel fully working — Dashboard, API Keys (create/list/edit/delete + reveal-once modal), Query History, Cache, Plan Configs
 - Full black/mint visual redesign live across scoring app, homepage, and whitepaper (see the locked color system in `FRONTEND_TASKS.md`)
+- BF10 (non-EVM signal accuracy audit) is now effectively DONE — all its child items (BF17/BF18/BF19/BF20/BF28/BF33 and this session's BF24/BF25/BF27/BF29/BF30/BF32/BF34/BF35/BF37) are closed with live evidence. Only BF26 and BF21 remain (see below) before the whole signal-accuracy effort can be signed off as complete.
 
-**What's still open before Phase 1 (pre-distribution) fully closes** — full detail in `FIXES.md`:
-- BF10 — signal accuracy audit (still open — BF17/BF18/BF19 not yet fixed; full diagnostic now complete, BF22–BF32 added)
-- BF11 — re-verify "Try It Live" docs widget hits the real Railway backend
-- BF22 — Fantom chain ID bug (critical — one-line fix, blocking Fantom accuracy)
-- BF23 — Scroll/Sepolia/Holesky listed as supported but not implemented (real chain count = 12, not 15)
-- BF24 — EVM pagination missing on all 7 working EVM chains
-- BF25 — EVM rate-limit errors cached as false zero scores
-- BF26–BF32 — additional accuracy and validation issues found in diagnostic (see FIXES.md)
-- FF17 — AI-native tell cleanup across homepage/docs/whitepaper (open, high priority, not yet sent)
-- Whitepaper + FAQ update — draft ready at docs/whitepaper-additions-draft.md; NOT sent to Frontend Builder until backend is fully verified correct
+**What's still open right now — only 2 backend items, both awaiting the Builder's reply:**
+- **BF26** (EVM wallet age = 0 for token-only wallets) — sent back to Backend Builder because their "verification" was code inspection only, no real wallet tested. Waiting on them to find a real token-only address (e.g. an airdrop-only EOA) and re-test live.
+- **BF21** (TON Jetton holdings via tonapi.io) — fix looks correct but was verified against a *cached* Railway response, breaking from the fresh-test standard used everywhere else in the batch. Waiting on a fresh, non-cached re-check.
+- A combined follow-up prompt covering both was already sent to the Backend Builder this session (see chat log for exact wording) — **do not resend or duplicate it**; just wait for their reply and grade it against D16.
+
+**What's still open beyond those two** — full detail in `FIXES.md`:
+- BF11 — re-verify "Try It Live" docs widget hits the real Railway backend (never assigned, still open)
+- BF23 — Scroll/Sepolia/Holesky listed as supported but not implemented (real chain count = 12, not 15) — not yet assigned
+- FF17 — AI-native tell cleanup across homepage/docs/whitepaper (open, high priority, not yet sent) — Frontend Builder is idle and waiting for Ahmad's priority call on this
+- Doc sweep: "Fantom" → "Sonic" rename (BF22) left stale mentions in README.md/CHANGELOG.md/ARCHITECTURE.md/TASKS.md — non-functional, held pending Manager confirmation
+- Whitepaper + FAQ update — draft ready at docs/whitepaper-additions-draft.md; NOT sent to Frontend Builder until backend is fully verified correct (now much closer — just BF26/BF21 away)
 
 **⚠️ Chain count across ALL public materials is wrong:** docs, whitepaper, and UI all say 15 chains. Real working count is 12. Scroll, Sepolia, Holesky are not implemented. Fantom is querying the wrong network. This must be corrected before any public-facing update ships.
 
@@ -109,19 +112,28 @@ Ahmad's directive: bug fixes/cleanup/polish are not tasks. Create `FIXES.md`, mo
 | Price/liquidity design intentionally absent from `TOKENOMICS.md` | Deferred by Ahmad, decide later, do not reconstruct |
 | DECISIONS.md is Manager-write, Builder-read — Builders never update it | Ahmad's direction, July 12, 2026 — before treating any behavior as a bug, check DECISIONS.md first |
 | Whitepaper additions held until backend fully verified | Content draft exists; publishing wrong technical claims would be worse than publishing nothing |
+| Contract addresses are NOT rejected from scoring — scored like any other address (BF36) | OTI never verifies identity for any address; "no person behind a contract" isn't a meaningfully different bar than a normal wallet (multisigs, smart accounts, and all TON wallets are contracts). The bot/scam-risk concern this was meant to address is deferred to the future bot/suspicious-wallet behavioral detection phase (ROADMAP.md Phase 4), not solved here. |
+| D16 (evidence standard) applies retroactively, including to "verified" reports | A Builder's own report claiming something is verified is not sufficient if it turns out to be code-inspection-only or based on cached/stale data — re-check the actual evidence given, not just the claim of verification, every time. |
 
 ---
 
 ## Next Things the Manager Must Do (In Order)
 
-### 1. Wait for WHY answers from Backend Builder (DECISIONS.md D10–D15)
-WHY questionnaire sent this session. Builder is explaining the reasoning behind: EVM pagination cap, EVM token holdings from transfer history, Tron/Solana `to`=self address, TON Jetton inference, rate-limit error caching, Sui object diversity. Once answers arrive, update DECISIONS.md entries (D10–D15) with confirmed status — INTENTIONAL / TECHNICAL LIMITATION / REVISIT — then and only then scope the fix prompts. Do not treat any of these as confirmed bugs until statuses are updated.
+### 1. Grade the Backend Builder's reply on BF26 + BF21 (this is what you're waiting for right now)
+A combined follow-up prompt is already sent, asking for: (a) BF26 — a real token-only test wallet (empty `txlist`, real `tokentx`) with actual Railway output showing non-zero wallet age; (b) BF21 — a fresh, non-cached re-verification of the TON Jetton fix. When the reply comes in:
+- Apply D16 strictly: code inspection, a description of what the code "should do," or a cached response does NOT count as evidence. Only a real address + real raw API response + real Railway response counts.
+- If BF26 still has no real wallet, send it back again — do not accept "couldn't find one, but logically it should work."
+- If BF21 is still cached, send it back again for a fresh call.
+- Once both are genuinely verified, update `FIXES.md`: flip BF26 to ✅ with the evidence, flip BF21's header from "FIX REPORTED — PENDING FRESH VERIFICATION" to ✅, and add the fresh evidence line.
+- Only after BOTH close should you queue this Backend Builder's next item — remember the hard one-task-at-a-time rule.
 
-### 2. Once WHY answers are in — scope and send BF22 + BF23 first
-BF22 (Fantom chain ID, one-line fix) and BF23 (remove Scroll/Sepolia/Holesky from all docs and UI) are confirmed bugs with no ambiguity. BF22 goes to Backend Builder; BF23 requires both Backend Builder (remove from chain schema/enum) and Frontend Builder (remove from UI chain selector and docs site). Coordinate both. Chain count across all materials drops from 15 to 12.
+### 2. Once BF26 + BF21 close — the whole BF10 signal-accuracy audit is done
+This is a real milestone: every child item (BF17–BF37, minus the won't-fix BF36 and the still-unassigned BF11/BF23) will be closed. Tell Ahmad explicitly when this happens — it's worth flagging as "signal accuracy audit fully complete."
 
-### 3. Continue backend fix queue (BF17, BF18, BF19, BF24, BF25 in priority order)
-BF17, BF18, BF19 are blocking BF10 sign-off. After those, BF24 (EVM pagination) and BF25 (rate-limit error caching) are next highest priority. One active item at a time per Builder — Ahmad's hard rule.
+### 3. Then pick the next backend item — likely candidates, in rough priority
+- **BF23** — Scroll/Sepolia/Holesky removal from docs/UI (chain count 15→12 everywhere) — confirmed bug, no ambiguity, ready to scope now if Ahmad wants it before the milestone above closes.
+- **BF11** — re-verify "Try It Live" docs widget hits real Railway backend — small, never assigned.
+- Doc sweep — stale "Fantom" mentions in README/CHANGELOG/ARCHITECTURE/TASKS (non-functional, cosmetic, low priority).
 
 ### 4. Once all backend fixes verified live — finalise whitepaper additions
 Whitepaper additions draft is at docs/whitepaper-additions-draft.md. Update the signal applicability table and chain count once all fixes are confirmed. Then send to Frontend Builder as their next task.
@@ -137,6 +149,12 @@ Full detail in the Manager's persistent memory (`vercel-docs-proxy.md` topic). S
 
 ### Lesson learned (verifying "done" reports)
 A live-site check of Task 11A initially looked broken (`/` showed the old scoring form) — turned out to be a stale/cached screenshot, not a real bug. A cache-busted check (`?t=<random>` + checking `x-vercel-cache`/`age` headers) confirmed it was genuinely live and correct. Always re-verify with a cache-busted check before reporting a problem to Ahmad — false alarms cost trust too.
+
+### Lesson learned (D16 evidence standard — this session, July 13, 2026)
+When a Builder reports a fix as "verified," that word alone means nothing — check what evidence backs it. This session: BF26 was sent back because "verified" turned out to mean reading the code, not testing a real wallet; BF21 was sent back because "verified" turned out to mean a cached Railway response, breaking from the fresh-test standard the rest of the batch used. Both looked fine on first read of the report text — the gap only showed up when the Manager asked "what specific wallet, what specific raw response?" Always ask that question before accepting a close.
+
+### Lesson learned (Backend Builder handoffs mid-batch)
+Twice this project a Backend Builder has hit its usage/credit limit mid-task and had to be replaced. Each time: (1) work-in-progress must be confirmed pushed to a branch/commit before the old Builder's environment is abandoned; (2) the new Builder starts with zero secrets/API keys — re-add all of them; (3) give the new Builder a full onboarding pass (project overview, sacred files, D16 with a concrete example of a past fabrication) before resuming the task, don't assume continuity of understanding just because the code is the same.
 
 ---
 
