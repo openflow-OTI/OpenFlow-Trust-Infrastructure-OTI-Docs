@@ -158,15 +158,14 @@ The badge is not displayed by the attestation itself. It is displayed by OTI's t
 - Five-tier badge visuals (Ahmad to sign off design before build)
 - Admin panel additions: attestation stats (issued per tier, claim rate, revocations), manual revoke, fee/discount settings
 
-### Open decisions before scoping into task prompts
-1. **Badge tier visual design** — Ahmad to finalise (5 distinct designs, one per tier, "fancy and differentiated")
-2. **Score thresholds per tier** — confirm exact score bands that map to each tier (thresholds exist in codebase, need confirming against current scoring output)
+### Open decisions
+All architectural decisions are locked. Badge tier visual design and exact score thresholds per tier will be discussed and confirmed during the Phase 2B build — they do not need to be resolved before task prompts are written. The Backend Builder confirms thresholds from the codebase; Ahmad reviews badge visuals as part of the Frontend task.
 
-**Note on attestation fee:** amount, OTI token discount rate, and free-tier threshold (10M cap) are all managed entirely via the admin dashboard. No hardcoded values in the codebase. Ahmad sets them live without a Builder being involved.
+**Note on attestation fee:** amount, OTI token discount rate, and 10M free-tier cap are all managed via admin dashboard. No hardcoded values. Ahmad sets them live.
 
-**Note on signing key:** purely a Backend Builder technical implementation concern — where the key is stored and how it is protected. Not an Ahmad decision. Builder handles it as part of building the attestation system.
+**Note on signing key:** Backend Builder implementation detail — not Ahmad's decision.
 
-**Privacy policy + Terms & Conditions:** deferred until product is fully built. Ahmad's decision, July 14, 2026. Writing legal pages before the product is finalised means rewriting them anyway. Build first, then design legal around what actually exists.
+**Privacy policy + Terms & Conditions:** deferred until full product is built (Ahmad, July 14, 2026).
 
 ### Risks logged
 - OTI signing key compromise = fake badges possible — key storage/rotation policy must be defined before launch

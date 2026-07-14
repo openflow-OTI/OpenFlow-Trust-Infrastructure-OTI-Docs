@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 14, 2026 (session 15 — Phase 2B architecture finalised. MetaMask Snap removed. On-chain soulbound NFT removed. BAS attestation on BNB Chain confirmed as sole trust record layer. Business model fully documented in new BUSINESS_MODEL.md. Token utility section added to TOKENOMICS.md. Decisions D17–D22 added to DECISIONS.md.)
+> Last updated: July 14, 2026 (session 15 — Phase 2B fully finalised. All architecture decisions locked. BUSINESS_MODEL.md created. TOKENOMICS.md token utility added. DECISIONS.md D17–D22 added. Both Builders idle. Phase 2 (WOR) is the immediate next build. Phase order: 2 → 2B → 3 → 4 → 5.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TASKS.md, FIXES.md, and DECISIONS.md in that order.**
 > **⚠️ Read `TOKENOMICS.md` before touching anything token-related — price/liquidity sections were deliberately removed at Ahmad's request. Do not add them back or estimate them yourself.**
 > **⚠️ D16 (evidence rule, non-negotiable): no signal value or test result may ever be estimated or guessed — only real on-chain data or a disclosed hard cap. This applies retroactively too: if a Builder reports something "verified" via code-reading only (no live wallet, no real API response), it is NOT verified. Send it back. This is exactly what happened with BF26 this session and why it's still open.
@@ -132,32 +132,34 @@ Once done, Phase 1 is fully closed and Phase 5 (bots + widget + extension) is un
 
 ### 4. After 1D done — start Phase 2 (WOR)
 **Confirmed strategic order (Ahmad, July 14, 2026): Phase 2 → Phase 2B → Phase 3 → Phase 4 → Phase 5.**
-Phase 5 (distribution channels) is last — it hits harder once WOR, attestation, monetization, token, and growth features are all live.
 
-**Phase 3 now has two pillars (Ahmad, July 14, 2026):**
+**Immediate next Manager action:** Design Phase 2 (WOR) fully — every backend endpoint, every frontend flow, every admin dashboard connection — before writing a single Builder prompt. Ahmad wants complete design first, then prompts.
+
+**Phase 2 (WOR) — what needs designing before prompts:**
+- `wallet_ownership` DB table schema
+- `POST /api/wallet/register` — EIP-191 sign + passkey registration flow
+- `POST /api/report/compromised` — wallet sign + passkey → instant 0-score flag
+- EIP-191 signature verification (backend)
+- Registration UI (wallet connect + sign + passkey set)
+- Report UI (wallet connect + passkey entry + submit)
+- `wallet_links` table connection to WOR
+- Admin dashboard: WOR registry view, compromised wallets list, manual override
+
+**Phase 2B (OTI Verified Badge) — fully designed, architecture locked:**
+- BAS attestation on BNB Chain only — no soulbound NFT, no MetaMask Snap
+- First 10M attestations free → one-time fee after (admin panel managed)
+- OTI auto-rescores every 30 days — no user action needed
+- Widget (partner-side) + Extension (user-side) are the display layers
+- First 1M attestation users receive OTI token reward before token launch
+- Badge visual design + score thresholds confirmed during build, not before
+- Full design: ROADMAP.md Phase 2B | All decisions: DECISIONS.md D17–D22
+
+**Phase 3 pillars:**
 - Fiat/crypto payment infrastructure (self-serve portal, Stripe, Coinbase Commerce)
-- OTI token: create + deploy on BSC + plug into ecosystem + run presale
-- Exchange listing is a separate post-Phase-3 event, after revenue streams are working. See TOKENOMICS.md.
+- OTI token: create + deploy BSC + ecosystem integration + presale ($10k raise)
+- Exchange listing: post-Phase-3, after revenue is live. Ahmad decides timing.
 
-**Next immediate action:** Design Phase 2 (WOR) fully — all backend endpoints, all frontend flows, all admin dashboard connections — before writing any Builder prompts. Ahmad wants everything mapped before a single prompt is sent.
-
-**Phase 2B — OTI Verified Badge (architecture finalised July 14, 2026):**
-Full design in ROADMAP.md. Summary of finalised decisions:
-- Attestation via **BAS (BNB Attestation Service) on BNB Chain only** — no other chains, no soulbound NFT, no MetaMask Snap
-- **First 10M attestations free** — deliberate network effect investment
-- **One-time fee post-10M** — not recurring. Amount configured via admin panel.
-- **OTI token discount** for paying in OTI token (Phase 3 integration)
-- **OTI handles rescoring** automatically every 30 days — user does nothing after initial attestation
-- **Widget** reads BAS and shows badge on partner sites. **Extension** reads BAS and shows badge on every site.
-- **First 1 million attestation users** receive OTI token reward before token launch — see DECISIONS.md D22
-
-**Remaining open decisions before Phase 2B task prompts can be written:**
-1. Badge tier visual design — 5 distinct designs, one per tier (Ahmad to finalise)
-2. Score thresholds per tier — confirm exact bands from codebase
-
-Attestation fee, token discount, and 10M cap: admin panel managed, no hardcoded values, no Ahmad input needed at build time.
-Signing key: technical Builder implementation detail, not Ahmad's decision.
-Privacy policy + T&C: deferred until full product is built (Ahmad, July 14, 2026).
+**Privacy policy + T&C:** deferred until full product built (Ahmad, July 14, 2026).
 
 ### 5. Whitepaper additions (when ready)
 Draft exists at docs/whitepaper-additions-draft.md.
