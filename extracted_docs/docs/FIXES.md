@@ -65,7 +65,8 @@
 ### BF12 — Railway Deploys Don't Auto-Run Migrations 🔴 OPEN (optional)
 **Priority:** Low, small effort, not urgent. Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && build && start` — it does **not** run `drizzle-kit push`. Every schema change currently needs Ahmad to manually run the migration against the Railway production DB after deploying (this is how BF3 above was applied). Optional fix: add `drizzle-kit push` to `railway.json`'s `buildCommand` (a one-line change — NOT to `nixpacks.toml`, which stays sacred). Not yet assigned; only worth doing if Ahmad wants to remove the manual step.
 
-### BF13 — DB Never Used as Cache Source — Scores Expire on Every Restart 🟡 IN PROGRESS — Frontend Builder (backend ✅ confirmed July 14, 2026)
+### BF13 — DB Never Used as Cache Source — Scores Expire on Every Restart ✅
+**Fixed:** July 14, 2026. L1 (in-memory LRU) + L2 (DB, configurable rescore window) cache architecture implemented. Keep-highest score logic on write. Global cache ON/OFF toggle stored in system_settings. Admin endpoints: DELETE /api/admin/cache/:address, DELETE /api/admin/cache (all), PATCH /api/admin/rescore-window, PATCH /api/admin/cache/toggle, GET /api/admin/cache/stats. Frontend admin Cache tab built with stats display, toggle switch (confirm dialog on OFF), rescore window input, per-wallet clear, and clear-all. All 6 frontend evidence steps confirmed live. Railway migration (system_settings table) run manually via Railway Console by Ahmad.
 **Priority:** High. Discovered July 11, 2026. The DB (chain_scores table) is write-only — never consulted when answering requests. Only cache is a 500-entry in-memory LRU (5-min TTL, wiped on restart).
 
 **Full scope (expanded per Ahmad, July 14, 2026):**
@@ -238,6 +239,9 @@
 
 ### FF21 — Docs Site Vercel Build Config Broken for Subproject ✅
 **Fixed:** July 12, 2026. `oti-docs/vercel.json` build configuration fixed so the docs subproject builds/deploys correctly on Vercel. Verified live.
+
+### FF22 — Query History Tab: Add Search/Filter Bar 🔴 OPEN
+**Priority:** Medium. Requested July 14, 2026. The Query History tab in the admin dashboard currently shows a flat list with no way to narrow it down. Add a search/filter bar so Ahmad can filter by chain, wallet address, or date range. All filtering should work client-side if the full list is already loaded, or query the backend if the history is paginated. Match existing admin dashboard style exactly.
 
 ### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper ✅
 **Fixed:** July 14, 2026. Full read-through of all three surfaces. No emoji found anywhere (Lucide icons already in use). Homepage: 4 copy rewrites (How It Works steps, Use Cases). Whitepaper: 9 copy rewrites across Sections 02, 03, 04, 09, 10, 11, 12 — AI boilerplate compressed and grounded. Docs site: already clean, no changes needed.

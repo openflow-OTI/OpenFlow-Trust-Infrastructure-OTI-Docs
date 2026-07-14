@@ -37,8 +37,8 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 | Role | Status | Notes |
 |---|---|---|
 | Ahmad (CEO) | Always active | Sole GitHub merge authority |
-| Frontend Builder | Active, standing by | FF17 ✅, BF11 ✅, BF23 ✅ all closed July 14, 2026. Awaiting Frontend side of BF13 (admin dashboard UI) — to be sent after Backend Builder confirms BF13 backend done. |
-| Backend Builder | Active, working | BF14 ✅, BF15 ✅, BF16 ✅, BF11 ✅, BF23 ✅ all closed July 14, 2026. Currently working BF13 (DB cache + admin rescore controls + cache toggle). Do not send anything else until BF13 is confirmed done with all 8 evidence steps. |
+| Frontend Builder | Active, standing by | BF13 ✅ fully closed July 14, 2026 (all 6 steps confirmed). FF22 (Query History filter bar) queued — next item to send. |
+| Backend Builder | New builder onboarded July 14, 2026 (third Builder — previous hit usage limit). BF13 backend already done by previous Builder. New Builder oriented but has no active task. Do not send anything until Ahmad decides next backend item. |
 | Development Manager | Previous account exhausted credits mid-session, July 13, 2026 — this handover exists because of that, not because work was paused deliberately. | Writes prompts, reviews PRs, owns roadmap and docs |
 
 ---
