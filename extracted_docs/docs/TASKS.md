@@ -34,6 +34,9 @@ Restructured the single Vercel app into a proper front door: the scoring tool mo
 ### TASK 11B — Frontend: Whitepaper Page ✅
 Built `/whitepaper` — full-length technical/business document (Executive Summary through remaining sections), sticky table-of-contents sidebar on desktop (accordion on mobile), section numbers in mint, print-to-PDF support via `window.print()`, shares the homepage's nav/footer and color system. Three post-launch rendering issues (body text color, mobile horizontal scroll, Roadmap section removal) were fixed — see `FIXES.md` FF16.
 
+### TASK 16 — Backend: Wallet Ownership Registry (WOR) — Phase 2 ✅
+10 endpoints + `wallet_ownership` table. EIP-191 sig verification (ethers v6), bcrypt passkey (cost 12), 15-min challenge replay protection, dual-factor self-report (sig + passkey → instant 0-score, generic 401 on either failure). Activates `wallet_links` and `compromised_wallets` tables. 4 admin endpoints (paginated registry, manual flag/unflag). Score cache invalidated on compromise. Verified end-to-end with 2 real EVM keypairs, full raw response evidence provided. Railway migration (`drizzle-kit push`) confirmed applied July 14, 2026. Two noted deviations: compromised_wallets written via Drizzle ORM (already proven in prod); compromised/revoked re-registration treated as UPSERT not hard 409.
+
 ### TASK 11 — Frontend: Developer Docs Site ✅
 Docusaurus site covering Getting Started, API Reference (weighted signal shape), Score Explanation, Supported Chains, Rate Limits, and code examples in JS/Python/cURL. Deployed as its own Vercel project (`oti-docs`, pnpm-based build) and proxied onto the main site at `otiscore.vercel.app/docs/` via `vercel.json` rewrites. Confirmed fully live July 9, 2026 — `/docs`, `/docs/`, and `/docs/api-reference` all verified 200 via curl. One open follow-up in `FIXES.md` (BF11 — re-verify "Try It Live" widget against the real backend).
 
@@ -41,20 +44,7 @@ Docusaurus site covering Getting Started, API Reference (weighted signal shape),
 
 ## 🔴 Active Queue
 
-### TASK 16 — Backend: Wallet Ownership Registry (WOR) — Phase 2 🔴 ACTIVE
-**Builder:** Backend Builder | **Started:** July 14, 2026
-**Prompt:** `docs/PENDING_BACKEND_PROMPT_WOR.md`
-
-Ahmad's flagship trust feature. Off-chain EIP-191 signing + passkey pre-registration. If a wallet is compromised, the verified owner connects + enters passkey → instant 0-score flag. No admin review. No blockchain write. Fully automated.
-
-**Deliverables:**
-- `wallet_ownership` DB table (new)
-- 6 public endpoints: GET /challenge, POST /register, GET /registration-status/:address, POST /report/compromised, GET /wallet/links/:address, POST /wallet/links
-- 4 admin endpoints: GET /admin/wor/registrations, GET /admin/wor/registrations/:address, POST /admin/wor/flag, DELETE /admin/wor/flag/:address
-- EIP-191 signature verification
-- Activates existing `wallet_links` and `compromised_wallets` tables
-
-**⚠ Frontend task (Task 17) cannot start until this task is confirmed deployed on Railway.**
+Nothing active. Frontend Builder prompt for Phase 2 WOR (Task 17) is next — to be written and sent by Manager.
 
 ---
 

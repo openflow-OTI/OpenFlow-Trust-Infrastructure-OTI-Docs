@@ -10,35 +10,7 @@
 
 ## Your Active Item Right Now
 
-### TASK 16 — Backend: Wallet Ownership Registry (WOR) 🔴 ACTIVE — July 14, 2026
-
-Ahmad's flagship trust feature. Off-chain EIP-191 signing + passkey pre-registration. If a wallet is compromised, the verified owner connects + enters passkey → instant 0-score flag. No admin review. No blockchain write. Fully automated.
-
-**Your full task prompt is in:** `docs/PENDING_BACKEND_PROMPT_WOR.md`
-Read it completely before writing any code.
-
-**What you're building:**
-- NEW DB table: `wallet_ownership`
-- 6 public endpoints:
-  - GET /api/wallet/register/challenge
-  - POST /api/wallet/register
-  - GET /api/wallet/registration-status/:address
-  - POST /api/report/compromised
-  - GET /api/wallet/links/:address
-  - POST /api/wallet/links
-- 4 admin endpoints (x-admin-secret required):
-  - GET /api/admin/wor/registrations
-  - GET /api/admin/wor/registrations/:address
-  - POST /api/admin/wor/flag
-  - DELETE /api/admin/wor/flag/:address
-- EIP-191 signature verification (ethers v6 or viem)
-- Activates existing `wallet_links` and `compromised_wallets` tables
-
-**Phase 2 scope:** EVM chains only. Non-EVM → return 400.
-**Sacred files:** Never touch scoring.ts or nixpacks.toml.
-**D16:** Every verification claim must be backed by a real wallet address and real raw API response — not code inspection.
-**Railway migration:** After pushing, Ahmad must manually run drizzle-kit push against Railway production DATABASE_URL. Remind him in your completion report.
-**Frontend dependency:** The Frontend Builder's Task 17 cannot start until your endpoints are live. Notify the Manager when done — do not mark anything done yourself until told.
+**As of July 14, 2026 — you have NO active task.** Task 16 (WOR backend) is complete and deployed. Wait for the Manager to send the next prompt before starting anything.
 
 ---
 
