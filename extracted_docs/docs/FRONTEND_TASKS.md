@@ -67,7 +67,7 @@
 
 ## 🔴 Your Task Queue
 
-Active fix: FF24 — WOR UI/UX polish + ecosystem wiring. Full prompt in FIXES.md.
+Nothing queued. Your active item is fix FF24 in FIXES.md — check there.
 
 ---
 
