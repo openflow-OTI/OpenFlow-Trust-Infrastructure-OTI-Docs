@@ -65,8 +65,16 @@
 ### BF12 — Railway Deploys Don't Auto-Run Migrations 🔴 OPEN (optional)
 **Priority:** Low, small effort, not urgent. Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && build && start` — it does **not** run `drizzle-kit push`. Every schema change currently needs Ahmad to manually run the migration against the Railway production DB after deploying (this is how BF3 above was applied). Optional fix: add `drizzle-kit push` to `railway.json`'s `buildCommand` (a one-line change — NOT to `nixpacks.toml`, which stays sacred). Not yet assigned; only worth doing if Ahmad wants to remove the manual step.
 
-### BF13 — DB Never Used as Cache Source — Scores Expire on Every Restart 🔴 OPEN — HIGH PRIORITY
-**Priority:** High — directly impacts scale and trust accuracy. Discovered July 11, 2026 via full codebase audit. The DB (`chain_scores` table) is write-only from the cache's perspective — it receives every new score but is never consulted when answering a request. The only cache is a 500-entry in-memory LRU with a 5-minute TTL that is wiped on every Railway restart. Fix: make the score route check the DB first — if a score exists for that wallet+chain within the last 30 days, return it immediately without calling any external API. Ahmad's decision: 30-day validity, admin panel control over the rescore period (so Ahmad can force wallet rescores on a rolling daily basis, not all at once), keep the highest recorded score in sync. This fix is the single biggest lever for handling scale — the majority of repeat requests will never touch external APIs once it is in place.
+### BF13 — DB Never Used as Cache Source — Scores Expire on Every Restart 🟡 IN PROGRESS — Backend Builder
+**Priority:** High. Discovered July 11, 2026. The DB (chain_scores table) is write-only — never consulted when answering requests. Only cache is a 500-entry in-memory LRU (5-min TTL, wiped on restart).
+
+**Full scope (expanded per Ahmad, July 14, 2026):**
+- L1 (in-memory LRU) + L2 (DB, 30-day per-wallet window) cache architecture
+- Keep-highest score logic — never overwrite a higher score with a lower one
+- Configurable rescore window (stored in DB, not hardcoded at 30 days)
+- Global cache ON/OFF toggle — when OFF, every request bypasses both L1 and DB and hits the on-chain API directly (live data only, not written to cache)
+- Admin endpoints: DELETE /api/admin/cache/:address, DELETE /api/admin/cache (all), PATCH /api/admin/rescore-window, PATCH /api/admin/cache/toggle, GET /api/admin/cache/stats
+- Frontend Builder wires admin dashboard UI after backend is confirmed done (new task)
 
 ### BF14 — Dead In-Memory History Write Still Running After BF6 ✅
 **Fixed:** July 14, 2026. Removed recordHistory() call from score route, deleted lib/history.ts. Confirmed no other imports existed. Score route verified working after removal.
