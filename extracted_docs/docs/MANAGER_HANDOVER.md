@@ -154,8 +154,10 @@ Full design in ROADMAP.md. Summary of finalised decisions:
 **Remaining open decisions before Phase 2B task prompts can be written:**
 1. Badge tier visual design — 5 distinct designs, one per tier (Ahmad to finalise)
 2. Score thresholds per tier — confirm exact bands from codebase
-3. OTI signing key management/rotation policy
-4. Attestation fee amount (specific price — Ahmad decides, admin panel manages)
+
+Attestation fee, token discount, and 10M cap: admin panel managed, no hardcoded values, no Ahmad input needed at build time.
+Signing key: technical Builder implementation detail, not Ahmad's decision.
+Privacy policy + T&C: deferred until full product is built (Ahmad, July 14, 2026).
 
 ### 5. Whitepaper additions (when ready)
 Draft exists at docs/whitepaper-additions-draft.md.

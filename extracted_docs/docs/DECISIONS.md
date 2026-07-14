@@ -151,7 +151,7 @@ This file records the reasoning behind how OTI was built — not what the code d
 **What the system will do:** After the first 10 million free attestations, wallets pay a one-time fee to receive an OTI attestation. There is no renewal fee, no subscription, and no monthly charge — OTI handles all rescoring and re-attestation at its own cost.
 **Why:** Ahmad's explicit decision, July 14, 2026. One-time fee removes the friction of recurring payment, maximises user volume, and is sustainable because the total addressable wallet population is in the hundreds of millions to billions. Volume is the revenue engine, not per-user margin. OTI covers rescoring costs from attestation fee revenue, widget revenue, API subscriptions, and token treasury.
 **Confirmed by:** Ahmad, July 14, 2026.
-**Implications:** The attestation fee amount and OTI token discount rate are configured via the admin panel — not hardcoded. Never hardcode a specific price in the codebase.
+**Implications:** The attestation fee amount, OTI token discount rate, and the 10M free-tier cap are all configured via the admin panel — not hardcoded. Never hardcode a specific price or threshold in the codebase. Ahmad sets these values live without a Builder being involved.
 
 ---
 

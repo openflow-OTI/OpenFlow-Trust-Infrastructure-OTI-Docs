@@ -161,8 +161,12 @@ The badge is not displayed by the attestation itself. It is displayed by OTI's t
 ### Open decisions before scoping into task prompts
 1. **Badge tier visual design** — Ahmad to finalise (5 distinct designs, one per tier, "fancy and differentiated")
 2. **Score thresholds per tier** — confirm exact score bands that map to each tier (thresholds exist in codebase, need confirming against current scoring output)
-3. **OTI signing key management/rotation policy** — how signing key is stored, rotated, and protected
-4. **Attestation fee amount** — specific price (in USD/BNB/OTI token). Ahmad decides, then admin panel manages it.
+
+**Note on attestation fee:** amount, OTI token discount rate, and free-tier threshold (10M cap) are all managed entirely via the admin dashboard. No hardcoded values in the codebase. Ahmad sets them live without a Builder being involved.
+
+**Note on signing key:** purely a Backend Builder technical implementation concern — where the key is stored and how it is protected. Not an Ahmad decision. Builder handles it as part of building the attestation system.
+
+**Privacy policy + Terms & Conditions:** deferred until product is fully built. Ahmad's decision, July 14, 2026. Writing legal pages before the product is finalised means rewriting them anyway. Build first, then design legal around what actually exists.
 
 ### Risks logged
 - OTI signing key compromise = fake badges possible — key storage/rotation policy must be defined before launch
