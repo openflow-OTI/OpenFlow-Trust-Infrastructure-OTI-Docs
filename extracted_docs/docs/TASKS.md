@@ -42,9 +42,12 @@ Docusaurus site covering Getting Started, API Reference (weighted signal shape),
 
 ---
 
+### TASK 17 — Frontend: WOR UI — Phase 2 ✅
+/register (3-step: address check → MetaMask sign → passkey set) and /report (3-step: status check → sign + passkey → confirm dialog) pages live. "⚑ Report this wallet" link activated on results page. Admin WOR tab added (Registry, Compromised, Manual Override sub-views). Verified end-to-end by Ahmad with real Trust Wallet on July 14, 2026 — registration, self-report, and 0% compromised score all confirmed live. Follow-up UI/UX and ecosystem wiring polish tracked as FF24.
+
 ## 🔴 Active Queue
 
-Nothing active. Frontend Builder prompt for Phase 2 WOR (Task 17) is next — to be written and sent by Manager.
+Nothing active.
 
 ---
 

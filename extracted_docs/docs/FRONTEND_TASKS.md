@@ -62,9 +62,12 @@
 
 ---
 
+### TASK 17 — WOR UI — Phase 2 ✅
+/register (3-step: address check → MetaMask sign → passkey set) and /report (3-step: status check → sign + passkey → confirm dialog). "⚑ Report this wallet" link activated on results page. Admin WOR tab (Registry, Compromised, Manual Override). Verified live by Ahmad July 14, 2026. Follow-up polish tracked as FF24.
+
 ## 🔴 Your Task Queue
 
-Nothing is currently queued. Once Ahmad confirms priority, the Manager will send you `FIXES.md` FF17 (AI-native tell cleanup) as your next active item — it lives in the fixes log, not here, since it corrects existing copy/design rather than building something new.
+Active fix: FF24 — WOR UI/UX polish + ecosystem wiring. Full prompt in FIXES.md.
 
 ---
 

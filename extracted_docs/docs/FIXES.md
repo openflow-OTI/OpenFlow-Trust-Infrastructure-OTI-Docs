@@ -240,6 +240,13 @@
 ### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper ✅
 **Fixed:** July 14, 2026. Full read-through of all three surfaces. No emoji found anywhere (Lucide icons already in use). Homepage: 4 copy rewrites (How It Works steps, Use Cases). Whitepaper: 9 copy rewrites across Sections 02, 03, 04, 09, 10, 11, 12 — AI boilerplate compressed and grounded. Docs site: already clean, no changes needed.
 
+### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements 🔴 ACTIVE — July 14, 2026
+Four issues raised by Ahmad after live verification of Task 17:
+1. Admin dashboard "total compromised wallets" stat not wired to the WOR tab — clicking it should navigate there.
+2. WOR flows not surfaced within the site — users should be able to reach /register from the scoring tool, results page, and homepage without knowing the URL.
+3. /register, /report, and admin WOR tab UI/UX is too plain — needs a professional redesign matching the quality bar of the rest of the app.
+4. Admin needs a visible delete button for wallets registered as compromised (for testing; will be removed later) — backend DELETE /api/admin/wor/flag/:address already exists.
+
 ---
 
 ## Adding a New Fix
