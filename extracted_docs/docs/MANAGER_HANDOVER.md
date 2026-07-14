@@ -139,7 +139,9 @@ Phase 5 (distribution channels) is last — it hits harder once WOR, monetizatio
 - OTI token: create + deploy on BSC + plug into ecosystem + run presale
 - Exchange listing is a separate post-Phase-3 event, after revenue streams are working. See TOKENOMICS.md.
 
-**Next immediate action:** Design Phase 2 (WOR) fully and carefully before writing any Builder prompts — Ahmad wants all features listed including admin dashboard connections. Ahmad also has an additional WOR layer to share before design begins.
+**Next immediate action:** Design Phase 2 (WOR) + Phase 2B (OTI Verified Badge) fully before writing any Builder prompts. Ahmad wants all features listed including admin dashboard connections.
+
+**Phase 2B — OTI Verified Badge:** Documented in ROADMAP.md. Ahmad's proposal — portable, cryptographically-signed badge attached to the wallet address (ERC-5192 soulbound + EAS attestation + MetaMask Snap). Score-tier-based badge design with fancy visuals — Ahmad to confirm score ranges and visual concept. Open decisions listed in ROADMAP.md Phase 2B before task prompts can be written.
 
 ### 5. Whitepaper additions (when ready)
 Draft exists at docs/whitepaper-additions-draft.md.

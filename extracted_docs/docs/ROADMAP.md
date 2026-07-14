@@ -90,6 +90,43 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 
 ---
 
+## PHASE 2B — OTI VERIFIED BADGE (Cross-Platform Wallet Trust Badge)
+**Owner: Backend Builder + Frontend Builder + Smart Contract | Status: Designed, not yet scoped into task prompts — open decisions pending Ahmad**
+**Sequencing:** Ships directly after Phase 2 (WOR). Reuses WOR's EIP-191 signature flow — not a replacement, an extension.
+
+### What it is
+A portable, cryptographically-signed proof attached to the wallet address itself — not just a UI decoration on OTI's site. Built on proven Web3 standards:
+- **ERC-5192 Soulbound NFT** — permanently locked to the wallet, cannot be transferred or faked
+- **EAS (Ethereum Attestation Service)** — signed claim ("0xABC scored 87/100, verified by OTI, July 11 2026"), verifiable by any dapp without trusting OTI's API blindly
+- **MetaMask Snaps / wallet-native display** — shows badge inside the wallet app itself. Precedent: "UTU Trust" Snap already ships this pattern in production
+
+### Badge tiers (score-based — design TBD by Ahmad)
+Badges are tiered by OTI score, not just free vs. paid. Fancy visual design per tier — Ahmad to finalize exact score ranges and visual concept. Two delivery methods:
+- **Off-chain attestation** — free, instant, auto-issued above a trust threshold, re-verified every 30 days
+- **On-chain soulbound badge** — optional paid tier, permanent public record, small gas + service fee. Can tie into OTI token utility in Phase 3 (e.g. pay in OTI for a discount)
+
+### What needs to be built
+**Backend:** `POST /api/badge/issue`, `POST /api/badge/mint`, `GET /api/badge/:address`, badge expiry/re-score scheduler, `wallet_badges` DB table
+**Smart contract:** Minimal ERC-5192 soulbound contract, OTI-signer-restricted mint, deployed per supported chain
+**Frontend:** Badge claim UI on results page, public `/verify/:address` page, tier-based badge visuals
+**Phase 5 extension:** MetaMask Snap to show badge natively inside wallet
+
+### Open decisions before scoping into task prompts
+1. Badge tier score ranges and visual design (Ahmad — in discussion)
+2. Which chain(s) get the on-chain soulbound contract first
+3. MetaMask Snap: build in Phase 2B or defer to Phase 5
+4. Gas fee model per chain for paid on-chain tier
+5. OTI signing key management/rotation policy
+
+### Risks logged
+- Gas costs vary per chain — need fee model before paid tier launches
+- Off-chain attestations require trust in OTI's signing key — key compromise = fake badges possible
+- Badge re-score schedule needs tuning (too stale = bad actors slip through; too aggressive = gas spam)
+- MetaMask Snap review/publishing process needs research
+- Legal: "Verified" badge implies liability — clear disclaimer needed, consistent with WOR's compromised-wallet reporting
+
+---
+
 ## PHASE 3 — MONETIZATION INFRASTRUCTURE + TOKEN
 **Owner: Both Builders | Status: Planned — infrastructure partially ready**
 
