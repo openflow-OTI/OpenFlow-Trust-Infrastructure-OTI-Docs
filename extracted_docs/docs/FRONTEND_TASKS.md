@@ -32,7 +32,7 @@
 **Completed:** July 8, 2026 (build), fixes verified July 8–9, 2026. Built `/whitepaper`: full section-by-section technical/business document, sticky TOC sidebar on desktop (accordion on mobile), mint section numbers, print-to-PDF via `window.print()`, shared navbar/footer/color system with the homepage. Three post-launch rendering fixes (body text color, mobile horizontal scroll, Roadmap section removal) are logged in `FIXES.md` FF16.
 
 ### TASK 11 — Developer Docs Site ✅
-**Completed:** July 9, 2026. Docusaurus site (`oti-docs/`) covering Getting Started, API Reference, Score Explanation, Supported Chains, Rate Limits, and JS/Python/cURL examples, plus an OG social-share image and a live "Try It Live" widget. Deployed as its own Vercel project (pnpm-based build — do not switch back to npm, see `MANAGER_HANDOVER.md` for why) and proxied onto the main site at `/docs/` via `vercel.json` rewrites. Confirmed fully live via curl on `/docs`, `/docs/`, and `/docs/api-reference`. One open follow-up: `FIXES.md` BF11/BF-style item — re-verify "Try It Live" hits the real Railway backend post-redeploy (tracked as BF11 in `FIXES.md`, owned by whichever Builder picks it up next — currently unassigned).
+**Completed:** July 9, 2026. Docusaurus site (`oti-docs/`) covering Getting Started, API Reference, Score Explanation, Supported Chains, Rate Limits, and JS/Python/cURL examples, plus an OG social-share image and a live "Try It Live" widget. Deployed as its own Vercel project (pnpm-based build — oti-docs uses pnpm; the main frontend app uses npm — do not mix them) and proxied onto the main site at `/docs/` via `vercel.json` rewrites. Confirmed fully live via curl on `/docs`, `/docs/`, and `/docs/api-reference`. One open follow-up: `FIXES.md` BF11/BF-style item — re-verify "Try It Live" hits the real Railway backend post-redeploy (tracked as BF11 in `FIXES.md`, owned by whichever Builder picks it up next — currently unassigned).
 
 ---
 
@@ -97,7 +97,8 @@ You never update either file on your own initiative. Every update — whether ma
 **General rules:**
 - Never touch Git, never push, never open a PR — Ahmad handles all of that himself
 - Never touch `vercel.json` — ever
-- Never manually edit `src/api/schema.gen.ts` — run `pnpm codegen` instead
+- Never manually edit `src/api/schema.gen.ts` — run `npm run codegen` instead
+- Main app uses **npm**. Docs site (`oti-docs/`) uses **pnpm**. Never mix them.
 - Ahmad loves the chain selector — do not touch it
 - All CSS goes in `src/index.css` — no new component libraries
 - Test on mobile (375px) — most users are on mobile

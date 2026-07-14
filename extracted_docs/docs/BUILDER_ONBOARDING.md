@@ -111,7 +111,8 @@ The frontend uses auto-generated types from the backend's OpenAPI spec. If you c
 
 ## Frontend Builder Specific Notes
 
-- `src/api/schema.gen.ts` is auto-generated — NEVER manually edit it. Run `pnpm codegen` to regenerate after backend changes.
+- `src/api/schema.gen.ts` is auto-generated — NEVER manually edit it. Run `npm run codegen` to regenerate after backend changes.
+- The main app uses **npm**. The Docusaurus docs site (`oti-docs/`) uses **pnpm** — do not mix them.
 - The design language: black background, mint green (`#00ff87` approx) as accent, monospace typography
 - Ahmad loves the chain selector component — do not change it
 - When in doubt about design decisions, ask the Manager — Ahmad has strong visual opinions
