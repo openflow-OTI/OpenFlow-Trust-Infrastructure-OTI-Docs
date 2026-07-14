@@ -66,16 +66,7 @@
 **Priority:** Low, small effort, not urgent. Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && build && start` — it does **not** run `drizzle-kit push`. Every schema change currently needs Ahmad to manually run the migration against the Railway production DB after deploying (this is how BF3 above was applied). Optional fix: add `drizzle-kit push` to `railway.json`'s `buildCommand` (a one-line change — NOT to `nixpacks.toml`, which stays sacred). Not yet assigned; only worth doing if Ahmad wants to remove the manual step.
 
 ### BF13 — DB Never Used as Cache Source — Scores Expire on Every Restart ✅
-**Fixed:** July 14, 2026. L1 (in-memory LRU) + L2 (DB, configurable rescore window) cache architecture implemented. Keep-highest score logic on write. Global cache ON/OFF toggle stored in system_settings. Admin endpoints: DELETE /api/admin/cache/:address, DELETE /api/admin/cache (all), PATCH /api/admin/rescore-window, PATCH /api/admin/cache/toggle, GET /api/admin/cache/stats. Frontend admin Cache tab built with stats display, toggle switch (confirm dialog on OFF), rescore window input, per-wallet clear, and clear-all. All 6 frontend evidence steps confirmed live. Railway migration (system_settings table) run manually via Railway Console by Ahmad.
-**Priority:** High. Discovered July 11, 2026. The DB (chain_scores table) is write-only — never consulted when answering requests. Only cache is a 500-entry in-memory LRU (5-min TTL, wiped on restart).
-
-**Full scope (expanded per Ahmad, July 14, 2026):**
-- L1 (in-memory LRU) + L2 (DB, 30-day per-wallet window) cache architecture
-- Keep-highest score logic — never overwrite a higher score with a lower one
-- Configurable rescore window (stored in DB, not hardcoded at 30 days)
-- Global cache ON/OFF toggle — when OFF, every request bypasses both L1 and DB and hits the on-chain API directly (live data only, not written to cache)
-- Admin endpoints: DELETE /api/admin/cache/:address, DELETE /api/admin/cache (all), PATCH /api/admin/rescore-window, PATCH /api/admin/cache/toggle, GET /api/admin/cache/stats
-- Frontend Builder wires admin dashboard UI after backend is confirmed done (new task)
+**Fixed:** July 14, 2026. L1 (in-memory LRU) + L2 (DB, configurable rescore window) cache architecture implemented. Keep-highest score logic on write. Global cache ON/OFF toggle stored in system_settings. Admin endpoints: DELETE /api/admin/cache/:address, DELETE /api/admin/cache (all), PATCH /api/admin/rescore-window, PATCH /api/admin/cache/toggle, GET /api/admin/cache/stats. Frontend admin Cache tab: stats display, toggle switch (confirm dialog on OFF), rescore window input, per-wallet clear, clear-all, and quick-score button. All 6 frontend evidence steps confirmed live. Railway migration (system_settings table) run manually via Railway Console by Ahmad.
 
 ### BF14 — Dead In-Memory History Write Still Running After BF6 ✅
 **Fixed:** July 14, 2026. Removed recordHistory() call from score route, deleted lib/history.ts. Confirmed no other imports existed. Score route verified working after removal.

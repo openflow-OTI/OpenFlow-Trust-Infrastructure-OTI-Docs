@@ -10,9 +10,7 @@
 
 ## Your Active Item Right Now
 
-**BF10 is done** (✅ July 12, 2026, per `FIXES.md`) — the note below is stale and kept only so you can see what changed. The diagnostic audit that followed BF10 surfaced 15 new numbered fixes (BF17–BF32 in `FIXES.md`), all confirmed July 12, 2026. Your next active item is **BF22 — Fantom Chain ID** (see the task prompt the Manager sends you) — do not start on Task 3, Task 9C, or anything else; both are already complete per this file's own Completed Tasks list below.
-
-~~You are working on BF10 — Signal Accuracy Audit & Cross-Chain Fix, documented in FIXES.md, not in this file. Status: in progress, sent July 8, 2026, not yet reviewed. Nothing else goes to you until this is verified done.~~
+**As of July 14, 2026 — you have NO active task.** All fixes through BF23 and the full BF10 signal-accuracy audit (BF17–BF37) are complete. Your next confirmed item is **BF12** (Railway auto-migrations — optional, one-line fix to `railway.json`). Wait for the Manager to send you the prompt before starting anything.
 
 ---
 

@@ -41,13 +41,13 @@ Docusaurus site covering Getting Started, API Reference (weighted signal shape),
 
 ## 🔴 Active Queue
 
-Nothing is currently queued as a new-build task for either Builder. **Backend Builder** — BF10 is done (✅ July 12, 2026); the follow-on diagnostic audit produced BF17–BF32 in `FIXES.md`, all confirmed bugs/limitations. A new Backend Builder has been onboarded (prior one ran out of credit) and is starting on BF22 (Fantom chain ID — critical, single-line fix), working down the confirmed list. **Frontend Builder** is idle, awaiting Ahmad's priority call on `FIXES.md` FF17 (AI-native tell cleanup) versus starting the next real task below.
+Nothing is currently queued as a new-build task for either Builder as of July 14, 2026. Both Builders are idle. All open items are in `FIXES.md`. Next backend item confirmed by Ahmad: **BF12** (Railway auto-migrations — optional, one-line fix). Phase 1 is effectively closed — Ahmad still needs to create the internal bot API key and widget key via the admin panel (task 1D in `ROADMAP.md`) before Phase 5 unlocks.
 
 ---
 
 ## ⛔ PHASE 5 GATE — Distribution Channel Tasks Below Depend On Phase 1 Being Fully Closed
 
-Every bot reply, widget badge, and extension popup links back to the marketing homepage, docs site, and whitepaper. Do not start any task below until Ahmad confirms Phase 1 (see `ROADMAP.md`) is fully closed — including the two open Phase 1 fixes in `FIXES.md` (BF11, FF17).
+Every bot reply, widget badge, and extension popup links back to the marketing homepage, docs site, and whitepaper. Do not start any task below until Ahmad confirms Phase 1 (see `ROADMAP.md`) is fully closed — specifically task 1D (create operational API keys via admin panel).
 
 ### TASK 12 — Backend: Telegram Bot
 Telegraf (Node.js) bot in `/bots/telegram/` inside the backend repo, deployed as a second Railway process. Commands: `/score [address] [chain]`, `/help`, `/about`. Env vars needed: `TELEGRAM_BOT_TOKEN`, `OTI_BOT_API_KEY`. See `ROADMAP.md` Phase 5 for full context.

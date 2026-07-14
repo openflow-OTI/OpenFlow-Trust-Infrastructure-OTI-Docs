@@ -10,7 +10,7 @@
 
 ## Where You Stand Right Now
 
-You are idle as of July 9, 2026 — all tasks below are done. Your likely next item is `FIXES.md` FF17 (a full "AI-native tell" cleanup pass across the homepage, docs site, and whitepaper — copy/tone, emoji, any other AI-generated tell), but the Manager needs to confirm priority with Ahmad before sending it. Do not start anything new until the Manager assigns it.
+**As of July 14, 2026 — you have NO active task.** All build tasks and all frontend fixes (FF1–FF23) are complete. Your next confirmed item is **BF12** frontend side if applicable — but wait for the Manager to send a prompt. Do not start anything on your own.
 
 ---
 
