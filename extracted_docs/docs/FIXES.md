@@ -65,7 +65,7 @@
 ### BF12 — Railway Deploys Don't Auto-Run Migrations 🔴 OPEN (optional)
 **Priority:** Low, small effort, not urgent. Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && build && start` — it does **not** run `drizzle-kit push`. Every schema change currently needs Ahmad to manually run the migration against the Railway production DB after deploying (this is how BF3 above was applied). Optional fix: add `drizzle-kit push` to `railway.json`'s `buildCommand` (a one-line change — NOT to `nixpacks.toml`, which stays sacred). Not yet assigned; only worth doing if Ahmad wants to remove the manual step.
 
-### BF13 — DB Never Used as Cache Source — Scores Expire on Every Restart 🟡 IN PROGRESS — Backend Builder
+### BF13 — DB Never Used as Cache Source — Scores Expire on Every Restart 🟡 IN PROGRESS — Frontend Builder (backend ✅ confirmed July 14, 2026)
 **Priority:** High. Discovered July 11, 2026. The DB (chain_scores table) is write-only — never consulted when answering requests. Only cache is a 500-entry in-memory LRU (5-min TTL, wiped on restart).
 
 **Full scope (expanded per Ahmad, July 14, 2026):**
