@@ -41,7 +41,20 @@ Docusaurus site covering Getting Started, API Reference (weighted signal shape),
 
 ## 🔴 Active Queue
 
-Nothing is currently queued as a new-build task for either Builder as of July 14, 2026. Both Builders are idle. All open items are in `FIXES.md`. Next backend item confirmed by Ahmad: **BF12** (Railway auto-migrations — optional, one-line fix). Phase 1 is effectively closed — Ahmad still needs to create the internal bot API key and widget key via the admin panel (task 1D in `ROADMAP.md`) before Phase 5 unlocks.
+### TASK 16 — Backend: Wallet Ownership Registry (WOR) — Phase 2 🔴 ACTIVE
+**Builder:** Backend Builder | **Started:** July 14, 2026
+**Prompt:** `docs/PENDING_BACKEND_PROMPT_WOR.md`
+
+Ahmad's flagship trust feature. Off-chain EIP-191 signing + passkey pre-registration. If a wallet is compromised, the verified owner connects + enters passkey → instant 0-score flag. No admin review. No blockchain write. Fully automated.
+
+**Deliverables:**
+- `wallet_ownership` DB table (new)
+- 6 public endpoints: GET /challenge, POST /register, GET /registration-status/:address, POST /report/compromised, GET /wallet/links/:address, POST /wallet/links
+- 4 admin endpoints: GET /admin/wor/registrations, GET /admin/wor/registrations/:address, POST /admin/wor/flag, DELETE /admin/wor/flag/:address
+- EIP-191 signature verification
+- Activates existing `wallet_links` and `compromised_wallets` tables
+
+**⚠ Frontend task (Task 17) cannot start until this task is confirmed deployed on Railway.**
 
 ---
 

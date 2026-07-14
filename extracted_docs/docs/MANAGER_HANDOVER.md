@@ -130,20 +130,19 @@ Via admin panel at otiscore.vercel.app/admin:
 - Widget shared key: for the embeddable widget (Task 14)
 Once done, Phase 1 is fully closed and Phase 5 (bots + widget + extension) is unblocked.
 
-### 4. After 1D done — start Phase 2 (WOR)
+### 4. ✅ Phase 2 (WOR) design complete + Backend Builder task sent (July 14, 2026)
 **Confirmed strategic order (Ahmad, July 14, 2026): Phase 2 → Phase 2B → Phase 3 → Phase 4 → Phase 5.**
 
-**Immediate next Manager action:** Design Phase 2 (WOR) fully — every backend endpoint, every frontend flow, every admin dashboard connection — before writing a single Builder prompt. Ahmad wants complete design first, then prompts.
+**Full design saved at:** `docs/PHASE2_WOR_DESIGN.md`
+**Backend Builder prompt saved at:** `docs/PENDING_BACKEND_PROMPT_WOR.md`
+**Task 16** is the active backend task. Task 17 (Frontend WOR) cannot start until Task 16 is deployed.
 
-**Phase 2 (WOR) — what needs designing before prompts:**
-- `wallet_ownership` DB table schema
-- `POST /api/wallet/register` — EIP-191 sign + passkey registration flow
-- `POST /api/report/compromised` — wallet sign + passkey → instant 0-score flag
-- EIP-191 signature verification (backend)
-- Registration UI (wallet connect + sign + passkey set)
-- Report UI (wallet connect + passkey entry + submit)
-- `wallet_links` table connection to WOR
-- Admin dashboard: WOR registry view, compromised wallets list, manual override
+**Next Manager actions (in order):**
+1. ⏳ Wait for Backend Builder to complete Task 16 (WOR backend, 10 endpoints + wallet_ownership table).
+2. Review Backend Builder's completion report against D16 evidence standard — ask for specific wallet addresses and raw API responses.
+3. Confirm Ahmad runs drizzle-kit push against Railway production DATABASE_URL after Backend Builder deploys.
+4. Once Task 16 confirmed ✅ on Railway → write and send Frontend Builder prompt (Task 17).
+5. After both Tasks 16 + 17 are done → begin Phase 2B design (OTI Verified Badge — architecture is locked in ROADMAP.md and DECISIONS.md D17–D22).
 
 **Phase 2B (OTI Verified Badge) — fully designed, architecture locked:**
 - BAS attestation on BNB Chain only — no soulbound NFT, no MetaMask Snap
