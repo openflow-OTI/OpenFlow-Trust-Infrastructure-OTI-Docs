@@ -130,10 +130,9 @@ Via admin panel at otiscore.vercel.app/admin:
 - Widget shared key: for the embeddable widget (Task 14)
 Once done, Phase 1 is fully closed and Phase 5 (bots + widget + extension) is unblocked.
 
-### 4. After BF12 done + 1D done — start Phase 5
-Send Task 12 (Telegram Bot) to Backend Builder first.
-Tasks 13, 14, 15 follow in order — one at a time.
-Phase 2 (WOR) can run in parallel with Phase 5 if Ahmad wants to double-track.
+### 4. After 1D done — start Phase 2 (WOR)
+**Confirmed strategic order (Ahmad, July 14, 2026): Phase 2 → 3 → 4 → 5.**
+Phase 5 (distribution channels) is last — it hits harder once WOR, monetization, and growth features are all live. Send Phase 2 (WOR) to both Builders next. Backend: `wallet_ownership` table + register/report endpoints + EIP-191 verification. Frontend: registration UI + report UI + passkey integration. See ROADMAP.md Phase 2.
 
 ### 5. Whitepaper additions (when ready)
 Draft exists at docs/whitepaper-additions-draft.md.

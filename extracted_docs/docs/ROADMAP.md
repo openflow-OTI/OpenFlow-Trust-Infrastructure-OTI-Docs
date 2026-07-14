@@ -120,10 +120,10 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 
 ---
 
-## PHASE 5 — DISTRIBUTION CHANNELS (bots, widget, extension) 🔒 GATED — LAST PHASE
-**Owner: Backend Builder (bots + widget) + separate repo (extension) | Status: Not started — begins only after Phase 1 fully closes**
+## PHASE 5 — DISTRIBUTION CHANNELS (bots, widget, extension) 🔒 LAST — INTENTIONAL
+**Owner: Backend Builder (bots + widget) + separate repo (extension) | Status: Not started — begins only after Phases 2, 3, and 4 are complete**
 
-This is the only phase gated behind Phase 1 (marketing homepage, docs site, operational keys). Every bot reply, widget badge, and extension popup links back to those pages — launching before they exist wastes the traffic. Everything else (WOR, monetization, growth) ships first; distribution channels are the final step before public launch.
+**Strategic decision (Ahmad, July 14, 2026):** Phase 5 is deliberately last. Distribution channels exist to bring people to the product — but the product needs to be fully built first (WOR, monetization, growth features). When mass adoption comes via Phase 5, the full stack will already be there to receive it. Build order: Phase 2 → 3 → 4 → 5.
 
 Source: OTI Full Distribution & Technical Development Strategy (Founder's Playbook)
 
