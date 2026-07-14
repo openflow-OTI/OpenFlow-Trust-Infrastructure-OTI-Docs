@@ -240,8 +240,11 @@
 ### FF21 — Docs Site Vercel Build Config Broken for Subproject ✅
 **Fixed:** July 12, 2026. `oti-docs/vercel.json` build configuration fixed so the docs subproject builds/deploys correctly on Vercel. Verified live.
 
-### FF22 — Query History Tab: Add Search/Filter Bar 🔴 OPEN
-**Priority:** Medium. Requested July 14, 2026. The Query History tab in the admin dashboard currently shows a flat list with no way to narrow it down. Add a search/filter bar so Ahmad can filter by chain, wallet address, or date range. All filtering should work client-side if the full list is already loaded, or query the backend if the history is paginated. Match existing admin dashboard style exactly.
+### FF22 — Query History Tab: Add Search/Filter Bar ✅
+**Fixed:** July 14, 2026. Search/filter bar added to the Query History admin tab. Ahmad can filter by chain, wallet address, or date range. Matches existing admin dashboard style.
+
+### FF23 — Cache Tab: Live "Score a Wallet" Quick-Action Button ✅
+**Fixed:** July 14, 2026. Added a quick-action button to the Cache tab so Ahmad can immediately re-score any wallet right after clearing it — without leaving the tab. Matches existing admin dashboard style.
 
 ### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper ✅
 **Fixed:** July 14, 2026. Full read-through of all three surfaces. No emoji found anywhere (Lucide icons already in use). Homepage: 4 copy rewrites (How It Works steps, Use Cases). Whitepaper: 9 copy rewrites across Sections 02, 03, 04, 09, 10, 11, 12 — AI boilerplate compressed and grounded. Docs site: already clean, no changes needed.
