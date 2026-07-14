@@ -86,7 +86,7 @@
 ### BF16 — Chain Routing Duplicated Across 4+ Files — No Central Registry ✅
 **Fixed:** July 14, 2026. New file: src/lib/chainRegistry.ts — exports SUPPORTED_CHAINS, ALL_CHAIN_ZOD_ENUM, CHAIN_FAMILY_MAP, PLAN_UPGRADE_REQUIRED. score.ts and routes/history.ts now import from registry. chainFamily.ts left independent (separate workspace package — importing from api-server would create circular dependency). Adding a new chain now requires editing one file only.
 
-### BF17 — Tron Smart Contract Diversity Structurally Broken (to = self address) 🔴 OPEN — HIGH
+### BF17 — Tron Smart Contract Diversity Structurally Broken (to = self address) ✅
 **Priority:** High — discovered during BF10 live result review, July 12, 2026. Root cause confirmed by full diagnostic audit: Tron's transaction shaping sets `to` and `from` fields to the wallet's own address rather than the actual counterpart/contract address. This means the "unique contract addresses" diversity component is structurally capped at ≤1 regardless of how many distinct contracts the wallet actually used. A wallet with 1 contract call can score 20/20 because the volume-threshold fallback path in scoring.ts drives the score, not real diversity. Fix: extract the actual Tronscan contract address from each transaction and use it for the unique-contract diversity count.
 
 ### BF18 — Sui Wallet Age Returns 0 for Receive-Only Wallets ✅
@@ -97,7 +97,7 @@
 **Priority:** Medium — updated after full diagnostic audit, July 12, 2026. The backend TON address validator correctly accepts EQ/UQ user-friendly format (48 chars) and normalizes `+/` → `-_`. The live rejection seen during testing was likely coming from the frontend validator only. Fix scope: audit the frontend `validateAddress.ts` for TON to confirm it applies the same acceptance logic as the backend — specifically that it handles both the URL-safe (`-_`) and standard (`+/`) base64 character variants of EQ/UQ addresses. Backend validator appears correct; frontend validator needs verification and possible alignment.
 **Closed:** July 12, 2026, via FF20 — Frontend's `validateAddress.ts` widened to accept both base64 variants. Verified live.
 
-### BF20 — Solana Smart Contract Diversity Structurally Broken (to = self address) 🔴 OPEN — MEDIUM
+### BF20 — Solana Smart Contract Diversity Structurally Broken (to = self address) ✅
 **Priority:** Medium. Root cause confirmed by full diagnostic audit, July 12, 2026. Same structural problem as BF17 (Tron) but for Solana: every transaction sets `to: walletAddress` (self-referential) rather than the actual program ID invoked. The "unique contract" diversity component is capped at 1 regardless of how many distinct on-chain programs the wallet actually used. Volume-threshold fallbacks in scoring.ts still allow active wallets to score reasonably — nothing is fabricated — but true program diversity is not being measured. Fix: extract the actual Solana program ID from each transaction's account keys and use it for the unique-program diversity count.
 
 ### BF21 — TON Jetton Holdings Inferred From Outgoing Messages, Not a Direct Balance Query ✅
@@ -131,7 +131,7 @@
 **Priority:** Medium. Discovered during full diagnostic audit, July 12, 2026. Affects all 7 working EVM chains. Token holding diversity is computed by counting distinct contract addresses in the `tokentx` transfer event log — not by querying actual current balances. A wallet that received 100 tokens and then sent all of them away still registers as "holding" 100 distinct tokens. The signal measures historical transfer breadth, not genuine current portfolio diversity. Fix: use a real token balance query (e.g. Etherscan's `tokenbalance` endpoint or a multicall) to determine which tokens the wallet actually currently holds, rather than inferring from transfer history.
 **Fixed and pushed:** July 13, 2026. `getCurrentTokenBalances()` queries Etherscan's `tokenbalance` endpoint per contract (capped at 30 lookups), response now includes `currentTokenHoldings` filtered to nonzero real balances. Verified live on `0x1a9C8182C09F50C8318d769245beA52c32BE35BC` (Uniswap deployer): 25 real live balances returned (USDT, UNI, others), not derived from transfer history.
 
-### BF28 — Solana Smart Contract Diversity: `to` Field Set to Wallet's Own Address 🔴 OPEN — MEDIUM
+### BF28 — Solana Smart Contract Diversity: `to` Field Set to Wallet's Own Address ✅
 **Priority:** Medium. Full root cause from diagnostic audit, July 12, 2026. This is the exact same structural issue as BF20 (Solana) — confirmed and detailed here separately for clarity. Every Solana transaction in the current codebase sets `to: walletAddress` rather than extracting the actual program ID from the transaction's account keys. Unique contract count is structurally 1 for any wallet. Volume thresholds in scoring.ts keep active wallets scoring reasonably but genuine program diversity is not measured. Fix: extract the program ID (last account key, or the first non-wallet program key) from each Solana transaction and use it as the `to` value for diversity counting. (Note: this item supersedes and expands on BF20 for the Solana side — BF20 covers both Solana and Tron together; this entry is for tracking the Solana fix specifically.)
 
 ### BF33 — Smart Contract Diversity `to=self` Bug Also Suspected on TON and Sui ✅
