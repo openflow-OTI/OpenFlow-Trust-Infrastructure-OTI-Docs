@@ -1,6 +1,6 @@
 # OTI Token — Supply, Sale Structure & Revenue Distribution
 
-> Last updated: July 14, 2026 (session 14) | Maintained by: Development Manager
+> Last updated: July 14, 2026 (session 15 — token utility section added; attestation integration documented) | Maintained by: Development Manager
 > **Status: Ahmad-approved design, locked — EXCEPT price and liquidity, which are explicitly out of scope here.** This is OTI's own independent token — it is NOT the OpenFlow "FLOW" ecosystem token discussed in earlier planning. OTI can live with or without OpenFlow, so it has its own token, its own supply, and its own economics. Launch chain: BNB Smart Chain (BSC) first, with cross-chain expansion planned later.
 > **Build + presale timing (Ahmad, July 14, 2026):** Token creation, ecosystem integration, and presale all happen in Phase 3 (alongside monetization infrastructure). Exchange listing is a separate, later event — after Phase 3 revenue streams are live and working. Do not conflate presale with listing.
 > **Price and liquidity pool design are intentionally NOT covered in this document.** Ahmad decided the team will determine token price and liquidity pool structure later, closer to launch. Do not infer or reconstruct pricing/liquidity numbers from earlier versions of this file — they were removed on purpose.
@@ -91,9 +91,41 @@ Once OTI's paid API tiers (Pro/Enterprise, per the existing Revenue Model in TAS
 
 ---
 
-## 7. Explicitly Out of Scope For Now
+## 7. Token Utility — What OTI Token Actually Does
+
+This section documents the genuine, functional uses of the OTI token — not speculative value drivers, but concrete things the token does inside the OTI ecosystem from the moment it launches.
+
+**Ahmad's explicit direction (July 14, 2026):** OTI token must be a real utility token from creation day. It should not launch as an empty speculative asset waiting for utility to be bolted on later. Utility is built in Phase 3 alongside the token itself.
+
+### 7.1 Pay for Attestation
+The primary utility. Users who want an OTI Verified Badge attestation can pay the attestation fee in OTI token. This creates immediate, recurring demand — every new attestation (after the first 10M free tier closes) is a potential token transaction.
+
+- **Discount for token payment** — users who pay in OTI token receive a discount versus paying in BNB or fiat. This makes token acquisition actively worth doing for wallet holders, not just for speculators.
+- **Fee amount and discount rate** — configured via admin panel. Not hardcoded. Ahmad adjusts as market conditions change.
+
+### 7.2 Early Adopter Rewards — First 1 Million Attestation Users
+**Ahmad's decision (July 14, 2026):** The first 1 million wallets that register for OTI attestation will receive OTI tokens as a reward — distributed before the token launches publicly.
+
+Why this is strategically important:
+- Token has **real holders with real utility** on day one — not a launch into empty hands
+- Early adopters become promoters — they hold tokens, they want the token to grow, they talk about OTI
+- Launch narrative becomes: *"1 million verified wallets, tokens already distributed to real users"* — this is a credible launch story, not an empty one
+- These users already understand what OTI does (they got attested) — they are the most qualified possible token holders to communicate OTI's value
+
+Token source for this reward: drawn from the **Ecosystem & Partnerships** bucket (4,500,000 OTI). Amount per user to be decided by Ahmad before Phase 3 — not defined here.
+
+### 7.3 Staking (Revenue-Backed Rewards Pool)
+Token holders who stake OTI receive rewards from the Revenue-Backed Rewards Pool. Rewards are funded by OTI's real API and attestation revenue — not by token inflation. See Section 6 (Revenue Distribution) for the buyback mechanic. Staking design detail deferred until OTI has real usage and revenue to build around.
+
+### 7.4 Future Widget / API Access (Planned)
+As the ecosystem matures, OTI token may gate or discount access to premium widget tiers and API plans. Not part of Phase 3 — documented here as the intended direction so the token design is not made incompatible with it.
+
+---
+
+## 8. Explicitly Out of Scope For Now
 
 - **Price and liquidity pool design:** intentionally not part of this document. The team will decide token price and liquidity structure later, closer to launch.
+- **Token redesign:** Ahmad noted (July 14, 2026) that the token design may need a broader rethink at a later point. This is deferred — current design stands until Ahmad reopens it explicitly.
 - **Staking/derivative system (e.g., a "locked OTI" derivative used as collateral):** discussed as a future phase, not part of this design. To be scoped separately once OTI has real usage and revenue to build the mechanism around.
 - **Governance:** not part of this design. No DAO or voting mechanism defined yet for OTI token holders.
 - **Formal legal/securities review:** flagged once to Ahmad; his explicit decision is that the raise is small enough not to require this at this stage.

@@ -1,5 +1,5 @@
 # OTI — Architectural Decisions Log
-> Last updated: July 12, 2026 (session 10 — file created. Ahmad's direction: before treating any observed behavior as a bug, understand whether it was a deliberate decision with a reason. This file records why things exist the way they do — confirmed decisions, known technical limitations, and items still pending an answer from the Builder.) | Maintained by: Development Manager
+> Last updated: July 14, 2026 (session 15 — Phase 2B architecture decisions added: D17–D22) | Maintained by: Development Manager
 
 ---
 
@@ -118,6 +118,58 @@ This file records the reasoning behind how OTI was built — not what the code d
 **What this means:** Every number a signal reports (transaction count, contract diversity, wallet age, token holdings, timing patterns — on any chain) must come directly from real on-chain data. It is never acceptable to guess, infer from a loosely-related proxy, default to a placeholder, or otherwise produce a number "off the top of the head" that looks plausible but isn't verified against the chain itself. The only exception is a genuine hard cap imposed by the chain/data source itself (e.g. a provider's page-size or rate limit) — and even then, the cap must be disclosed/documented, not silently presented as the true value.
 **Why:** Confirmed by Ahmad, July 13, 2026, directly triggered by the Tron contract-diversity investigation: Backend's own initial "641 contract interactions" verification for a test wallet turned out to be fabricated — a classification bug counted native resource-delegation operations as smart-contract calls. The number looked convincing and passed a first verification pass, but wasn't real. This is the exact failure mode the policy exists to prevent: a signal must never look right without being right.
 **Implications for fixes:** Before reporting a signal fix as verified, the Builder must show the raw on-chain data source proving the number, not just a plausible-looking API response. Applies retroactively — any previously "verified" fix should be treated as unconfirmed if its verification did not check the actual raw transaction/contract-type data behind the number. This is a standing review bar for the Manager to apply to every future Builder report, not a one-time fix.
+
+---
+
+### D17 — Phase 2B Uses BAS (BNB Attestation Service) as the Sole Attestation Layer
+**Status:** INTENTIONAL
+**What the code will do:** OTI's attestation system writes all wallet trust records to BAS (BNB Attestation Service) on BNB Chain — not to Ethereum EAS, not to any other chain, not to an OTI-owned contract.
+**Why:** Ahmad's explicit decision, July 14, 2026. BNB Chain was chosen because: (1) OTI's token launches on BSC — one chain for token, payments, and attestation creates a clean ecosystem; (2) BNB gas costs are a fraction of Ethereum; (3) BAS is live and active with 3.5M+ attestations — not experimental; (4) wallet addresses are the same across all EVM chains, so one BAS attestation on BNB Chain covers the wallet's entire cross-chain OTI score with no per-chain contract duplication.
+**Confirmed by:** Ahmad, July 14, 2026.
+**Implications for builders:** Do not deploy attestation contracts to any other chain. Do not use Ethereum EAS directly. Integrate BAS SDK for BNB Chain only.
+
+---
+
+### D18 — On-Chain Soulbound NFT Removed From Phase 2B
+**Status:** INTENTIONAL
+**What was removed:** The ERC-5192 / ERC-5114 soulbound NFT tier (a minted, non-transferable token in the user's wallet) was proposed as an optional paid attestation tier but was removed from the design entirely.
+**Why:** Ahmad's explicit decision, July 14, 2026. BAS attestation covers the same trust-record use case without the rescoring complexity (burn-and-remint or dynamic metadata updates every 30 days), without per-chain contract deployment, and without gas costs at the user level. The attestation is cleaner, cheaper, and chain-agnostic. Do not reconstruct or re-add the soulbound NFT layer without Ahmad explicitly reopening it.
+**Confirmed by:** Ahmad, July 14, 2026.
+
+---
+
+### D19 — MetaMask Snap Removed From Phase 2B and Phase 5
+**Status:** INTENTIONAL
+**What was removed:** MetaMask Snaps integration — a mini-app inside the MetaMask extension that would show the OTI badge natively inside the wallet UI — was proposed and then removed from the product entirely.
+**Why:** Ahmad's explicit decision, July 14, 2026. MetaMask Snaps is the only mature wallet-native plugin system (Trust Wallet, Coinbase Wallet, Phantom have no equivalent). Requiring users to find and install the OTI Snap creates friction for marginal display coverage that the widget (on partner sites) and extension (on every site) already cover without installation. Do not reconstruct or re-add MetaMask Snap without Ahmad explicitly reopening it.
+**Confirmed by:** Ahmad, July 14, 2026.
+
+---
+
+### D20 — Attestation Fee Is One-Time, Not Recurring
+**Status:** INTENTIONAL
+**What the system will do:** After the first 10 million free attestations, wallets pay a one-time fee to receive an OTI attestation. There is no renewal fee, no subscription, and no monthly charge — OTI handles all rescoring and re-attestation at its own cost.
+**Why:** Ahmad's explicit decision, July 14, 2026. One-time fee removes the friction of recurring payment, maximises user volume, and is sustainable because the total addressable wallet population is in the hundreds of millions to billions. Volume is the revenue engine, not per-user margin. OTI covers rescoring costs from attestation fee revenue, widget revenue, API subscriptions, and token treasury.
+**Confirmed by:** Ahmad, July 14, 2026.
+**Implications:** The attestation fee amount and OTI token discount rate are configured via the admin panel — not hardcoded. Never hardcode a specific price in the codebase.
+
+---
+
+### D21 — First 10 Million Attestations Are Free
+**Status:** INTENTIONAL
+**What the system will do:** The first 10 million wallets that register for OTI attestation pay nothing. After that threshold, new attestations require the one-time fee.
+**Why:** Ahmad's explicit decision, July 14, 2026. The free tier is a deliberate network effect investment — not marketing spend, not charity. When 10 million wallets carry OTI attestations, partners encounter OTI badges widely enough that integrating OTI's widget becomes a business necessity rather than an optional choice. The cost of the free tier is covered by the expected return: partner widget adoption and its associated revenue.
+**Confirmed by:** Ahmad, July 14, 2026.
+**Implications:** The 10M threshold and free/paid gate are managed via admin panel settings, not hardcoded. Admin panel must expose a toggle and counter.
+
+---
+
+### D22 — OTI Token Rewards First 1 Million Attestation Users Before Launch
+**Status:** INTENTIONAL
+**What the system will do:** The first 1 million wallets that register for OTI attestation receive OTI tokens as a reward — distributed before the token launches publicly. Token source: Ecosystem & Partnerships bucket. Amount per user: Ahmad to decide before Phase 3.
+**Why:** Ahmad's explicit decision, July 14, 2026. Three purposes: (1) Token has real holders with real utility on launch day — not an empty launch into speculation. (2) Early adopters who understand OTI's product become the most qualified promoters. (3) Launch narrative is "1 million verified wallets, tokens already in real hands" — a credible story backed by actual usage, not promises.
+**Confirmed by:** Ahmad, July 14, 2026.
+**Implications for Phase 3:** Token distribution to early attestation users must be built into Phase 3 infrastructure. The list of first-1M attested wallet addresses needs to be tracked from Phase 2B launch onwards — start recording from day one.
 
 ---
 

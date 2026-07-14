@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 14, 2026 (session 14 — BF12 closed. ALL fixes BF1–BF37 and FF1–FF23 now ✅. Both Builders idle. Phase 1 fully complete on the Builder side — Ahmad still needs to create operational API keys (1D) via admin panel to unblock Phase 5. Next build items: Task 12 (Telegram Bot) → 13 → 14 → 15, one at a time, after 1D done.)
+> Last updated: July 14, 2026 (session 15 — Phase 2B architecture finalised. MetaMask Snap removed. On-chain soulbound NFT removed. BAS attestation on BNB Chain confirmed as sole trust record layer. Business model fully documented in new BUSINESS_MODEL.md. Token utility section added to TOKENOMICS.md. Decisions D17–D22 added to DECISIONS.md.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TASKS.md, FIXES.md, and DECISIONS.md in that order.**
 > **⚠️ Read `TOKENOMICS.md` before touching anything token-related — price/liquidity sections were deliberately removed at Ahmad's request. Do not add them back or estimate them yourself.**
 > **⚠️ D16 (evidence rule, non-negotiable): no signal value or test result may ever be estimated or guessed — only real on-chain data or a disclosed hard cap. This applies retroactively too: if a Builder reports something "verified" via code-reading only (no live wallet, no real API response), it is NOT verified. Send it back. This is exactly what happened with BF26 this session and why it's still open.
@@ -131,17 +131,31 @@ Via admin panel at otiscore.vercel.app/admin:
 Once done, Phase 1 is fully closed and Phase 5 (bots + widget + extension) is unblocked.
 
 ### 4. After 1D done — start Phase 2 (WOR)
-**Confirmed strategic order (Ahmad, July 14, 2026): Phase 2 → 3 → 4 → 5.**
-Phase 5 (distribution channels) is last — it hits harder once WOR, monetization, token, and growth features are all live.
+**Confirmed strategic order (Ahmad, July 14, 2026): Phase 2 → Phase 2B → Phase 3 → Phase 4 → Phase 5.**
+Phase 5 (distribution channels) is last — it hits harder once WOR, attestation, monetization, token, and growth features are all live.
 
 **Phase 3 now has two pillars (Ahmad, July 14, 2026):**
 - Fiat/crypto payment infrastructure (self-serve portal, Stripe, Coinbase Commerce)
 - OTI token: create + deploy on BSC + plug into ecosystem + run presale
 - Exchange listing is a separate post-Phase-3 event, after revenue streams are working. See TOKENOMICS.md.
 
-**Next immediate action:** Design Phase 2 (WOR) + Phase 2B (OTI Verified Badge) fully before writing any Builder prompts. Ahmad wants all features listed including admin dashboard connections.
+**Next immediate action:** Design Phase 2 (WOR) fully — all backend endpoints, all frontend flows, all admin dashboard connections — before writing any Builder prompts. Ahmad wants everything mapped before a single prompt is sent.
 
-**Phase 2B — OTI Verified Badge:** Documented in ROADMAP.md. Ahmad's proposal — portable, cryptographically-signed badge attached to the wallet address (ERC-5192 soulbound + EAS attestation + MetaMask Snap). Score-tier-based badge design with fancy visuals — Ahmad to confirm score ranges and visual concept. Open decisions listed in ROADMAP.md Phase 2B before task prompts can be written.
+**Phase 2B — OTI Verified Badge (architecture finalised July 14, 2026):**
+Full design in ROADMAP.md. Summary of finalised decisions:
+- Attestation via **BAS (BNB Attestation Service) on BNB Chain only** — no other chains, no soulbound NFT, no MetaMask Snap
+- **First 10M attestations free** — deliberate network effect investment
+- **One-time fee post-10M** — not recurring. Amount configured via admin panel.
+- **OTI token discount** for paying in OTI token (Phase 3 integration)
+- **OTI handles rescoring** automatically every 30 days — user does nothing after initial attestation
+- **Widget** reads BAS and shows badge on partner sites. **Extension** reads BAS and shows badge on every site.
+- **First 1 million attestation users** receive OTI token reward before token launch — see DECISIONS.md D22
+
+**Remaining open decisions before Phase 2B task prompts can be written:**
+1. Badge tier visual design — 5 distinct designs, one per tier (Ahmad to finalise)
+2. Score thresholds per tier — confirm exact bands from codebase
+3. OTI signing key management/rotation policy
+4. Attestation fee amount (specific price — Ahmad decides, admin panel manages)
 
 ### 5. Whitepaper additions (when ready)
 Draft exists at docs/whitepaper-additions-draft.md.

@@ -8,4 +8,5 @@
 - [Builder onboarding secrets gap](builder-onboarding-secrets-gap.md) — new Builder Replit environments start with zero API keys; all secrets must be manually re-added each time a Builder is replaced/recreated.
 - [D16 evidence standard, applied retroactively](d16-evidence-standard.md) — a Builder's claim of "verified" is not evidence; check whether it was a real wallet/fresh call or code-inspection/cached response before accepting a close.
 - [Contract addresses scored like any wallet](contract-address-scoring-decision.md) — OTI doesn't verify identity for any address, so no address-type gatekeeping; bot/scam risk deferred to a future behavioral-detection phase, not solved by rejecting contracts.
+- [Phase 2B final architecture](phase2b-architecture.md) — BAS on BNB Chain only; no soulbound NFT; no MetaMask Snap; one-time fee; first 10M free; OTI auto-rescores; widget + extension are the display layers.
 </content>

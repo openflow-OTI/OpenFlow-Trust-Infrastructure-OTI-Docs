@@ -1,5 +1,5 @@
 # OTI — Product Roadmap
-> Last updated: July 10, 2026 (session 8 — full rewrite for consistency with the new `FIXES.md` file; no strategic changes, phase structure unchanged from the July 5 reorganization) | Maintained by: Development Manager
+> Last updated: July 14, 2026 (session 15 — Phase 2B fully redesigned: MetaMask Snap removed, on-chain soulbound NFT removed, BAS attestation on BNB Chain confirmed as sole trust record layer, pricing model finalised, widget/extension as display layers confirmed) | Maintained by: Development Manager
 > Source document: OTI Full Distribution & Technical Development Strategy (Founder's Playbook, July 2026)
 
 ---
@@ -91,39 +91,83 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 ---
 
 ## PHASE 2B — OTI VERIFIED BADGE (Cross-Platform Wallet Trust Badge)
-**Owner: Backend Builder + Frontend Builder + Smart Contract | Status: Designed, not yet scoped into task prompts — open decisions pending Ahmad**
+**Owner: Backend Builder + Frontend Builder | Status: Architecture finalised (July 14, 2026) — open decisions closed. Ready for design into task prompts after Phase 2 (WOR) ships.**
 **Sequencing:** Ships directly after Phase 2 (WOR). Reuses WOR's EIP-191 signature flow — not a replacement, an extension.
 
 ### What it is
-A portable, cryptographically-signed proof attached to the wallet address itself — not just a UI decoration on OTI's site. Built on proven Web3 standards:
-- **ERC-5192 Soulbound NFT** — permanently locked to the wallet, cannot be transferred or faked
-- **EAS (Ethereum Attestation Service)** — signed claim ("0xABC scored 87/100, verified by OTI, July 11 2026"), verifiable by any dapp without trusting OTI's API blindly
-- **MetaMask Snaps / wallet-native display** — shows badge inside the wallet app itself. Precedent: "UTU Trust" Snap already ships this pattern in production
+A portable, cryptographically-signed proof of a wallet's OTI trust tier — attached to the wallet address itself, not just displayed on OTI's site. When a wallet is scored, OTI signs the result and stores it as a BAS attestation on BNB Chain. That attestation is then readable by any widget, extension, or third party — without trusting OTI's servers.
 
-### Badge tiers (score-based — design TBD by Ahmad)
-Badges are tiered by OTI score, not just free vs. paid. Fancy visual design per tier — Ahmad to finalize exact score ranges and visual concept. Two delivery methods:
-- **Off-chain attestation** — free, instant, auto-issued above a trust threshold, re-verified every 30 days
-- **On-chain soulbound badge** — optional paid tier, permanent public record, small gas + service fee. Can tie into OTI token utility in Phase 3 (e.g. pay in OTI for a discount)
+**Key architecture decisions (Ahmad, July 14, 2026):**
+- ✅ **BAS (BNB Attestation Service) only** — attestation stored on BNB Chain via BAS. One attestation per wallet covers all chains (wallet address is chain-agnostic across EVM). BNB chosen because OTI token is on BSC, gas is cheap, and BAS is live with 3.5M+ attestations already.
+- ✅ **No on-chain soulbound NFT** — removed entirely. Attestation via BAS is cleaner, cheaper, and avoids rescoring complexity.
+- ✅ **No MetaMask Snap** — removed entirely. The widget and extension provide the same display coverage without requiring users to install a third-party plugin.
+- ✅ **EAS/BAS is the sole trust record layer** — one standard, one chain, one place.
+
+### How attestation works
+```
+OTI scores a wallet across all supported chains
+→ Produces one unified tier result
+→ OTI's signing key signs: "wallet 0xABC = TRUSTED tier, July 14 2026, expires August 13 2026"
+→ Signed attestation stored in BAS registry on BNB Chain, indexed by wallet address
+→ Anyone queries BAS: wallet address → tier + issue date + expiry
+→ Widget reads BAS → displays badge on partner site
+→ Extension reads BAS → displays badge on any site
+→ Third party queries BAS directly → verifies without calling OTI's API
+```
+
+### Badge tiers (score-based — visual design TBD by Ahmad)
+Five tiers, one for every score band. Each tier gets distinct visual design (not just a colour change — fully differentiated art). Ahmad to finalise exact score thresholds and visual concept before task prompts are written.
+
+| Tier | Label | Notes |
+|---|---|---|
+| 1 | HIGHLY TRUSTED | Top tier |
+| 2 | TRUSTED | Standard verified |
+| 3 | NEUTRAL | Mid-range |
+| 4 | RISKY | Caution flag |
+| 5 | HIGH RISK | Bottom tier — still gets a badge, just a warning badge |
+
+All five tiers get a badge. The badge doesn't mean "clean" — it means "OTI-verified at this tier."
+
+### Pricing model (Ahmad, July 14, 2026)
+- **First 10 million attestations: FREE** — deliberate network effect investment
+- **Post-10M: one-time fee per attestation** — not recurring, not a subscription
+- **OTI token discount** — users who pay in OTI token get a discount (Phase 3 integration)
+- **Fee amount + token discount:** configured via admin panel, not hardcoded
+- **Rescoring:** fully automated by OTI every 30 days — user never needs to do anything after initial attestation. OTI re-signs and updates the BAS attestation in background batches.
+
+### Display layer — widget and extension
+The badge is not displayed by the attestation itself. It is displayed by OTI's two distribution channels:
+
+**Widget (partner-side):** Partners embed OTI's widget. Widget detects connected wallet → queries BAS → shows badge tier in partner's UI. Partners get full configuration control (which tiers to show, what action per tier, visual customisation). Initially free for partners; charged later once adoption is established.
+
+**Extension (user-side):** Users install OTI's browser extension once. Extension auto-detects wallet addresses on every website — Etherscan, OpenSea, Twitter/X, any site — and overlays the OTI badge. No partner integration required. Works everywhere. The extension is the user's own widget.
 
 ### What needs to be built
-**Backend:** `POST /api/badge/issue`, `POST /api/badge/mint`, `GET /api/badge/:address`, badge expiry/re-score scheduler, `wallet_badges` DB table
-**Smart contract:** Minimal ERC-5192 soulbound contract, OTI-signer-restricted mint, deployed per supported chain
-**Frontend:** Badge claim UI on results page, public `/verify/:address` page, tier-based badge visuals
-**Phase 5 extension:** MetaMask Snap to show badge natively inside wallet
+**Backend:**
+- `POST /api/attestation/issue` — sign and write attestation to BAS
+- `GET /api/attestation/:address` — check attestation status for a wallet
+- `POST /api/attestation/revoke` — revoke attestation on WOR compromise report
+- Attestation scheduler — daily batch rescore of all wallets approaching 30-day expiry
+- `wallet_attestations` DB table — track issued attestations, expiry, tier at issue time
+- BAS SDK integration (BNB Chain)
+- OTI signing key management
+
+**Frontend:**
+- Attestation claim UI on results page — "Get your OTI badge" flow (sign → pay → issue)
+- Public `/verify/:address` page — anyone pastes any wallet, sees its badge tier and BAS proof link
+- Five-tier badge visuals (Ahmad to sign off design before build)
+- Admin panel additions: attestation stats (issued per tier, claim rate, revocations), manual revoke, fee/discount settings
 
 ### Open decisions before scoping into task prompts
-1. Badge tier score ranges and visual design (Ahmad — in discussion)
-2. Which chain(s) get the on-chain soulbound contract first
-3. MetaMask Snap: build in Phase 2B or defer to Phase 5
-4. Gas fee model per chain for paid on-chain tier
-5. OTI signing key management/rotation policy
+1. **Badge tier visual design** — Ahmad to finalise (5 distinct designs, one per tier, "fancy and differentiated")
+2. **Score thresholds per tier** — confirm exact score bands that map to each tier (thresholds exist in codebase, need confirming against current scoring output)
+3. **OTI signing key management/rotation policy** — how signing key is stored, rotated, and protected
+4. **Attestation fee amount** — specific price (in USD/BNB/OTI token). Ahmad decides, then admin panel manages it.
 
 ### Risks logged
-- Gas costs vary per chain — need fee model before paid tier launches
-- Off-chain attestations require trust in OTI's signing key — key compromise = fake badges possible
-- Badge re-score schedule needs tuning (too stale = bad actors slip through; too aggressive = gas spam)
-- MetaMask Snap review/publishing process needs research
+- OTI signing key compromise = fake badges possible — key storage/rotation policy must be defined before launch
 - Legal: "Verified" badge implies liability — clear disclaimer needed, consistent with WOR's compromised-wallet reporting
+- BAS dependency — if BAS has an outage, attestation writes fail. Read path (widget/extension) can fall back to OTI's own DB record until BAS recovers.
 
 ---
 
