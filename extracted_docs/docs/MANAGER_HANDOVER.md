@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 14, 2026 (session 13 — BF12/BF13/BF14/BF15/BF16/BF23 closed. BF13 full DB cache system + admin UI shipped and live. FF17/FF18/FF19/FF20/FF21/FF22/FF23 all closed. BF17/BF20/BF28 marked ✅ — covered by BF33. All fixes complete. Both Builders idle. Next item: BF12 (Backend Builder). Phase 1 effectively closed — Ahmad to create operational API keys (1D) to unblock Phase 5. Manager account credit exhausted — new Manager onboarding from this file.)
+> Last updated: July 14, 2026 (session 14 — BF12 closed. ALL fixes BF1–BF37 and FF1–FF23 now ✅. Both Builders idle. Phase 1 fully complete on the Builder side — Ahmad still needs to create operational API keys (1D) via admin panel to unblock Phase 5. Next build items: Task 12 (Telegram Bot) → 13 → 14 → 15, one at a time, after 1D done.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TASKS.md, FIXES.md, and DECISIONS.md in that order.**
 > **⚠️ Read `TOKENOMICS.md` before touching anything token-related — price/liquidity sections were deliberately removed at Ahmad's request. Do not add them back or estimate them yourself.**
 > **⚠️ D16 (evidence rule, non-negotiable): no signal value or test result may ever be estimated or guessed — only real on-chain data or a disclosed hard cap. This applies retroactively too: if a Builder reports something "verified" via code-reading only (no live wallet, no real API response), it is NOT verified. Send it back. This is exactly what happened with BF26 this session and why it's still open.
@@ -64,8 +64,10 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Chain count is correctly 15 in all public materials (12 working, 3 gated: BSC/Base/Optimism)
 - "Fantom" fully renamed to "Sonic" across all code and public materials
 
-**Only open item:**
-- **BF12** 🔴 (optional) — Railway auto-migrations. Backend Builder's next task. One-line fix to `railway.json`. Ahmad confirmed he wants it done.
+**All fixes complete as of July 14, 2026:**
+- BF1–BF37 all ✅ (BF36 = won't-fix by decision)
+- FF1–FF23 all ✅
+- No open fixes remain. Both Builders idle.
 
 **ADMIN_SECRET status:** Ahmad set `ADMIN_SECRET` in Railway Variables. Admin Panel login at `otiscore.vercel.app/admin` confirmed working.
 
@@ -119,24 +121,8 @@ Ahmad's directive: bug fixes/cleanup/polish are not tasks. Create `FIXES.md`, mo
 ### 1. ✅ DONE — All fixes complete (July 14, 2026)
 BF1–BF37 and FF1–FF23 all closed. Signal accuracy audit fully done. BF13 DB cache system live. Both Builders idle.
 
-### 2. Send BF12 to Backend Builder — NEXT ACTION
-Ahmad confirmed this is the next item. One-line fix: add `drizzle-kit push` to `railway.json`'s `buildCommand` so Railway auto-runs migrations on every deploy. Do NOT touch `nixpacks.toml`.
-
-**Prompt to send:**
-```
-Task: BF12 — Railway Auto-Migrations
-
-Currently Railway only runs pnpm install + build + start on
-deploy. drizzle-kit push never runs automatically — Ahmad
-has to run it manually via the Railway Console every time
-there's a schema change.
-
-Fix: add drizzle-kit push to railway.json's buildCommand.
-Do NOT touch nixpacks.toml — that file is sacred.
-
-Show the exact change made and confirm it. Do not mark
-BF12 ✅ yourself — report back and wait.
-```
+### 2. ✅ DONE — BF12 closed (July 14, 2026)
+`railway.json` `buildCommand` updated to append `drizzle-kit push` after build. Plain push used deliberately (not push-force). Confirmed and closed.
 
 ### 3. Ahmad's action — create two API keys (Phase 1 task 1D)
 Via admin panel at otiscore.vercel.app/admin:
