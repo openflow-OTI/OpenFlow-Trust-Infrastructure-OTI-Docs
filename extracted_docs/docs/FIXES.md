@@ -59,8 +59,8 @@
 
 ---
 
-### BF11 — Re-verify "Try It Live" Widget Against Railway Backend 🔴 OPEN
-**Priority:** Low-medium, small effort. The docs site's "Try It Live" widget had its API URL reverted during the Task 11 (docs site) remediation, but was never re-checked live after the redeploys. Just needs a live check that it's actually hitting the real Railway backend, not a stale/dev URL. Not yet assigned to a Builder.
+### BF11 — Re-verify "Try It Live" Widget Against Railway Backend ✅
+**Fixed:** July 14, 2026. API_BASE in oti-docs/src/components/WalletScorer.jsx confirmed correct (https://workspaceapi-server-production-5c0c.up.railway.app/api). Live test: Vitalik's wallet scored 96/100, cached:false — widget hitting real Railway backend. Backend confirmed shared fetch client uses setBaseUrl() at runtime, no hardcoded URL at library level.
 
 ### BF12 — Railway Deploys Don't Auto-Run Migrations 🔴 OPEN (optional)
 **Priority:** Low, small effort, not urgent. Confirmed July 5, 2026: Railway's deploy pipeline only runs `pnpm install && build && start` — it does **not** run `drizzle-kit push`. Every schema change currently needs Ahmad to manually run the migration against the Railway production DB after deploying (this is how BF3 above was applied). Optional fix: add `drizzle-kit push` to `railway.json`'s `buildCommand` (a one-line change — NOT to `nixpacks.toml`, which stays sacred). Not yet assigned; only worth doing if Ahmad wants to remove the manual step.
@@ -68,14 +68,14 @@
 ### BF13 — DB Never Used as Cache Source — Scores Expire on Every Restart 🔴 OPEN — HIGH PRIORITY
 **Priority:** High — directly impacts scale and trust accuracy. Discovered July 11, 2026 via full codebase audit. The DB (`chain_scores` table) is write-only from the cache's perspective — it receives every new score but is never consulted when answering a request. The only cache is a 500-entry in-memory LRU with a 5-minute TTL that is wiped on every Railway restart. Fix: make the score route check the DB first — if a score exists for that wallet+chain within the last 30 days, return it immediately without calling any external API. Ahmad's decision: 30-day validity, admin panel control over the rescore period (so Ahmad can force wallet rescores on a rolling daily basis, not all at once), keep the highest recorded score in sync. This fix is the single biggest lever for handling scale — the majority of repeat requests will never touch external APIs once it is in place.
 
-### BF14 — Dead In-Memory History Write Still Running After BF6 🔴 OPEN
-**Priority:** Low, small effort. BF6 fixed the history endpoint to read from the `chain_scores` DB table — but `recordHistory()` (lib/history.ts) is still being called on every fresh score, writing to an in-memory Map that nothing reads anymore. It is dead code burning memory on every request. Fix: remove the `recordHistory()` call from the score route and delete or archive `lib/history.ts`.
+### BF14 — Dead In-Memory History Write Still Running After BF6 ✅
+**Fixed:** July 14, 2026. Removed recordHistory() call from score route, deleted lib/history.ts. Confirmed no other imports existed. Score route verified working after removal.
 
-### BF15 — Compromised Wallet DB Check Runs on Every Request Including Cache Hits 🔴 OPEN
-**Priority:** Medium. The compromised-wallet SELECT against the DB runs before the cache check — meaning even a fully cached request pays for a DB round-trip every single time. Under high load this becomes a constant unnecessary DB tax. Fix: move the compromised-wallet check after the cache check, or maintain a small in-memory set of compromised addresses that refreshes periodically (fast lookup, no DB call per request).
+### BF15 — Compromised Wallet DB Check Runs on Every Request Including Cache Hits ✅
+**Fixed:** July 14, 2026. Cache key now built immediately after PLAN_UPGRADE_REQUIRED check. Cache hit returns immediately with zero DB calls. resolveChainFamily + compromised DB query only run on cache miss. Annotated BF15 in code for traceability.
 
-### BF16 — Chain Routing Duplicated Across 4+ Files — No Central Registry 🔴 OPEN
-**Priority:** Medium — not urgent now but becomes a real bug risk as new chains are added. Discovered July 11, 2026. Chain routing logic (which fetcher to call for which chain) is a raw if/else block copy-pasted independently in: `score.ts` (routing), `score.ts` (validateRequest), `detect.ts` (auto-detection), `chainFamily.ts` (persistence), and likely `routes/chains.ts`. Adding one new chain today requires editing 4–5 files by hand and keeping them in sync manually. Fix: consolidate into a single chain registry (config map) that all four locations import from — one place to add a chain, everything else derives from it automatically.
+### BF16 — Chain Routing Duplicated Across 4+ Files — No Central Registry ✅
+**Fixed:** July 14, 2026. New file: src/lib/chainRegistry.ts — exports SUPPORTED_CHAINS, ALL_CHAIN_ZOD_ENUM, CHAIN_FAMILY_MAP, PLAN_UPGRADE_REQUIRED. score.ts and routes/history.ts now import from registry. chainFamily.ts left independent (separate workspace package — importing from api-server would create circular dependency). Adding a new chain now requires editing one file only.
 
 ### BF17 — Tron Smart Contract Diversity Structurally Broken (to = self address) 🔴 OPEN — HIGH
 **Priority:** High — discovered during BF10 live result review, July 12, 2026. Root cause confirmed by full diagnostic audit: Tron's transaction shaping sets `to` and `from` fields to the wallet's own address rather than the actual counterpart/contract address. This means the "unique contract addresses" diversity component is structurally capped at ≤1 regardless of how many distinct contracts the wallet actually used. A wallet with 1 contract call can score 20/20 because the volume-threshold fallback path in scoring.ts drives the score, not real diversity. Fix: extract the actual Tronscan contract address from each transaction and use it for the unique-contract diversity count.
@@ -103,8 +103,8 @@
 **Fix:** In `etherscan.ts`, rename `fantom` → `sonic` throughout `CHAIN_ID` and the reverse lookup table (chain ID stays `"146"`). Update any user/API-facing chain name strings ("Fantom" / "Fantom Opera" → "Sonic" / "Sonic Mainnet") in responses (`/api/chains`, `chain` field) and anywhere else the chain is labeled.
 **Fixed:** July 12, 2026. Renamed across `etherscan.ts`, `score.ts`, `admin.ts`, `history.ts`, `lib/db/chainFamily.ts` — enums/schemas updated, "fantom" removed everywhere in code, `sonic` mapped to the `evm` family. Verified live: `GET /api/chains` lists `sonic`/146, no `fantom`; `?chain=fantom` now correctly rejected; `?chain=sonic` on `0x21be370D5312f44cb42ce377BC9b8a0cef1a4C83` returns real data (txCount 2), cross-checked against sonicscan.org's public explorer (also shows 2 transactions). Remaining "Fantom" mentions are in non-functional docs only (README.md, CHANGELOG.md, ARCHITECTURE.md, TASKS.md) — doc sweep held pending Manager confirmation, outside BF22's code scope.
 
-### BF23 — Scroll, Sepolia, and Holesky Listed as Supported But Not Implemented 🔴 OPEN — HIGH
-**Priority:** High — documentation integrity issue. Discovered during full diagnostic audit, July 12, 2026. All three chains appear in the live docs and whitepaper as supported chains, but none of them exist anywhere in the codebase — not in the chain ID map, not in the Zod schema enum. Any request to `?chain=scroll`, `?chain=sepolia`, or `?chain=holesky` returns a 400 "Invalid enum value" error. Until they are implemented, they must be removed from all documentation, the docs site chain list, the whitepaper chain list, and the UI chain selector. Chain count across all public-facing materials must drop from 15 to 12 until these three are real.
+### BF23 — Scroll, Sepolia, and Holesky Listed as Supported But Not Implemented ✅
+**Fixed:** July 14, 2026. Backend confirmed all three absent from Zod enum, CHAIN_ID map, chainFamily, and detect.ts. GET /api/chains confirmed not listing them (live response verified). Frontend: absent from chains.ts, supported-chains.md, WalletScorer.jsx. Whitepaper EVM chain list cleaned (removed "Scroll, Sepolia, Holesky" from Section 06). Chain count stays at 15 across all public materials — BSC/Base/Optimism fill those slots as gated chains (Ahmad's decision).
 
 ### BF24 — All 7 Working EVM Chains Have No Transaction Pagination ✅
 **Priority:** High. Discovered during full diagnostic audit, July 12, 2026. Every working EVM chain (Ethereum, Polygon, Arbitrum, Avalanche, Linea, zkSync, and Fantom once chain ID is fixed) hard-caps at a single page: 1,000 native transactions, 500 token transfers, 500 internal transactions — all fetched oldest-first with no pagination loop. This is the exact same class of bug that BF10 fixed for all 5 non-EVM chains, but it was never applied to EVM. Live confirmed on Ethereum: vitalik.eth returns exactly txCount=1000 (the cap). Any wallet with more than 1,000 lifetime native transactions has all of its more-recent activity silently excluded — transaction count, timing patterns, and contract diversity are all computed from an old, incomplete slice of history. Fix: apply cursor/page pagination to EVM fetching the same way BF10 applied it to non-EVM, with a page cap and time budget for safety.
@@ -231,13 +231,8 @@
 ### FF21 — Docs Site Vercel Build Config Broken for Subproject ✅
 **Fixed:** July 12, 2026. `oti-docs/vercel.json` build configuration fixed so the docs subproject builds/deploys correctly on Vercel. Verified live.
 
-### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper 🔴 OPEN — HIGH PRIORITY
-**Raised by Ahmad:** July 9, 2026. The largest open frontend fix — a full read-through of all three public-facing surfaces (marketing homepage, developer docs site, whitepaper) for anything that reads as AI-generated rather than a deliberately designed product site:
-1. **Copy/tone** — flag and rewrite any AI-sounding boilerplate phrasing.
-2. **Emoji usage** — audit and replace/remove emoji everywhere it appears (not just the Trust Signals/Use Cases sections) with a proper icon set (Lucide/Heroicons) in mint where an icon is still needed.
-3. **Any other AI tell** — visual or textual, caught during the read-through.
-
-**Status:** Scoped, not yet sent to a Builder — confirm priority with Ahmad before sending (this is broad enough that it may be worth splitting into three smaller passes — homepage, docs, whitepaper — rather than one large one). Not yet assigned an order relative to BF10 on the backend side; they're independent and can run in parallel once both are prioritized.
+### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper ✅
+**Fixed:** July 14, 2026. Full read-through of all three surfaces. No emoji found anywhere (Lucide icons already in use). Homepage: 4 copy rewrites (How It Works steps, Use Cases). Whitepaper: 9 copy rewrites across Sections 02, 03, 04, 09, 10, 11, 12 — AI boilerplate compressed and grounded. Docs site: already clean, no changes needed.
 
 ---
 
