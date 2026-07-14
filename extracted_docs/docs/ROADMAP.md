@@ -90,8 +90,14 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 
 ---
 
-## PHASE 3 — MONETIZATION INFRASTRUCTURE
+## PHASE 3 — MONETIZATION INFRASTRUCTURE + TOKEN
 **Owner: Both Builders | Status: Planned — infrastructure partially ready**
+
+**Strategic decision (Ahmad, July 14, 2026):** Phase 3 now has two pillars:
+1. **Fiat/crypto payment infrastructure** — paid API plans, self-serve portal, Stripe + Coinbase Commerce
+2. **OTI token creation + ecosystem integration + presale** — token deployed on BSC, plugged into the platform (Rewards Pool, staking, ecosystem utility), presale runs during this phase to fund continued development
+
+Exchange listing is a separate, later event — happens after Phase 3 revenue streams are working and the token has real utility behind it. Not scoped here; Ahmad decides timing.
 
 | Feature | Notes |
 |---|---|
@@ -100,7 +106,10 @@ Even if the attacker has the private keys, they don't have the pre-registered pa
 | Fiat payments | Stripe — easiest integration, industry standard |
 | Crypto payments | Coinbase Commerce (hosted checkout, low setup) |
 | BSC/Base/Optimism unlock | $49/mo Etherscan Lite — Ahmad's decision |
-| **OTI token + presale** | Finalized design — see `TOKENOMICS.md`. Own independent token (not the OpenFlow "FLOW" ecosystem token), 30,000,000 fixed supply, launching on BSC first, cross-chain later. Price/liquidity design intentionally deferred — do not reconstruct. Not yet scoped into Builder tasks. |
+| **OTI token — create + deploy** | 30,000,000 fixed supply, BSC first, cross-chain later. See `TOKENOMICS.md`. Own independent token — NOT the OpenFlow "FLOW" ecosystem token. |
+| **OTI token — ecosystem integration** | Plug token into the platform: Revenue-Backed Rewards Pool (buyback from API revenue), staking, and any other ecosystem utility Ahmad defines. |
+| **OTI token — presale** | Pre-listing sale ($10k raise, 500k tokens, BNB/USDT on BSC). Runs during Phase 3 to fund continued development. Price/liquidity design deferred — do not reconstruct without Ahmad. |
+| **Exchange listing** | Post-Phase 3 milestone — after revenue streams are live and generating real income. Ahmad decides timing. Not scoped into Phase 3 tasks. |
 
 ---
 

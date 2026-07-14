@@ -132,7 +132,14 @@ Once done, Phase 1 is fully closed and Phase 5 (bots + widget + extension) is un
 
 ### 4. After 1D done — start Phase 2 (WOR)
 **Confirmed strategic order (Ahmad, July 14, 2026): Phase 2 → 3 → 4 → 5.**
-Phase 5 (distribution channels) is last — it hits harder once WOR, monetization, and growth features are all live. Send Phase 2 (WOR) to both Builders next. Backend: `wallet_ownership` table + register/report endpoints + EIP-191 verification. Frontend: registration UI + report UI + passkey integration. See ROADMAP.md Phase 2.
+Phase 5 (distribution channels) is last — it hits harder once WOR, monetization, token, and growth features are all live.
+
+**Phase 3 now has two pillars (Ahmad, July 14, 2026):**
+- Fiat/crypto payment infrastructure (self-serve portal, Stripe, Coinbase Commerce)
+- OTI token: create + deploy on BSC + plug into ecosystem + run presale
+- Exchange listing is a separate post-Phase-3 event, after revenue streams are working. See TOKENOMICS.md.
+
+**Next immediate action:** Design Phase 2 (WOR) fully and carefully before writing any Builder prompts — Ahmad wants all features listed including admin dashboard connections. Ahmad also has an additional WOR layer to share before design begins.
 
 ### 5. Whitepaper additions (when ready)
 Draft exists at docs/whitepaper-additions-draft.md.

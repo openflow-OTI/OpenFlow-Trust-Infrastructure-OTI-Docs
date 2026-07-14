@@ -1,7 +1,8 @@
 # OTI Token — Supply, Sale Structure & Revenue Distribution
 
-> Last updated: July 9, 2026 (session 6) | Maintained by: Development Manager
+> Last updated: July 14, 2026 (session 14) | Maintained by: Development Manager
 > **Status: Ahmad-approved design, locked — EXCEPT price and liquidity, which are explicitly out of scope here.** This is OTI's own independent token — it is NOT the OpenFlow "FLOW" ecosystem token discussed in earlier planning. OTI can live with or without OpenFlow, so it has its own token, its own supply, and its own economics. Launch chain: BNB Smart Chain (BSC) first, with cross-chain expansion planned later.
+> **Build + presale timing (Ahmad, July 14, 2026):** Token creation, ecosystem integration, and presale all happen in Phase 3 (alongside monetization infrastructure). Exchange listing is a separate, later event — after Phase 3 revenue streams are live and working. Do not conflate presale with listing.
 > **Price and liquidity pool design are intentionally NOT covered in this document.** Ahmad decided the team will determine token price and liquidity pool structure later, closer to launch. Do not infer or reconstruct pricing/liquidity numbers from earlier versions of this file — they were removed on purpose.
 > Regulatory note: Ahmad has explicitly decided this raise is small enough not to require formal securities/regulatory review at this stage. This decision was flagged to him once by the Manager and is his call to make.
 
