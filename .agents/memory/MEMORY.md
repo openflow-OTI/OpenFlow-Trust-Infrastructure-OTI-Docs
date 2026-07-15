@@ -9,4 +9,6 @@
 - [D16 evidence standard, applied retroactively](d16-evidence-standard.md) — a Builder's claim of "verified" is not evidence; check whether it was a real wallet/fresh call or code-inspection/cached response before accepting a close.
 - [Contract addresses scored like any wallet](contract-address-scoring-decision.md) — OTI doesn't verify identity for any address, so no address-type gatekeeping; bot/scam risk deferred to a future behavioral-detection phase, not solved by rejecting contracts.
 - [Phase 2B final architecture](phase2b-architecture.md) — BAS on BNB Chain only; no soulbound NFT; no MetaMask Snap; one-time fee; first 10M free; OTI auto-rescores; widget + extension are the display layers.
-</content>
+- [compromised_wallets is single source of truth](compromised-wallets-source-of-truth.md) — score endpoint, admin WOR Compromised view, and dashboard stats must ALL query compromised_wallets. BF38/BF39/BF40 all caused by splitting this across compromised_wallets and wallet_ownership.status.
+- [WalletConnect challenge TTL trap](walletconnect-challenge-ttl.md) — self-report challenge expires in 15 min; any test taking longer silently hits the 400 branch. Ahmad's early self-reports failed this way and looked like backend bugs.
+- [/services hub decision](services-hub-decision.md) — Ahmad decided July 15 2026: homepage at / stays unchanged; new service portal lives at /services with navbar link. Cards: Score, WOR, API Docs, Whitepaper, Coming Soon placeholders.
