@@ -240,6 +240,9 @@
 ### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper ✅
 **Fixed:** July 14, 2026. Full read-through of all three surfaces. No emoji found anywhere (Lucide icons already in use). Homepage: 4 copy rewrites (How It Works steps, Use Cases). Whitepaper: 9 copy rewrites across Sections 02, 03, 04, 09, 10, 11, 12 — AI boilerplate compressed and grounded. Docs site: already clean, no changes needed.
 
+### BF38 — WOR: Self-Report Not Syncing wallet_ownership Status + Admin Unflag Not Working 🔴 ACTIVE — July 15, 2026
+Two related issues in the WOR backend. (1) POST /api/report/compromised writes to compromised_wallets correctly (score page shows the warning) but does NOT update wallet_ownership.status to 'compromised' — so the admin WOR Registry still shows those wallets as "active" and the Compromised sub-view returns 0 results. (2) Admin cannot remove/revoke a compromised wallet — either DELETE /api/admin/wor/flag/:address is not working or the status rollback in wallet_ownership isn't happening. Both confirmed by Ahmad live on July 15, 2026.
+
 ### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements 🔴 ACTIVE — July 14, 2026
 Four issues raised by Ahmad after live verification of Task 17:
 1. Admin dashboard "total compromised wallets" stat not wired to the WOR tab — clicking it should navigate there.
