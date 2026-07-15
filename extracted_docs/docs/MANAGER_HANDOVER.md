@@ -56,7 +56,7 @@ Ahmad is CEO of OpenFlow Labs and sole GitHub merge authority. He does NOT want 
 - Admin Panel fully working — Dashboard, API Keys, Query History, Cache, Plan Configs, WOR tab
 
 **Fix status as of July 15, 2026:**
-- BF1–BF39: all ✅. BF40 is ⏳ AWAITING AHMAD LIVE VERIFICATION — new Backend Builder self-reported the two counts already match in production (no code change made), but this has not been independently confirmed by Ahmad or the Manager yet. Do not mark closed until Ahmad checks the actual dashboard + WOR Compromised sub-view live.
+- BF1–BF40: all ✅. BF40's real root cause was the WOR admin Compromised tab calling `/admin/wor/registrations?status=compromised` (filters `wallet_ownership.status`) instead of BF39's `/admin/wor/compromised` (sources `compromised_wallets`). Fixed by making the `status=compromised` path on `/admin/wor/registrations` source from `compromised_wallets` too. Deployed, Ahmad confirmed live — dashboard, Compromised tab, and stats all agree now. Closed.
 - FF1–FF27: FF25/FF26/FF27 are 🔴 ACTIVE (Frontend Builder working on them with Task 18)
 - Task 18 (/services hub page): 🔴 ACTIVE (Frontend Builder working on it)
 
