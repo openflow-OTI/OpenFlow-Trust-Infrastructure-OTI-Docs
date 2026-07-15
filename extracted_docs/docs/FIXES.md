@@ -245,11 +245,12 @@
 **Fix:** Added `GET /admin/wor/compromised` to `worAdmin.ts`, documented in `openapi.yaml`. Deployed to Railway. Verified live.
 
 ### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements 🔴 ACTIVE — July 14, 2026
-Four issues raised by Ahmad after live verification of Task 17:
-1. Admin dashboard "total compromised wallets" stat not wired to the WOR tab — clicking it should navigate there.
+Five issues confirmed after live verification of Task 17 and BF38:
+1. Admin dashboard FLAGGED WALLETS stat card not wired to the WOR tab — clicking it should navigate there. Also: the card count does not re-fetch after an unflag action in the WOR Compromised sub-view — removing a flag leaves the dashboard count stale until a full page reload.
 2. WOR flows not surfaced within the site — users should be able to reach /register from the scoring tool, results page, and homepage without knowing the URL.
 3. /register, /report, and admin WOR tab UI/UX is too plain — needs a professional redesign matching the quality bar of the rest of the app.
 4. Admin needs a visible delete button for wallets registered as compromised (for testing; will be removed later) — backend DELETE /api/admin/wor/flag/:address already exists.
+5. /report page UX sequencing: sign-then-passkey order, submit disabled until both factors present, mobile table overflow fix.
 
 ---
 
