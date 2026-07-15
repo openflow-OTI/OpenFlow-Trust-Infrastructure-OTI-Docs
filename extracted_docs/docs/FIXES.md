@@ -240,8 +240,13 @@
 ### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper ✅
 **Fixed:** July 14, 2026. Full read-through of all three surfaces. No emoji found anywhere (Lucide icons already in use). Homepage: 4 copy rewrites (How It Works steps, Use Cases). Whitepaper: 9 copy rewrites across Sections 02, 03, 04, 09, 10, 11, 12 — AI boilerplate compressed and grounded. Docs site: already clean, no changes needed.
 
-### BF38 — WOR: Self-Report Status Sync + Admin Unflag Investigation ⏳ PENDING AHMAD CONFIRMATION — July 15, 2026
-Investigated live by Backend Builder against real Postgres with two fresh EVM keypairs. Both bugs were already correct in code: (1) POST /api/report/compromised correctly writes to both compromised_wallets AND updates wallet_ownership.status = 'compromised' — confirmed via psql. (2) DELETE /api/admin/wor/flag/:address correctly deletes from compromised_wallets, restores status to 'active', and invalidates score cache — confirmed via psql and score endpoint. Builder's assessment: Ahmad may have been hitting a Railway deploy that predated the Task 16 migration. Awaiting Ahmad to confirm he is on the latest Railway deploy before closing.
+### BF38 — WOR: Self-Report Does Not Update wallet_ownership.status + Admin Compromised View Returns 0 🔴 ACTIVE — July 15, 2026
+Confirmed live on production (post-redeployment) July 15, 2026. Exact symptoms:
+- `POST /api/report/compromised` writes to `compromised_wallets` correctly (score page shows compromised warning) but does NOT update `wallet_ownership.status` to `'compromised'` — Registry sub-view still shows those wallets as `active`.
+- Admin → WOR → Compromised sub-view returns 0 results even after self-reporting wallets (the view queries by `status = 'compromised'`, finds none).
+- Dashboard FLAGGED WALLETS card shows 0.
+Two wallets confirmed registered: `0x3cdd64c0cf...` (15/07/2026 08:36) and `0x55e4b875b5...` (14/07/2026 15:38) — both show `active` in Registry despite being self-reported as compromised.
+Root cause: `POST /api/report/compromised` handler is missing the `UPDATE wallet_ownership SET status = 'compromised' WHERE address = ?` step, or it is executing but failing silently. Fix must also ensure `DELETE /api/admin/wor/flag/:address` restores status back to `'active'` and invalidates the score cache.
 
 ### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements 🔴 ACTIVE — July 14, 2026
 Four issues raised by Ahmad after live verification of Task 17:
