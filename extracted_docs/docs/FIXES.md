@@ -244,14 +244,20 @@
 **Root cause:** `GET /admin/wor/compromised` never existed — only `GET /admin/wor/registrations?status=compromised` did. Admin dashboard surfaces were hitting the missing route; 404s rendered silently as "0 results." The self-report transaction and unflag handler were correct all along. Confirmed via live end-to-end test on production (fresh wallet `0xd4A1FAC47f8150FF58285D4Ba1a9694b503b2c3F`): POST /api/report/compromised returns 200, both DB writes commit atomically (wallet_ownership.status → 'compromised', compromised_wallets row inserted), score endpoint immediately shows compromised warning. Ahmad's two original wallets (0x55e4b875b5..., 0x3cdd64c0cf...) have no compromised_wallets row — their self-report calls hit an early-exit branch (most likely expired 15-min challenge) and never reached the transaction; they will need to be re-reported with a fresh challenge.
 **Fix:** Added `GET /admin/wor/compromised` to `worAdmin.ts`, documented in `openapi.yaml`. Deployed to Railway. Verified live.
 
-### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements ⏳ AWAITING AHMAD LIVE VERIFICATION — July 15, 2026
-Built July 15, 2026. npm run build clean, zero TS errors. Five items shipped:
-1. Dashboard FLAGGED WALLETS live refresh — flag/unflag actions in WOR now invalidate ['admin','stats'] so the count updates immediately without a page reload.
-2. Results page WOR CTA — "Wallet compromised? Report it →" now shown when a wallet is registered and not compromised (unregistered "Register it" CTA was already present).
-3. /report submit guard — Submit button disabled until both signature and passkey have values (not just !loading).
-4. /report success icon — ShieldAlert (Lucide) replacing the old blob/logo icon.
-5. Mobile WOR table overflow — already handled via shared .admin-table-wrap (overflow-x: auto).
-Note: Builder's FIXES.md had a stale FF24 ID ("Query History Export to CSV" from prior Builder's copy). Manager's copy is the source of truth — that item does not exist in the Manager's FIXES.md and should be disregarded. Awaiting Ahmad to push and verify on live Vercel.
+### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements ✅ — July 15, 2026
+Verified live by Ahmad July 15, 2026. All five items confirmed working: dashboard FLAGGED WALLETS live refresh, results page "Report it →" CTA, /report submit guard, ShieldAlert success icon, mobile table overflow. Three follow-up items logged as FF25, FF26, FF27. Admin "Remove Flag" button in WOR — Ahmad will remove this himself.
+
+### BF39 — Admin WOR Compromised View Misses Wallets Not in wallet_ownership 🔴 ACTIVE — July 15, 2026
+Confirmed July 15, 2026. GET /admin/wor/compromised queries wallet_ownership WHERE status = 'compromised'. Any wallet that is in compromised_wallets but has no wallet_ownership row (address was never WOR-registered, or registration predates WOR), or whose wallet_ownership.status was not updated due to BF38's old silent-fail, will show the compromised warning on the score page but will not appear in the WOR admin Compromised sub-view — leaving an unflag orphan Ahmad cannot remove. Fix: rewrite GET /admin/wor/compromised to query compromised_wallets as the primary source of truth, LEFT JOIN wallet_ownership for additional metadata. This makes the view consistent with the score endpoint, which also reads from compromised_wallets directly.
+
+### FF25 — WOR Portal: Register Should Be Primary Entry Point 🔴 ACTIVE — July 15, 2026
+Wherever WOR is surfaced on the site (homepage WOR section, results page CTA, score input page link), /register should be the first/primary action and /report should be secondary. Currently /report is presented first in some places. Reorder so Register is always the lead CTA.
+
+### FF26 — WOR DApp Connect: OTI Logo Missing (Shows "o" Placeholder) 🔴 ACTIVE — July 15, 2026
+When Trust Wallet (and any WalletConnect-compatible wallet) shows the "Connect DApp" modal for otiscore.vercel.app, it displays a circle with the letter "o" instead of the OTI logo. Fix: add a proper 512×512 OTI logo PNG to the frontend's public/ folder, reference it in the web app manifest (manifest.json / site.webmanifest) and in the WalletConnect metadata passed when initialising the connection (the iconUrl field). The logo should appear as a clean circle icon matching the OTI brand.
+
+### FF27 — /register Success Screen: OTI Logo in Circle 🔴 ACTIVE — July 15, 2026
+The /register success screen (step 4 — DONE state) should display the OTI logo inside a circle, matching the brand treatment Ahmad expects. Currently it does not show the logo in a circle. Use the same OTI logo asset added in FF26.
 
 ---
 
