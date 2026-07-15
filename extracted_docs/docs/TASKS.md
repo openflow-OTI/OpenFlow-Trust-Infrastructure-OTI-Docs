@@ -47,7 +47,8 @@ Docusaurus site covering Getting Started, API Reference (weighted signal shape),
 
 ## 🔴 Active Queue
 
-Nothing active.
+### TASK 18 — Frontend: Services Hub Page (`/services`) 🔴 ACTIVE — July 15, 2026
+New page at `/services` — a portal/hub that surfaces all OTI services as clickable cards so any user (wallet owner, developer, curious visitor) can immediately find what they need without knowing the URL structure. Cards: Score a Wallet → /score, Wallet Ownership Registry (Register / Report) → /register + /report, API for Developers → /docs, Whitepaper → /whitepaper, plus placeholder cards for future services. Homepage stays unchanged. `/services` link added to the navbar. Page must use the locked OTI color system, be fully responsive (375px mobile), and match the visual quality of the rest of the app. Running alongside FF25/FF26/FF27 frontend fixes and BF39 backend fix.
 
 ---
 

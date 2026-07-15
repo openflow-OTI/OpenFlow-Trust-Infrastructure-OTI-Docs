@@ -67,7 +67,8 @@
 
 ## 🔴 Your Task Queue
 
-Nothing queued. Your active item is fix FF24 in FIXES.md — check there.
+### TASK 18 — Services Hub Page (`/services`) 🔴 ACTIVE — July 15, 2026
+New page at `/services`. Full prompt in the Manager's task message. Running alongside FF25/FF26/FF27 in FIXES.md — do all four together.
 
 ---
 
