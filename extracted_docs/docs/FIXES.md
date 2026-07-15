@@ -251,6 +251,9 @@ Verified live by Ahmad July 15, 2026. All five items confirmed working: dashboar
 **Fix:** GET /admin/wor/compromised now selects from compromised_wallets as the primary source (same table the score endpoint reads), LEFT JOIN wallet_ownership on wo.wallet_address = LOWER(cw.address) for optional metadata. registered_at is now nullable in the response (documented in openapi.yaml). Same response field names preserved — no frontend changes needed.
 **Evidence:** Orphan insert (address with no wallet_ownership row) confirmed returned by endpoint. DELETE /api/admin/wor/flag/:address confirmed removes both registered and orphaned entries, restores wallet_ownership.status where applicable. Deployed to Railway. Awaiting Ahmad to confirm the orphaned wallet now appears in the admin Compromised sub-view and can be removed.
 
+### BF40 — Dashboard FLAGGED WALLETS Count Mismatches WOR Compromised View 🔴 ACTIVE — July 15, 2026
+Confirmed July 15, 2026. Dashboard FLAGGED WALLETS card shows 1, WOR admin Compromised sub-view shows 0 results. The GET /api/admin/stats "flagged_wallets" count and GET /admin/wor/compromised are querying different tables or conditions. After BF39, the Compromised view queries compromised_wallets. The stats endpoint likely still queries wallet_ownership WHERE status = 'compromised'. These must be aligned — both should query the same source of truth (compromised_wallets).
+
 ### FF25 — WOR Portal: Register Should Be Primary Entry Point 🔴 ACTIVE — July 15, 2026
 Wherever WOR is surfaced on the site (homepage WOR section, results page CTA, score input page link), /register should be the first/primary action and /report should be secondary. Currently /report is presented first in some places. Reorder so Register is always the lead CTA.
 
