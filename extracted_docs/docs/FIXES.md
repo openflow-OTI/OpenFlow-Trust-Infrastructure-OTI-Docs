@@ -244,13 +244,14 @@
 **Root cause:** `GET /admin/wor/compromised` never existed — only `GET /admin/wor/registrations?status=compromised` did. Admin dashboard surfaces were hitting the missing route; 404s rendered silently as "0 results." The self-report transaction and unflag handler were correct all along. Confirmed via live end-to-end test on production (fresh wallet `0xd4A1FAC47f8150FF58285D4Ba1a9694b503b2c3F`): POST /api/report/compromised returns 200, both DB writes commit atomically (wallet_ownership.status → 'compromised', compromised_wallets row inserted), score endpoint immediately shows compromised warning. Ahmad's two original wallets (0x55e4b875b5..., 0x3cdd64c0cf...) have no compromised_wallets row — their self-report calls hit an early-exit branch (most likely expired 15-min challenge) and never reached the transaction; they will need to be re-reported with a fresh challenge.
 **Fix:** Added `GET /admin/wor/compromised` to `worAdmin.ts`, documented in `openapi.yaml`. Deployed to Railway. Verified live.
 
-### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements 🔴 ACTIVE — July 14, 2026
-Five issues confirmed after live verification of Task 17 and BF38:
-1. Admin dashboard FLAGGED WALLETS stat card not wired to the WOR tab — clicking it should navigate there. Also: the card count does not re-fetch after an unflag action in the WOR Compromised sub-view — removing a flag leaves the dashboard count stale until a full page reload.
-2. WOR flows not surfaced within the site — users should be able to reach /register from the scoring tool, results page, and homepage without knowing the URL.
-3. /register, /report, and admin WOR tab UI/UX is too plain — needs a professional redesign matching the quality bar of the rest of the app.
-4. Admin needs a visible delete button for wallets registered as compromised (for testing; will be removed later) — backend DELETE /api/admin/wor/flag/:address already exists.
-5. /report page UX sequencing: sign-then-passkey order, submit disabled until both factors present, mobile table overflow fix.
+### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements ⏳ AWAITING AHMAD LIVE VERIFICATION — July 15, 2026
+Built July 15, 2026. npm run build clean, zero TS errors. Five items shipped:
+1. Dashboard FLAGGED WALLETS live refresh — flag/unflag actions in WOR now invalidate ['admin','stats'] so the count updates immediately without a page reload.
+2. Results page WOR CTA — "Wallet compromised? Report it →" now shown when a wallet is registered and not compromised (unregistered "Register it" CTA was already present).
+3. /report submit guard — Submit button disabled until both signature and passkey have values (not just !loading).
+4. /report success icon — ShieldAlert (Lucide) replacing the old blob/logo icon.
+5. Mobile WOR table overflow — already handled via shared .admin-table-wrap (overflow-x: auto).
+Note: Builder's FIXES.md had a stale FF24 ID ("Query History Export to CSV" from prior Builder's copy). Manager's copy is the source of truth — that item does not exist in the Manager's FIXES.md and should be disregarded. Awaiting Ahmad to push and verify on live Vercel.
 
 ---
 
