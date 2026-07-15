@@ -240,8 +240,8 @@
 ### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper ✅
 **Fixed:** July 14, 2026. Full read-through of all three surfaces. No emoji found anywhere (Lucide icons already in use). Homepage: 4 copy rewrites (How It Works steps, Use Cases). Whitepaper: 9 copy rewrites across Sections 02, 03, 04, 09, 10, 11, 12 — AI boilerplate compressed and grounded. Docs site: already clean, no changes needed.
 
-### BF38 — WOR: Self-Report Not Syncing wallet_ownership Status + Admin Unflag Not Working 🔴 ACTIVE — July 15, 2026
-Two related issues in the WOR backend. (1) POST /api/report/compromised writes to compromised_wallets correctly (score page shows the warning) but does NOT update wallet_ownership.status to 'compromised' — so the admin WOR Registry still shows those wallets as "active" and the Compromised sub-view returns 0 results. (2) Admin cannot remove/revoke a compromised wallet — either DELETE /api/admin/wor/flag/:address is not working or the status rollback in wallet_ownership isn't happening. Both confirmed by Ahmad live on July 15, 2026.
+### BF38 — WOR: Self-Report Status Sync + Admin Unflag Investigation ⏳ PENDING AHMAD CONFIRMATION — July 15, 2026
+Investigated live by Backend Builder against real Postgres with two fresh EVM keypairs. Both bugs were already correct in code: (1) POST /api/report/compromised correctly writes to both compromised_wallets AND updates wallet_ownership.status = 'compromised' — confirmed via psql. (2) DELETE /api/admin/wor/flag/:address correctly deletes from compromised_wallets, restores status to 'active', and invalidates score cache — confirmed via psql and score endpoint. Builder's assessment: Ahmad may have been hitting a Railway deploy that predated the Task 16 migration. Awaiting Ahmad to confirm he is on the latest Railway deploy before closing.
 
 ### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements 🔴 ACTIVE — July 14, 2026
 Four issues raised by Ahmad after live verification of Task 17:
