@@ -240,13 +240,9 @@
 ### FF17 — "AI-Native Tell" Cleanup: Copy, Tone, and Emoji Across Homepage, Docs, and Whitepaper ✅
 **Fixed:** July 14, 2026. Full read-through of all three surfaces. No emoji found anywhere (Lucide icons already in use). Homepage: 4 copy rewrites (How It Works steps, Use Cases). Whitepaper: 9 copy rewrites across Sections 02, 03, 04, 09, 10, 11, 12 — AI boilerplate compressed and grounded. Docs site: already clean, no changes needed.
 
-### BF38 — WOR: Self-Report Does Not Update wallet_ownership.status + Admin Compromised View Returns 0 🔴 ACTIVE — July 15, 2026
-Confirmed live on production (post-redeployment) July 15, 2026. Exact symptoms:
-- `POST /api/report/compromised` writes to `compromised_wallets` correctly (score page shows compromised warning) but does NOT update `wallet_ownership.status` to `'compromised'` — Registry sub-view still shows those wallets as `active`.
-- Admin → WOR → Compromised sub-view returns 0 results even after self-reporting wallets (the view queries by `status = 'compromised'`, finds none).
-- Dashboard FLAGGED WALLETS card shows 0.
-Two wallets confirmed registered: `0x3cdd64c0cf...` (15/07/2026 08:36) and `0x55e4b875b5...` (14/07/2026 15:38) — both show `active` in Registry despite being self-reported as compromised.
-Root cause: `POST /api/report/compromised` handler is missing the `UPDATE wallet_ownership SET status = 'compromised' WHERE address = ?` step, or it is executing but failing silently. Fix must also ensure `DELETE /api/admin/wor/flag/:address` restores status back to `'active'` and invalidates the score cache.
+### BF38 — WOR: Admin Compromised View + FLAGGED WALLETS Card Returning 0 ⏳ AWAITING PROD VERIFICATION — July 15, 2026
+**Root cause (confirmed):** The admin dashboard surfaces (Compromised sub-view, FLAGGED WALLETS card) were hitting `GET /admin/wor/compromised`, which never existed. Only `GET /admin/wor/registrations?status=compromised` existed. 404s rendered silently as "0 results" — not a visible error. The self-report transaction and unflag handler were both correct all along (psql confirmed with fresh wallet `0x5D607dc92477c7CeB2302F6CC2831906F745f55B`): status correctly flips to `'compromised'` on self-report and back to `'active'` on admin unflag, compromised_wallets row is deleted on unflag, score cache invalidated.
+**Fix:** Added `GET /admin/wor/compromised` to `worAdmin.ts` — same safe fields and pagination as the registrations list, hardcoded to `status=compromised`. Documented in `openapi.yaml`. Deployed to Railway. Awaiting Ahmad to confirm admin Compromised sub-view and FLAGGED WALLETS card now show correct counts in production.
 
 ### FF24 — WOR UI/UX Polish + Ecosystem Wiring + Admin Improvements 🔴 ACTIVE — July 14, 2026
 Four issues raised by Ahmad after live verification of Task 17:
