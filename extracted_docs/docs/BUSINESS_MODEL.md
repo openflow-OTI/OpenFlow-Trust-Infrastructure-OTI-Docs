@@ -1,5 +1,5 @@
 # OTI — Business Model
-> Created: July 14, 2026 (session 15) | Maintained by: Development Manager
+> Last updated: July 17, 2026 (session 16 — in-widget attestation flow, confirmed API tier signal-depth boundaries, partner revenue share model, Score Source Switcher as default widget data source) | Maintained by: Development Manager
 > This file captures the complete OTI business model — revenue, cost structure, growth strategy, and how every layer connects. It is the single source of truth for how OTI makes money and sustains itself. Update this file whenever Ahmad makes a strategic business decision that changes any part of the model.
 
 ---
@@ -19,22 +19,29 @@ OTI scores any wallet address across any supported chain and issues a cryptograp
 - **Post-10M: one-time fee per attestation** — not a subscription, not a recurring charge. One payment, permanent attestation record. Fee amount and OTI token discount configured via admin panel.
 - **Rescoring: fully automated** — OTI rescores every attested wallet every 30 days in background batches. The user never has to do anything after the initial attestation. Score changes → attestation automatically updated.
 - **Revenue from attestation fee scales with total wallet population.** There are already hundreds of millions of wallets and will be billions. Volume is the revenue engine, not margin per user.
+- **The attestation claim flow is embedded inside the widget — no redirect to OTI's site required.** A wallet owner who encounters their badge on a partner site can initiate the full attestation claim flow (and the WOR registration/compromise report flow) without leaving that partner's page. This is a distribution decision: most users encounter OTI on a partner site, not at otiscore.com. Making the claim flow in-widget means every partner becomes an attestation conversion surface automatically. The widget never calls `window.location` or opens a new tab for any interaction.
 
 ### Layer 2 — API Access (B2B, developers and platforms)
 Partners, developers, and enterprises pay for access to OTI's full scoring intelligence — not just the tier (which the attestation shows), but the raw signal breakdown, historical scores, chain-by-chain data, and webhook alerts.
 
-- **Free tier:** anonymous API access, low daily limit
-- **Pro tier:** paid, higher limits, all signals in response
-- **Enterprise tier:** direct contract, custom limits, SLA, compliance screening
+**Confirmed tier signal-depth boundaries (July 17, 2026):**
 
-The attestation only stores the tier result. Any partner who wants the full intelligence behind it — the 5 signals, the per-chain weights, the history — must call OTI's API. This is the key reason attestation doesn't cannibalize API revenue.
+| Tier | What the response includes |
+|---|---|
+| **Free / Anonymous** | Score number + tier label + compromised flag. Matches what the BAS attestation stores — neither competes with the other; they serve the same information through different channels (live API vs. blockchain record). |
+| **Pro** | All five signal scores with weighted contributions (`score`, `weighted`, `maxWeight` per signal) + score history (last N scores for the wallet from `chain_scores`). The intelligence layer — explains *why* a wallet received its tier. Any developer who needs signal-level reasoning (risk-pricing a loan, adjusting collateral, auditing a wallet's history) must use the Pro API. |
+| **Enterprise** | Everything in Pro + raw per-chain signal numbers (each individual chain the wallet is active on, not just the unified cross-chain EVM score) + webhook alerts for watched-wallet score changes + batch scoring endpoint + compliance-formatted export. The data infrastructure layer for exchanges, payment processors, and regulated entities who need OTI in their operational pipelines. |
+
+**Why attestation and API are structurally complementary — and must stay that way:** BAS stores the tier only — never the signal breakdown. This is deliberate (see DECISIONS.md D17). It ensures the attestation and the Pro API are permanently complementary rather than redundant. The attestation creates the public, trustless proof; the Pro API unlocks the private intelligence behind it. Any change that puts signal-level data into the attestation record would destroy the API revenue model by giving away Pro-tier information for free via BAS. Never put signal breakdowns in attestation records.
 
 ### Layer 3 — Widget Access (B2B, charged later — Phase 5+)
-Partners who embed OTI's widget get a pre-built trust display layer without building their own integration. The widget reads the attestation from BAS and shows the badge in the partner's UI.
+Partners who embed OTI's widget get a pre-built trust display layer without building their own integration.
 
+- **Default data source: OTI's own database** — the widget reads from `chain_scores` directly by default (Score Source = OTI Backend), not from BAS. This means the widget works from day one, before any wallet has an attestation. No BAS dependency in the early growth phase. Source transitions to Auto (BAS-first with DB fallback) once attestation adoption is meaningful — all server-side, invisible to the partner (see DECISIONS.md D23).
 - **Initially free** — seeding partner adoption during Phase 5 rollout
 - **Charged later** — once widget adoption is established, a subscription tier for commercial widget use
-- This is the B2B complement to the B2C attestation fee. Attestation revenue comes from users. Widget revenue comes from the platforms those users visit.
+- **Partner Revenue Share (July 17, 2026):** Partners earn a percentage of every attestation fee generated through their embedded widget. When a user discovers their OTI badge on a partner site and claims a BAS attestation through the in-widget flow, a share of that attestation fee is credited to the partner. The percentage is Ahmad's decision — configurable via admin panel, not hardcoded. **Attribution tracking is non-optional:** every attestation payment record must carry partner attribution metadata from day one of Phase 3 billing infrastructure. An attestation triggered through a partner's widget must know its origin. This cannot be retrofitted — it must be built into the payment record schema from the first day Phase 3 is built. Without it, the revenue share model has no data to operate on.
+- **Widget is the primary attestation sales channel.** Not a display layer bolted onto the product — it is the surface where most users will encounter OTI and where attestation conversion actually happens. Partners who earn from attestations have a financial incentive to surface the widget prominently and design UX that encourages attestation claims. OTI does not need to manage this — the revenue share structure manages it.
 
 ### Layer 4 — OTI Token (ecosystem utility, Phase 3+)
 OTI token is not speculative — it is a functional payment rail within the OTI ecosystem from day one.

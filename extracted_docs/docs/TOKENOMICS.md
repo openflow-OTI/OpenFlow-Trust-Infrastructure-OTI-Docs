@@ -1,6 +1,6 @@
 # OTI Token — Supply, Sale Structure & Revenue Distribution
 
-> Last updated: July 14, 2026 (session 15 — token utility section added; attestation integration documented) | Maintained by: Development Manager
+> Last updated: July 17, 2026 (session 16 — Section 7.2 airdrop eligibility expanded to include proactively pre-scored wallets; passive discovery mechanic documented; tracking requirement added) | Maintained by: Development Manager
 > **Status: Ahmad-approved design, locked — EXCEPT price and liquidity, which are explicitly out of scope here.** This is OTI's own independent token — it is NOT the OpenFlow "FLOW" ecosystem token discussed in earlier planning. OTI can live with or without OpenFlow, so it has its own token, its own supply, and its own economics. Launch chain: BNB Smart Chain (BSC) first, with cross-chain expansion planned later.
 > **Build + presale timing (Ahmad, July 14, 2026):** Token creation, ecosystem integration, and presale all happen in Phase 3 (alongside monetization infrastructure). Exchange listing is a separate, later event — after Phase 3 revenue streams are live and working. Do not conflate presale with listing.
 > **Price and liquidity pool design are intentionally NOT covered in this document.** Ahmad decided the team will determine token price and liquidity pool structure later, closer to launch. Do not infer or reconstruct pricing/liquidity numbers from earlier versions of this file — they were removed on purpose.
@@ -103,14 +103,18 @@ The primary utility. Users who want an OTI Verified Badge attestation can pay th
 - **Discount for token payment** — users who pay in OTI token receive a discount versus paying in BNB or fiat. This makes token acquisition actively worth doing for wallet holders, not just for speculators.
 - **Fee amount and discount rate** — configured via admin panel. Not hardcoded. Ahmad adjusts as market conditions change.
 
-### 7.2 Early Adopter Rewards — First 1 Million Attestation Users
-**Ahmad's decision (July 14, 2026):** The first 1 million wallets that register for OTI attestation will receive OTI tokens as a reward — distributed before the token launches publicly.
+### 7.2 Early Adopter Rewards — First 1 Million Wallets in OTI's Scoring Database
+**Ahmad's decision (amended July 17, 2026 — original July 14, 2026):** The first 1 million wallet addresses in OTI's scoring database receive OTI tokens — including wallets that OTI has **proactively pre-scored**, regardless of whether the wallet owner has ever visited OTI or knows OTI exists.
+
+**Why the eligibility was expanded (July 17, 2026):** The original definition ("first 1M wallets that register for OTI attestation") targeted people who have already discovered OTI — the discovery moment was already lost. The strategic purpose of an early-adopter airdrop is *discovery*, not loyalty. With proactive pre-scoring, OTI sends tokens to wallet owners who didn't know they had a score. They check their wallet, see unfamiliar tokens, search "OTI," and discover they already have a trust score. **Discovery happens as a consequence of the airdrop** rather than being a prerequisite for it.
 
 Why this is strategically important:
 - Token has **real holders with real utility** on day one — not a launch into empty hands
-- Early adopters become promoters — they hold tokens, they want the token to grow, they talk about OTI
-- Launch narrative becomes: *"1 million verified wallets, tokens already distributed to real users"* — this is a credible launch story, not an empty one
-- These users already understand what OTI does (they got attested) — they are the most qualified possible token holders to communicate OTI's value
+- **Passive acquisition:** wallet owners discover OTI without OTI spending on marketing or outreach
+- Launch narrative becomes: *"1 million scored wallets, tokens already in real hands"* — credible and backed by real usage
+- Proactively pre-scored wallets represent a far larger, faster-growing pool than attested wallets during the early growth phase
+
+**Tracking requirement (critical infrastructure):** The eligibility counter starts when proactive background scoring begins — not at attestation launch. Every wallet OTI proactively scores from Phase 2B onwards is a potential airdrop recipient. **The tracking list must be built into the background scorer from day one — it cannot be reconstructed after the fact.** Phase 3 token distribution infrastructure reads from this list.
 
 Token source for this reward: drawn from the **Ecosystem & Partnerships** bucket (4,500,000 OTI). Amount per user to be decided by Ahmad before Phase 3 — not defined here.
 

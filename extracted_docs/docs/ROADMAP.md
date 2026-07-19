@@ -1,5 +1,5 @@
 # OTI — Product Roadmap
-> Last updated: July 14, 2026 (session 15 — Phase 2B fully redesigned: MetaMask Snap removed, on-chain soulbound NFT removed, BAS attestation on BNB Chain confirmed as sole trust record layer, pricing model finalised, widget/extension as display layers confirmed) | Maintained by: Development Manager
+> Last updated: July 17, 2026 (session 16 — Phase 2B badge design finalized (tiers, bands, hex, visual anatomy, interaction model); Score Source Switcher added; proactive background scoring added; Phase 3 partner attribution tracking required; Phase 4 Etherscan key rotation added; Phase 5 widget embed spec confirmed with 4 hard constraints; WOR in-widget documented; non-EVM deferral note added) | Maintained by: Development Manager
 > Source document: OTI Full Distribution & Technical Development Strategy (Founder's Playbook, July 2026)
 
 ---
@@ -115,18 +115,45 @@ OTI scores a wallet across all supported chains
 → Third party queries BAS directly → verifies without calling OTI's API
 ```
 
-### Badge tiers (score-based — visual design TBD by Ahmad)
-Five tiers, one for every score band. Each tier gets distinct visual design (not just a colour change — fully differentiated art). Ahmad to finalise exact score thresholds and visual concept before task prompts are written.
+### Badge tiers — FINALIZED July 17, 2026
 
-| Tier | Label | Notes |
-|---|---|---|
-| 1 | HIGHLY TRUSTED | Top tier |
-| 2 | TRUSTED | Standard verified |
-| 3 | NEUTRAL | Mid-range |
-| 4 | RISKY | Caution flag |
-| 5 | HIGH RISK | Bottom tier — still gets a badge, just a warning badge |
+| Tier | Label | Score Band | Colour | Hex |
+|---|---|---|---|---|
+| 1 | HIGHLY TRUSTED | 75–100 | Mint green | `#00E5A0` |
+| 2 | TRUSTED | 55–74 | Sky blue | `#4FC3F7` |
+| 3 | NEUTRAL | 35–54 | Cool gray | `#90A4AE` |
+| 4 | RISKY | 20–34 | Amber | `#FFB300` |
+| 5 | HIGH RISK | 0–19 | Red | `#FF4444` |
+
+**Compromised override:** Any wallet in `compromised_wallets` gets the Compromised badge regardless of its trust score. Colour: same red as HIGH RISK (`#FF4444`) with a warning icon (!) replacing the checkmark.
 
 All five tiers get a badge. The badge doesn't mean "clean" — it means "OTI-verified at this tier."
+
+### Visual anatomy (full card format — finalized July 17, 2026)
+- Dark background, tinted to tier colour with a subtle ambient glow matching the tier
+- **Shield icon:** pointed outline with checkmark inside. Fill: tier colour at 14% opacity. Stroke: tier colour at full opacity. Size: 44×44px in card form
+- **Score number:** 28pt, tier colour, bold, below the shield
+- **Tier label:** small caps, tier colour, below score number
+- **Horizontal divider:** thin line at tier colour, 18% opacity
+- **"OTI Verified" footer:** very small, subdued gray
+- **Chain logo bubble:** 18×18px circle at bottom-right of the shield. Background: page background. Border: chain's brand colour. Text: chain ticker at chain's brand colour
+
+**Chain bubble colours:** ETH `#627EEA` | BNB `#F0B90B` | POL `#8247E5` | SOL `#9945FF` | TRX `#EF0027` | All other EVM chains: their official brand colour, or neutral gray if none established.
+
+### Badge interaction model — finalized July 17, 2026
+
+**State 1 — Collapsed (always visible, no interaction required)**
+Small horizontal pill next to the wallet address. Contains: shield icon (14px) with chain bubble at bottom-right + score number + tier label + ▼ arrow. Background: tier colour at 12% opacity. Border: tier colour at 33% opacity. The ambient trust signal — always present, zero friction.
+
+**State 2 — Hover (quick summary, desktop only)**
+Mouse-over triggers a floating tooltip panel above the pill. Contains: tier label + score (large) + all five signal bars (name | gradient bar | score) + wallet metadata chips (on-chain since, tx count) + "Click for full breakdown →" prompt. Disappears on mouse-out. Teaser format — enough to understand the score at a glance without committing to the full breakdown. Touch devices skip directly to State 3 on tap.
+
+**State 3 — Expanded (full inline breakdown panel)**
+Clicking the pill (or tapping) expands a panel directly below the wallet row in the partner's table or list. Nothing navigates away. Partner's page does not scroll. Contains: shield + tier + chain + metadata + score number (large, right-aligned) + all five signal bars with gradient fills + signal weight footnote + "OTI Verified ✓" tag + "Powered by OTI · otiscore.com" attribution. Clicking again collapses (▼/▲ toggle).
+
+**Compromised expanded state:** Red warning shield with "!" → "⚠ Wallet Compromised" heading → explanation of WOR self-report + private key exposure warning + "Do not send funds" advisory + flag date.
+
+**The no-redirect rule is absolute:** every interaction — hover tooltip, signal breakdown, WOR flow, attestation claim — happens inside the widget panel on the partner's page. The widget never navigates the user away from the partner's site.
 
 ### Pricing model (Ahmad, July 14, 2026)
 - **First 10 million attestations: FREE** — deliberate network effect investment
@@ -147,19 +174,22 @@ The badge is not displayed by the attestation itself. It is displayed by OTI's t
 - `POST /api/attestation/issue` — sign and write attestation to BAS
 - `GET /api/attestation/:address` — check attestation status for a wallet
 - `POST /api/attestation/revoke` — revoke attestation on WOR compromise report
+- `GET /v1/badge/:wallet` — widget API endpoint; reads Score Source setting from `system_settings` and routes to OTI DB / BAS / Auto accordingly
+- `PATCH /admin/score-source` — admin endpoint to switch Score Source mode (OTI Backend / BAS Attestation / Auto)
 - Attestation scheduler — daily batch rescore of all wallets approaching 30-day expiry
+- **Proactive background scoring pipeline** — identifies wallet addresses from public on-chain data (recent transactions, active DeFi participants, newly active wallets) and scores them in background batches without any user request triggering it. Pre-populates `chain_scores` so badges are ready before any widget encounter. Every wallet scored by this pipeline is added to the first-1M airdrop eligibility tracking list (D22 — this tracking is mandatory from day one, cannot be added retroactively).
 - `wallet_attestations` DB table — track issued attestations, expiry, tier at issue time
 - BAS SDK integration (BNB Chain)
 - OTI signing key management
 
 **Frontend:**
-- Attestation claim UI on results page — "Get your OTI badge" flow (sign → pay → issue)
+- Attestation claim UI — embedded inside the widget (no redirect to OTI's site). Also on results page as secondary path.
 - Public `/verify/:address` page — anyone pastes any wallet, sees its badge tier and BAS proof link
-- Five-tier badge visuals (Ahmad to sign off design before build)
-- Admin panel additions: attestation stats (issued per tier, claim rate, revocations), manual revoke, fee/discount settings
+- Five-tier badge visuals — design finalized July 17, 2026 (see above — implement exactly as specified)
+- Admin panel additions: attestation stats (issued per tier, claim rate, revocations), manual revoke, fee/discount settings, Score Source selector (Backend / BAS / Auto)
 
 ### Open decisions
-All architectural decisions are locked. Badge tier visual design and exact score thresholds per tier will be discussed and confirmed during the Phase 2B build — they do not need to be resolved before task prompts are written. The Backend Builder confirms thresholds from the codebase; Ahmad reviews badge visuals as part of the Frontend task.
+All architectural decisions are locked. Badge tier visual design and score thresholds are finalized (July 17, 2026 — see above). No open design decisions remain. Task prompts can be written immediately.
 
 **Note on attestation fee:** amount, OTI token discount rate, and 10M free-tier cap are all managed via admin dashboard. No hardcoded values. Ahmad sets them live.
 
@@ -194,6 +224,7 @@ Exchange listing is a separate, later event — happens after Phase 3 revenue st
 | **OTI token — ecosystem integration** | Plug token into the platform: Revenue-Backed Rewards Pool (buyback from API revenue), staking, and any other ecosystem utility Ahmad defines. |
 | **OTI token — presale** | Pre-listing sale ($10k raise, 500k tokens, BNB/USDT on BSC). Runs during Phase 3 to fund continued development. Price/liquidity design deferred — do not reconstruct without Ahmad. |
 | **Exchange listing** | Post-Phase 3 milestone — after revenue streams are live and generating real income. Ahmad decides timing. Not scoped into Phase 3 tasks. |
+| **Partner attribution tracking — REQUIRED from day one** | Every attestation payment record must carry partner attribution metadata (which widget embed / partner site triggered the claim). Required for the Partner Revenue Share model (see BUSINESS_MODEL.md Layer 3). Cannot be retrofitted — must be in the payment record schema from the first day Phase 3 billing is built. |
 
 ---
 
@@ -207,6 +238,7 @@ Exchange listing is a separate, later event — happens after Phase 3 revenue st
 | Wallet portfolio view | `wallet_links` table infrastructure already built |
 | Webhook alerts | Notify integrators when a watched wallet is compromised |
 | Enterprise exchange path | Compliance screening, withdrawal risk scoring — see Playbook Section 16 |
+| **Etherscan API key rotation / pooling** | Pool of free-tier Etherscan keys, rotated round-robin inside `etherscan.ts`'s `etherscanApiKey()` function. Multiplies free-tier capacity by N keys before any paid API cost is incurred. Scope is fetcher layer only — no other file changes. Relevant when proactive background scoring volume threatens free-tier daily limits. Not needed until the background scorer is generating significant volume; premature before that threshold. See also: upgrading to a paid Etherscan plan as the long-term solution once revenue covers it. |
 | **Bot / suspicious-wallet behavioral detection** | Deliberately deferred, Ahmad, July 13, 2026 — see note below. Not scoped, not assigned. |
 
 **Note on bot/suspicious-wallet detection:** Ahmad identified this as arguably the system's primary intended use case — flagging bots, mixers/wash-trading patterns, and suspected-malicious wallets from on-chain behavior — but it currently does not exist at all; the system scores any syntactically valid address the same way regardless of behavioral red flags. This is a full new design (new signal(s) and/or a distinct classification layer), not a bug fix, and is explicitly set aside for now. Do not start scoping this until Ahmad reopens it — current priority is finishing real-data/signal-accuracy correctness work (`FIXES.md`) first.
@@ -238,8 +270,22 @@ Source: OTI Full Distribution & Technical Development Strategy (Founder's Playbo
 - Env vars needed: `DISCORD_BOT_TOKEN`, `DISCORD_CLIENT_ID`, `OTI_BOT_API_KEY`
 
 ### Channel 3 — Embeddable Widget
-- Vanilla JS, zero dependencies, served from Railway at `GET /widget.js`
-- One-line integration for site owners: `<div data-oti-wallet="0x..." data-oti-chain="ethereum"></div><script src="...widget.js" async></script>`
+Confirmed embed specification (July 17, 2026 — see DECISIONS.md D24):
+```html
+<script src="https://widget.otiscore.com/oti.js" data-wallet="0x..." data-chain="ETH" data-key="partner-api-key"></script>
+```
+**Four hard constraints (non-negotiable at implementation time):**
+1. **Zero external dependencies** — vanilla JS + Fetch API only. Works on any tech stack.
+2. **Scoped styles** — all CSS scoped via unique class prefix or Shadow DOM. Must not leak or be overrideable by partner's global styles.
+3. **Graceful empty state** — if no score exists, widget renders nothing silently. No error, no broken placeholder.
+4. **No redirect on any interaction** — hover, click, WOR flow, attestation claim — all happen inside the widget. `window.location` is never called.
+
+**WOR inside the widget:** The full WOR registration and compromise report flow is embedded as in-widget panels. A wallet owner on a partner site can register or file a compromise report without leaving the partner's page. Every partner becomes a WOR registration surface.
+
+**Non-EVM chains — deferred from widget:** Non-EVM address formats (Solana, TON, Tron) are not linkable to EVM addresses without `wallet_links` populated via WOR. Widget shows EVM unified scores only until cross-chain identity infrastructure is in place. OTI continues scoring non-EVM chains independently; per-chain non-EVM badges are a future phase item.
+
+**Data source:** Widget reads from OTI's `chain_scores` DB by default (Score Source = OTI Backend). Transitions to BAS-first once attestation adoption is meaningful — server-side setting, no partner action required (see DECISIONS.md D23).
+
 - Uses shared widget API key internally
 - Target sites: NFT marketplaces, on-chain portfolio trackers, P2P OTC platforms
 

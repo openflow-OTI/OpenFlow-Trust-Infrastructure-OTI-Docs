@@ -1,5 +1,5 @@
 # OTI — Architectural Decisions Log
-> Last updated: July 14, 2026 (session 15 — Phase 2B architecture decisions added: D17–D22) | Maintained by: Development Manager
+> Last updated: July 17, 2026 (session 16 — D22 amended: airdrop eligibility expanded to proactively pre-scored wallets; D23 Score Source Switcher added; D24 Widget Embed Spec added) | Maintained by: Development Manager
 
 ---
 
@@ -164,12 +164,39 @@ This file records the reasoning behind how OTI was built — not what the code d
 
 ---
 
-### D22 — OTI Token Rewards First 1 Million Attestation Users Before Launch
+### D22 — OTI Token Rewards First 1 Million Wallets in OTI's Scoring Database (Amended July 17, 2026)
 **Status:** INTENTIONAL
-**What the system will do:** The first 1 million wallets that register for OTI attestation receive OTI tokens as a reward — distributed before the token launches publicly. Token source: Ecosystem & Partnerships bucket. Amount per user: Ahmad to decide before Phase 3.
-**Why:** Ahmad's explicit decision, July 14, 2026. Three purposes: (1) Token has real holders with real utility on launch day — not an empty launch into speculation. (2) Early adopters who understand OTI's product become the most qualified promoters. (3) Launch narrative is "1 million verified wallets, tokens already in real hands" — a credible story backed by actual usage, not promises.
-**Confirmed by:** Ahmad, July 14, 2026.
-**Implications for Phase 3:** Token distribution to early attestation users must be built into Phase 3 infrastructure. The list of first-1M attested wallet addresses needs to be tracked from Phase 2B launch onwards — start recording from day one.
+**What the system will do:** The first 1 million wallet addresses in OTI's scoring database receive OTI tokens — including wallets that OTI has proactively pre-scored, regardless of whether the wallet owner has ever visited OTI or knows OTI exists. Token source: Ecosystem & Partnerships bucket. Amount per user: Ahmad to decide before Phase 3.
+**Original rationale (July 14, 2026):** Real token holders on launch day, qualified promoters, credible launch narrative.
+**Amendment rationale (July 17, 2026):** The original eligibility ("first 1M wallets that register for OTI attestation") targets people who have already discovered OTI — the discovery moment is already lost. The strategic purpose of an early-adopter airdrop is *discovery*, not loyalty. When the token launches, OTI sends tokens to the first 1M proactively-scored wallets. Owners check their wallets, see unfamiliar tokens, search "OTI," and discover they already have a trust score. Discovery happens *as a consequence* of the airdrop rather than being a prerequisite for it.
+**Confirmed by:** Ahmad, July 17, 2026.
+**Critical tracking implication:** The eligibility counter starts when proactive background scoring begins — not at attestation launch. Every wallet OTI proactively scores from Phase 2B onwards is a potential airdrop recipient. The tracking list is infrastructure — it must be built into the background scorer from day one. It cannot be reconstructed after the fact.
+**Implications for Phase 3:** Token distribution infrastructure must read from the proactive-scoring tracking list, not the attestation registry.
+
+---
+
+### D23 — Score Source Switcher: Widget Data Source Is Server-Side Configuration, Never Hardcoded in Embed Code
+**Status:** INTENTIONAL
+**What the system does:** The widget API's data source — OTI Backend DB, BAS Attestation, or Auto fallback — is a server-side `system_settings` value, not encoded anywhere in the widget embed script or the partner's HTML. Three modes: (1) **OTI Backend** — reads `chain_scores` DB directly; no BAS dependency; available from day one; correct default during early growth. (2) **BAS Attestation** — reads from BNB Chain via BAS SDK; trustless; only wallets with an active attestation return data. (3) **Auto** — tries BAS first, falls back to OTI DB; intended long-term default.
+**Why:** Changing the data source later — when attestation adoption reaches meaningful scale — must not require partner notification, embed code updates, or a coordinated migration event. If the source were hardcoded in the widget, every partner would need to update their script tag. At scale, this is impossible to coordinate. Server-side configuration means one admin panel change propagates to every embedded widget worldwide within 60 seconds (the `getSettings()` cache TTL).
+**Confirmed by:** Ahmad, July 17, 2026.
+**Implications for builders:** The widget embed API endpoint reads `getSettings().scoreSource` on every request. The embed code (`data-wallet`, `data-chain`, `data-key`) must never include a `data-source` or equivalent attribute. Partners must never know which source their widget reads from — that is OTI's operational decision to make and change unilaterally.
+
+---
+
+### D24 — Widget Embed Is a Self-Contained Vanilla JS Script Tag With Four Hard Constraints
+**Status:** INTENTIONAL
+**What the embed looks like:**
+```html
+<script src="https://widget.otiscore.com/oti.js" data-wallet="0x..." data-chain="ETH" data-key="partner-api-key"></script>
+```
+**Four constraints — non-negotiable at implementation time:**
+1. **Zero external dependencies.** No React, no Vue, no lodash, no fetch polyfill assumptions. Vanilla JS and the Fetch API only. The embed must work on a PHP page from 2015 and a Next.js 15 app equally.
+2. **Scoped styles.** All CSS injected by the script must be scoped to its own elements via a unique class prefix or Shadow DOM. It must not leak into the partner's page or be overrideable by the partner's global styles. CSS collision is the most common failure mode for embedded widgets.
+3. **Graceful empty state.** If no score exists for the wallet (not in DB, not in BAS), the widget renders nothing — silently. No error message, no broken placeholder, no loading spinner that never resolves. Absence is the correct behaviour.
+4. **No redirect on any interaction.** Every user action — hover, click, WOR flow, attestation claim — happens inside the widget panel. The script must never call `window.location`, never open a new tab, never navigate the user away from the partner's page.
+**Why:** Partners cannot tolerate a trust widget that ejects their users, breaks their page styles, or requires a specific tech stack. These constraints make OTI's widget embeddable on any site in any context with no risk to the partner's experience.
+**Confirmed by:** Ahmad, July 17, 2026.
 
 ---
 

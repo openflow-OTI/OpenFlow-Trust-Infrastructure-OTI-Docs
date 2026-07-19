@@ -1,5 +1,5 @@
 # OTI — Architecture Ground Truth
-> Last updated: July 5, 2026 | Maintained by: Development Manager
+> Last updated: July 17, 2026 | Maintained by: Development Manager
 > **This file is the source of truth for every piece of infrastructure in OTI. All Builders and all new Manager accounts must read this before touching anything.**
 > **After reading this file, read `DECISIONS.md` — it explains why things are built the way they are. This file says what; DECISIONS.md says why.**
 
@@ -78,14 +78,17 @@ Given a wallet address + chain, OTI returns a 0–100 trust score built from fiv
 
 ## Supported Chains (15 total)
 
-**EVM chains (10) — via Etherscan V2 API:**
-Ethereum, Polygon, Arbitrum, Avalanche, Fantom, Linea, Scroll, zkSync, Sepolia, Holesky
+**EVM chains — via Etherscan V2 API (7 live, 3 gated):**
+Ethereum, Polygon, Arbitrum, Avalanche, Sonic (formerly Fantom — chain ID 146, renamed July 2026), Linea, zkSync
 
 **Non-EVM chains (5):**
 TON, Solana, Sui, Bitcoin, Tron
 
 **Intentionally returning 503 (need Etherscan Lite $49/mo):**
 BSC (BNB Smart Chain), Base, Optimism
+
+**Not implemented — removed from all documentation (do not list as supported):**
+Scroll, Sepolia, Holesky — were in early docs as planned but were never built. Sepolia/Holesky are Ethereum testnets (limited value in a production trust scorer); Scroll requires the same Etherscan Lite plan as BSC/Base/Optimism. Real live chain count: 12 (7 EVM + 5 non-EVM). Do not claim 15.
 
 ---
 
@@ -97,7 +100,11 @@ Every score ever computed for any wallet on any chain is stored here. Full recor
 
 **Status:** ✅ Working. `persistScore()` writes here on every lookup.
 
-**Known gap:** The `/api/score/:address/history` endpoint reads from an in-memory store (see `lib/history.ts`), NOT from this table. Fix: make the history endpoint query this table directly. The data is here — it's just not being served.
+**History endpoint:** Now reads directly from this table. `lib/history.ts` (the in-memory store) was deleted; the dead `recordHistory()` call was removed from the scoring pipeline.
+
+**Two-tier cache — L1 + L2:** Every score request checks the in-memory LRU cache (L1) first, then this table (L2) before making any external API call. A valid L2 hit (within the 30-day rescore window) warms L1 and returns immediately — zero external API calls. Only a true L2 miss triggers Etherscan/Toncenter/etc.
+
+**Keep-highest write logic:** When a fresh score is written here, if a higher score already exists for that wallet, the higher score is preserved and only `scored_at` is updated to reset the rescore window. A wallet's score can only go up permanently — quiet periods do not lower a historically active wallet's score.
 
 ---
 
@@ -147,11 +154,11 @@ Every score ever computed for any wallet on any chain is stored here. Full recor
 ### `src/lib/scoring.ts` ⚠️ SACRED — NEVER MODIFY
 The trust scoring algorithm. Five signals, five weights, pure computation. This is OTI's protected IP.
 
-### `src/lib/history.ts` ⚠️ NEEDS FIX
-In-memory Map storing score history per wallet+chain key. This was temporary scaffolding — the data IS being written to `chain_scores` in the database, but the history endpoint reads from memory instead of the DB. Every Railway restart wipes this. Fix by making the history route query `chain_scores`.
+### `src/lib/history.ts` — DELETED ✅
+Was: in-memory Map storing score history per wallet+chain key (temporary scaffolding, wiped on every Railway restart). Now deleted entirely. History endpoint reads directly from `chain_scores`. The dead `recordHistory()` call in the scoring pipeline was also removed. Nothing imports this file.
 
-### `src/routes/admin.ts` ⚠️ NEEDS SECURITY FIX
-Full admin CRUD: API keys, plan configs, compromised wallets, usage stats. **Currently has zero authentication** — any person on the internet can call these endpoints. Must add `ADMIN_SECRET` header verification before any other work ships.
+### `src/routes/admin.ts` ✅ SECURED (BF5)
+Full admin CRUD: API keys, plan configs, compromised wallets, usage stats. Protected by `adminAuth.ts` middleware — every `/api/admin/*` request must include the correct `x-admin-secret` header matching the `ADMIN_SECRET` Railway environment variable. Wrong or missing secret returns a generic 401. Verified live.
 
 ### `src/middlewares/apiKeyAuth.ts`
 Daily quota logic. Reads from `plan_configs` table dynamically — not hardcoded.
@@ -239,6 +246,80 @@ SPA routing: `{"rewrites":[{"source":"/(.*)", "destination":"/index.html"}]}`. B
 ```
 
 The frontend signal bars must be updated to use `weighted / maxWeight` for bar fill width, and display `weighted/maxWeight` as the score label (e.g., "25/25", "4/20"). This fix must happen in BOTH backend (API response shape) and frontend (bar rendering logic).
+
+---
+
+## Two-Tier Cache Architecture (L1 + L2)
+
+OTI uses a two-tier cache for all score requests — no external API call is made unless both tiers miss:
+
+- **L1 — In-memory LRU cache:** 500 entries, 5-minute TTL. Unchanged from original design. A hit returns instantly.
+- **L2 — `chain_scores` database table:** On every L1 miss, the backend checks whether a valid score for this wallet+chain exists in `chain_scores` within the configured rescore window (default: 30 days). A valid L2 hit warms L1 and returns the result — zero external API calls.
+- **External API call:** Only triggered when both L1 and L2 miss. On a fresh compute, the result is written to both L1 and L2.
+
+**Cache toggle:** The entire cache can be disabled from the admin panel (debugging/research only — not for production use). When off, every request fetches live chain data.
+
+**Rescore window:** Configurable via admin panel. Reads from `system_settings` via `getSettings()` with a 60-second in-memory TTL — admin panel changes propagate within one minute, no deploy needed.
+
+---
+
+## `system_settings` Table
+
+Stores global OTI configuration that Ahmad can change from the admin panel without touching code or triggering a deploy:
+
+| Setting | Default | Notes |
+|---|---|---|
+| Rescore window | 30 days | How long a `chain_scores` entry is valid before a fresh compute is triggered |
+| Cache enabled | true | Toggle the two-tier cache — debugging tool, not for production use |
+| Score Source | OTI Backend | Controls where the widget API reads badge data from (see Score Source Switcher below) |
+
+Read via `getSettings()` with a 60-second in-memory TTL. Any change Ahmad makes in the admin panel takes effect across all running instances within one minute.
+
+---
+
+## Score Source Switcher
+
+The widget API's data source is a **server-side configuration** in `system_settings` — not hardcoded in the widget embed code. Three modes:
+
+| Mode | Behaviour | When to use |
+|---|---|---|
+| **OTI Backend** | Widget API reads from `chain_scores` DB directly. No BAS dependency. No attestation required. Available from day one. | **Default during early growth.** |
+| **BAS Attestation** | Reads attestation records from BNB Chain via BAS SDK. Trustless, blockchain-verifiable. Only returns data for wallets with an active BAS attestation. | Once attestation adoption is meaningful. |
+| **Auto (fallback)** | Tries BAS first. Falls back to OTI's DB score if no BAS attestation exists for the wallet. | **Intended long-term default.** |
+
+When Ahmad changes the setting in the admin panel, every embedded widget worldwide updates within one minute — no partner deploys, no partner notifications, no embed code changes required. **The widget embed code is permanently agnostic to this setting.** Partners only set `data-wallet`, `data-chain`, and `data-key`. Data source routing is entirely server-side.
+
+---
+
+## `chainRegistry.ts` — Single Chain Source of Truth
+
+All chain routing logic — supported chains list, chain-to-family mapping, Etherscan plan-upgrade gate — now lives in a single file: `chainRegistry.ts`. Before this file existed, the same information was scattered across `score.ts`, `history.ts`, and `chainFamily.ts`.
+
+Exports:
+- `SUPPORTED_CHAINS` — the authoritative list of all scoring-eligible chains
+- `ALL_CHAIN_ZOD_ENUM` — used by route validators
+- `CHAIN_FAMILY_MAP` — maps chain name to family (`evm`, `ton`, `solana`, etc.)
+- `PLAN_UPGRADE_REQUIRED` — set of chains gated behind Etherscan Lite: BSC, Base, Optimism
+
+**Adding a new chain = editing one file.**
+
+---
+
+## `chainWeighting.ts` — Chain-Specific Weight Redistribution
+
+`scoring.ts` is never touched. Weight redistribution for chains where not all five signals apply lives in `chainWeighting.ts`.
+
+**Bitcoin** is the primary case: Token Holding Behavior (20%) and Smart Contract Interactions (20%) are inapplicable (Bitcoin has no ERC-20 tokens, no smart contracts). Their combined 40% is redistributed proportionally across the three applicable signals:
+
+| Signal | Standard weight | Bitcoin weight |
+|---|---|---|
+| Wallet Age | 25% | 41.7% |
+| Transaction Count | 20% | 33.3% |
+| Transaction Timing Patterns | 15% | 25.0% |
+
+The raw signal values `scoring.ts` produces (Token Holding = 0, Contracts = 0 for Bitcoin) are still returned in the API response. Only the final score uses the redistributed weights.
+
+**General policy (Ahmad, confirmed):** This principle applies to any chain where a signal genuinely does not exist — Bitcoin is the primary case, not the only one.
 
 ---
 
