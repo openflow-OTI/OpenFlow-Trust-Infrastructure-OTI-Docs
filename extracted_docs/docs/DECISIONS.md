@@ -1,5 +1,5 @@
 # OTI — Architectural Decisions Log
-> Last updated: July 17, 2026 (session 16 — D22 amended: airdrop eligibility expanded to proactively pre-scored wallets; D23 Score Source Switcher added; D24 Widget Embed Spec added) | Maintained by: Development Manager
+> Last updated: July 19, 2026 (session 17 — D25: Etherscan key rotation strategy (10-key ceiling, ToS boundary, upgrade path); D26: Ethereum scores used for BNB campaign (BSC blocker bypass); D27: Campaign-first Phase 2B approach) | Maintained by: Development Manager
 
 ---
 
@@ -197,6 +197,36 @@ This file records the reasoning behind how OTI was built — not what the code d
 4. **No redirect on any interaction.** Every user action — hover, click, WOR flow, attestation claim — happens inside the widget panel. The script must never call `window.location`, never open a new tab, never navigate the user away from the partner's page.
 **Why:** Partners cannot tolerate a trust widget that ejects their users, breaks their page styles, or requires a specific tech stack. These constraints make OTI's widget embeddable on any site in any context with no risk to the partner's experience.
 **Confirmed by:** Ahmad, July 17, 2026.
+
+---
+
+### D25 — Etherscan API Key Rotation: Maximum 10 Free Keys, Hard ToS Ceiling
+**Status:** INTENTIONAL
+**What the system does:** `chainRegistry.ts`'s `etherscanApiKey()` function returns keys from a `ETHERSCAN_API_KEYS` array env var (Railway) in round-robin. Each key is a separate free Etherscan account (100,000 calls/day each). 10 keys = 1,000,000 calls/day = 200,000–333,000 wallets scored per day.
+**The ceiling is 10 keys — not more.** Creating more than ~10 free Etherscan accounts to multiply quota is clearly ToS-violating account farming. Etherscan detects: same IP registering many accounts, same Railway server using all keys, same wallet address patterns. If caught, all keys are banned simultaneously. Ahmad registers keys from separate email addresses across separate sessions — not all in one sitting.
+**Why 10 specifically:** Below ~10, the behaviour looks like a small team using shared accounts. Above 10, it is unambiguously account farming. 10 is the practical ceiling before risk becomes unreasonable.
+**Upgrade path (after campaign revenue):** Etherscan Standard plan ($199/month) — 100,000 calls/second, no daily cap. Upgrade = change `ETHERSCAN_API_KEYS` to a single high-quota key. No code change. The rotation infrastructure (Task 19) is still used; it just has one premium key in the array.
+**Confirmed by:** Ahmad, July 19, 2026.
+**Builder implication:** Task 19 must accept both `ETHERSCAN_API_KEYS` (array, 10 max) and fall back to the existing `ETHERSCAN_API_KEY` (single) if the array is not set. Backward compatible. Scope is `etherscanApiKey()` only — no other changes.
+
+---
+
+### D26 — Ethereum Scores Are Used for the BNB Chain Campaign (BSC Blocker Bypassed)
+**Status:** INTENTIONAL
+**What the system does:** The XMTP campaign scores wallets on Ethereum (already live, no Etherscan Lite subscription needed) and collects payment on BNB Chain (cheap gas). The Etherscan Lite $49/month subscription that gates BSC scoring is not required for this campaign.
+**Why this works:** Every EVM wallet address (0x...) is cryptographically the same key pair on Ethereum and BNB Chain. A wallet's Ethereum behavioral history — wallet age, transaction count, token holdings, contract interactions, timing patterns — is valid evidence of the same person's on-chain behaviour. Scoring on Ethereum and attesting on BNB Chain is not a workaround or a shortcut; it is technically correct.
+**Implication for smart contract:** The OTI signature payload includes `chain: "ethereum"` — the contract verifies against OTI's Ethereum-sourced score. The attestation on BAS records this honestly. No misrepresentation.
+**Confirmed by:** Ahmad (accepted the logic), July 19, 2026.
+**Do not:** Add BSC scoring (Etherscan Lite) as a prerequisite for the campaign. It is not needed. If Ahmad later subscribes to Etherscan Lite for Phase 3 (BSC/Base/Optimism API unlock), that is a separate decision for a separate reason.
+
+---
+
+### D27 — Campaign-First Phase 2B: Generate Revenue Before Building the Full Attestation Stack
+**Status:** INTENTIONAL
+**What this means:** Phase 2B is split into two parts. The Revenue Campaign (Tasks 19–22) is built first — ~1 focused day, $7–25 cost, $1,000–$5,000 projected revenue. The full attestation infrastructure (widget, Score Source Switcher, in-widget claim flow, proactive background scoring pipeline, BAS backend SDK integration) is built after, funded by campaign proceeds.
+**Why:** Ahmad needs revenue to continue building and running servers. The campaign's four components (key rotation, signing endpoint, smart contract, XMTP sender) are a self-contained revenue loop that builds entirely on existing infrastructure. None of the Post-Campaign Remaining items are needed for the campaign to generate revenue. Building the full stack first would delay revenue by weeks unnecessarily.
+**Build dependency is one-way:** Campaign components do not depend on Post-Campaign Remaining items. Post-Campaign Remaining items do depend on the campaign's signing endpoint (already built in Task 20). The campaign produces reusable infrastructure, not throwaway code.
+**Confirmed by:** Ahmad, July 19, 2026.
 
 ---
 

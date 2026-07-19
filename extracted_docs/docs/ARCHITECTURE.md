@@ -249,6 +249,64 @@ The frontend signal bars must be updated to use `weighted / maxWeight` for bar f
 
 ---
 
+## Etherscan API Key Rotation (Task 19 — built July 2026)
+
+OTI uses a pool of up to 10 free Etherscan API keys rotated round-robin to multiply the free-tier daily call capacity from 100K calls/day (1 key) to up to 1M calls/day (10 keys). This is required for the Phase 2B campaign wallet pre-scoring phase.
+
+**Environment variable:** `ETHERSCAN_API_KEYS` (Railway) — comma-separated list of keys, e.g. `key1,key2,...,key10`. Falls back to the original single `ETHERSCAN_API_KEY` if the array var is not set — backward compatible.
+
+**Implementation:** `chainRegistry.ts`'s `etherscanApiKey()` function maintains a module-level integer index, increments on every call (mod array length), returns the current key. Scope is this one function only — no other file changes.
+
+**Hard ceiling: 10 keys.** See D25 for the ToS reasoning. Never exceed 10 free keys. Scale beyond 10 = Etherscan Standard plan ($199/mo, upgrade via env var, no code change).
+
+**Upgrade path:** When Ahmad upgrades to Etherscan Standard, set `ETHERSCAN_API_KEYS` to the single premium key. The round-robin still runs (array of one). No code change.
+
+---
+
+## Phase 2B Campaign Components
+
+Four new components added for the XMTP Revenue Campaign (July 2026). All build on existing infrastructure.
+
+### `src/routes/sign.ts` — OTI Signing Endpoint
+New route file. Protected by existing `adminAuth.ts` middleware (x-admin-secret header).
+
+`POST /api/sign/score`
+- Input: `{ wallet_address, chain, expiry_timestamp }`
+- Checks `compromised_wallets` — 403 if flagged
+- Looks up `chain_scores` — 403 if score < 75 or not found
+- Signs: `ethers.solidityPackedKeccak256(['address','uint256','uint256'], [wallet_address, score, expiry_timestamp])` then `signingWallet.signMessage(hash)`
+- Returns: `{ wallet_address, score, expiry_timestamp, signature }`
+- `OTI_SIGNING_KEY` env var (Railway only — never in code, never logged)
+
+### Smart Contract — OTI Attestation Contract (BNB Chain, chainId 56)
+Solidity 0.8.x. Deployed at a BscScan-verified address (recorded after Task 21 deploy).
+- Chainlink BNB/USD oracle: `0x0567F2323251f0Aab15c8dFb1967E4eaA47d42aEE`
+- Accepts exactly $1 in BNB (calculated live via Chainlink)
+- Verifies OTI ECDSA signature on-chain via ecrecover
+- Enforces: score ≥ 75, expiry not passed, one attestation per wallet
+- Calls `BAS.attest()` with registered schema UID
+- Emits `AttestationMinted(wallet, score, attestationUID, amountPaid)`
+- `withdraw()` owner-only sweep of accumulated BNB revenue
+
+### BAS Schema UID
+Registered on BNB Chain BAS before smart contract deployment (Task 20 Part A). Schema fields: `address wallet, uint256 score, string tier, uint256 issuedAt, uint256 expiresAt`. Schema UID is a bytes32 hash — hardcoded as an immutable constructor argument in the smart contract. Record UID here after registration: **[TO BE FILLED after Task 20]**
+
+### XMTP Sender Script (standalone Node.js, not part of Railway API server)
+Reads `chain_scores` (chain='ethereum', score ≥ 75, scored within 30 days). Filters via `canMessage()`. Signs via `/api/sign/score`. Sends `wallet_sendCalls` XMTP messages to Coinbase Wallet inboxes. Tracks sent wallets in local SQLite/flat file. Run manually by Ahmad after end-to-end test.
+
+### `campaign_conversions` table (Task 22 — Moralis Streams)
+Moralis Streams webhook on `AttestationMinted` event writes to this table:
+```
+wallet          TEXT
+score           INTEGER
+attestation_uid TEXT
+amount_paid_bnb NUMERIC
+amount_paid_usd NUMERIC
+converted_at    TIMESTAMP
+```
+
+---
+
 ## Two-Tier Cache Architecture (L1 + L2)
 
 OTI uses a two-tier cache for all score requests — no external API call is made unless both tiers miss:

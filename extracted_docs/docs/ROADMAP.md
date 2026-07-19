@@ -1,5 +1,5 @@
 # OTI — Product Roadmap
-> Last updated: July 17, 2026 (session 16 — Phase 2B badge design finalized (tiers, bands, hex, visual anatomy, interaction model); Score Source Switcher added; proactive background scoring added; Phase 3 partner attribution tracking required; Phase 4 Etherscan key rotation added; Phase 5 widget embed spec confirmed with 4 hard constraints; WOR in-widget documented; non-EVM deferral note added) | Maintained by: Development Manager
+> Last updated: July 19, 2026 (session 17 — Phase 2B split into Revenue Campaign (Tasks 19–22, build now) and Post-Campaign Remaining; Etherscan key rotation moved from Phase 4 to Task 19 (prerequisite for campaign); BAS schema registration added as required pre-build step; 10-key rotation strategy documented (D25); Ethereum-scores-for-BNB-campaign insight documented (D26); campaign-first Phase 2B approach documented (D27); XMTP wallet targeting reality (5–15% XMTP penetration) documented) | Maintained by: Development Manager
 > Source document: OTI Full Distribution & Technical Development Strategy (Founder's Playbook, July 2026)
 
 ---
@@ -169,38 +169,79 @@ The badge is not displayed by the attestation itself. It is displayed by OTI's t
 
 **Extension (user-side):** Users install OTI's browser extension once. Extension auto-detects wallet addresses on every website — Etherscan, OpenSea, Twitter/X, any site — and overlays the OTI badge. No partner integration required. Works everywhere. The extension is the user's own widget.
 
-### What needs to be built
+### Phase 2B — Revenue Campaign (Build Now — Tasks 19–22)
+
+**Philosophy:** Build the revenue-generating subset of Phase 2B first. Four components, one focused day, $7–25 total cost, $1,000–$5,000 projected return on first campaign. Fund Phase 2B Remaining with the proceeds.
+
+**Build order is strict — each task unblocks the next:**
+
+**Task 19 — Etherscan Key Rotation (Backend Builder, ~1 hour) — FIRST**
+- Add `ETHERSCAN_API_KEYS` Railway env var (comma-separated, up to 10 keys)
+- Round-robin counter in `chainRegistry.ts`'s `etherscanApiKey()` function
+- Backward-compatible: falls back to single `ETHERSCAN_API_KEY` if array not set
+- **10 keys = 1M calls/day = 200K–333K wallets scored per day → 3–5 days to build 1M target list**
+- Key limit: maximum 10 free Etherscan keys (see D25 — ToS boundary). Never 100. Scale beyond 10 keys = Etherscan Standard plan ($199/mo) purchased from campaign revenue.
+
+**Task 20 — BAS Schema Registration + Signing Endpoint (Backend Builder, ~2 hours) — SECOND**
+- **Part A (do first):** Register OTI attestation schema on BAS — on-chain transaction, Ahmad signs and pays (~$0.01 gas). Fields: `address wallet, uint256 score, string tier, uint256 issuedAt, uint256 expiresAt`. Record the resulting schema UID — hardcoded into Task 21 smart contract.
+- **Part B:** New file `src/routes/sign.ts`. Railway env var: `OTI_SIGNING_KEY`. Endpoint: `POST /api/sign/score` behind adminAuth. Input: `{ wallet_address, chain, expiry_timestamp }`. Logic: check compromised_wallets → check chain_scores (score ≥ 75) → sign with ethers.js → return `{ wallet_address, score, expiry_timestamp, signature }`.
+
+**Task 21 — Smart Contract + XMTP Sender Script (Backend Builder, ~5 hours) — THIRD**
+- **Part A:** Solidity smart contract on BNB Chain (chainId 56). Chainlink BNB/USD oracle (`0x0567F2323251f0Aab15c8dFb1967E4eaA47d42aEE`). Receives exactly $1 in BNB, verifies OTI signature via ecrecover, checks score ≥ 75 and expiry not passed, calls `BAS.attest()` with schema UID, emits `AttestationMinted`. `withdraw()` owner-only sweep. Deploy testnet → Ahmad confirms → mainnet deploy.
+- **Part B:** Node.js XMTP sender script. Reads eligible wallets from `chain_scores` (chain='ethereum', score ≥ 75, scored within 30 days). Filters via `canMessage()`. For each: calls `/api/sign/score`, constructs `wallet_sendCalls` XMTP message (chainId 56, $1 BNB, signed payload as calldata). Rate: 3K messages/5-min window/sender wallet. Tracks sent wallets in local file to prevent re-sends. Ahmad runs manually after test confirms end-to-end.
+
+**Task 22 — Conversion Dashboard (Frontend Builder, ~2 hours) — FOURTH**
+- Moralis Streams webhook on `AttestationMinted` event → `campaign_conversions` table
+- Admin-only React/Vite view: messages sent, attestations minted, conversion %, revenue in BNB + USD, live conversion table. Revenue happens without this — build last.
+
+**Campaign targeting reality (documented July 19, 2026):**
+- Ethereum wallets with score ≥ 75 in `chain_scores`: built via Dune Analytics SQL + OTI API pre-scoring
+- Realistic universe of Ethereum wallets scoring ≥ 75: **2–4 million addresses** (active DeFi participants with strong on-chain history — casual wallets won't hit 75)
+- XMTP penetration across all EVM wallets: **5–15%** — `canMessage()` filter cuts target list to this subset
+- Real XMTP send list from 3M eligibles: ~150K–450K wallets
+- Revenue at 0.25% conversion on 200K sends: ~500 attestations → ~$500
+- Revenue at 0.25% conversion on 400K sends: ~1,000 attestations → ~$1,000
+- Campaign 2 always outperforms Campaign 1 — first campaign generates conversion data (which score bands, which message copy, which time of day) that makes the second campaign 2× more effective
+
+**The BSC blocker doesn't apply to this campaign (D26):**
+Every EVM wallet address is the same person on Ethereum and BNB Chain. OTI scores on Ethereum (already live, no Etherscan Lite needed). Payment is collected on BNB Chain (cheap gas, no scoring needed). The $49/mo Etherscan Lite subscription is not required for the campaign.
+
+---
+
+### Phase 2B — Post-Campaign Remaining (After Campaign Revenue Is In)
+
+Fund these with campaign proceeds:
+
 **Backend:**
-- `POST /api/attestation/issue` — sign and write attestation to BAS
-- `GET /api/attestation/:address` — check attestation status for a wallet
-- `POST /api/attestation/revoke` — revoke attestation on WOR compromise report
 - `GET /v1/badge/:wallet` — widget API endpoint; reads Score Source setting from `system_settings` and routes to OTI DB / BAS / Auto accordingly
-- `PATCH /admin/score-source` — admin endpoint to switch Score Source mode (OTI Backend / BAS Attestation / Auto)
+- `PATCH /admin/score-source` — admin endpoint to switch Score Source mode
+- `POST /api/attestation/issue` — OTI backend calling BAS SDK directly (for in-widget attestation claim flow, separate from smart contract path)
+- `GET /api/attestation/:address` — check attestation status
+- `POST /api/attestation/revoke` — revoke on WOR compromise report
 - Attestation scheduler — daily batch rescore of all wallets approaching 30-day expiry
-- **Proactive background scoring pipeline** — identifies wallet addresses from public on-chain data (recent transactions, active DeFi participants, newly active wallets) and scores them in background batches without any user request triggering it. Pre-populates `chain_scores` so badges are ready before any widget encounter. Every wallet scored by this pipeline is added to the first-1M airdrop eligibility tracking list (D22 — this tracking is mandatory from day one, cannot be added retroactively).
+- **Proactive background scoring pipeline** — scores wallets from Dune Analytics address lists in background batches. Feeds airdrop eligibility tracking list (D22 — tracking mandatory from day one of this pipeline, cannot be retroactively reconstructed).
 - `wallet_attestations` DB table — track issued attestations, expiry, tier at issue time
-- BAS SDK integration (BNB Chain)
-- OTI signing key management
+- Full BAS SDK integration (BNB Chain)
+- Upgrade to Etherscan Standard ($199/mo) if background scoring volume exceeds 10-key free-tier capacity
 
 **Frontend:**
-- Attestation claim UI — embedded inside the widget (no redirect to OTI's site). Also on results page as secondary path.
-- Public `/verify/:address` page — anyone pastes any wallet, sees its badge tier and BAS proof link
-- Five-tier badge visuals — design finalized July 17, 2026 (see above — implement exactly as specified)
-- Admin panel additions: attestation stats (issued per tier, claim rate, revocations), manual revoke, fee/discount settings, Score Source selector (Backend / BAS / Auto)
+- Attestation claim UI embedded inside widget (no redirect)
+- Public `/verify/:address` page
+- Five-tier badge visuals (design finalized July 17, 2026 — see above)
+- Admin panel: attestation stats, manual revoke, fee/discount settings, Score Source selector
 
 ### Open decisions
-All architectural decisions are locked. Badge tier visual design and score thresholds are finalized (July 17, 2026 — see above). No open design decisions remain. Task prompts can be written immediately.
+All architectural decisions are locked. No open design decisions remain. Task prompts for Tasks 19–22 are written and ready (see `TASKS.md`).
 
-**Note on attestation fee:** amount, OTI token discount rate, and 10M free-tier cap are all managed via admin dashboard. No hardcoded values. Ahmad sets them live.
-
-**Note on signing key:** Backend Builder implementation detail — not Ahmad's decision.
+**Note on attestation fee:** amount, OTI token discount rate, and 10M free-tier cap managed via admin dashboard — not hardcoded. Ahmad sets them live.
 
 **Privacy policy + Terms & Conditions:** deferred until full product is built (Ahmad, July 14, 2026).
 
 ### Risks logged
-- OTI signing key compromise = fake badges possible — key storage/rotation policy must be defined before launch
-- Legal: "Verified" badge implies liability — clear disclaimer needed, consistent with WOR's compromised-wallet reporting
-- BAS dependency — if BAS has an outage, attestation writes fail. Read path (widget/extension) can fall back to OTI's own DB record until BAS recovers.
+- OTI signing key compromise = fake badges possible — Ahmad holds the private key, it lives only in Railway env vars, never in code
+- XMTP fees: currently $0 on mainnet. When fees activate (~$50–100 per 1M messages), Campaign 2 economics change. First campaign is free — run it before fees activate.
+- BAS dependency — if BAS has an outage, attestation writes fail. Read path falls back to OTI's own DB record.
+- Legal: "Verified" badge implies liability — clear disclaimer needed, consistent with WOR compromised-wallet reporting
 
 ---
 
@@ -238,7 +279,7 @@ Exchange listing is a separate, later event — happens after Phase 3 revenue st
 | Wallet portfolio view | `wallet_links` table infrastructure already built |
 | Webhook alerts | Notify integrators when a watched wallet is compromised |
 | Enterprise exchange path | Compliance screening, withdrawal risk scoring — see Playbook Section 16 |
-| **Etherscan API key rotation / pooling** | Pool of free-tier Etherscan keys, rotated round-robin inside `etherscan.ts`'s `etherscanApiKey()` function. Multiplies free-tier capacity by N keys before any paid API cost is incurred. Scope is fetcher layer only — no other file changes. Relevant when proactive background scoring volume threatens free-tier daily limits. Not needed until the background scorer is generating significant volume; premature before that threshold. See also: upgrading to a paid Etherscan plan as the long-term solution once revenue covers it. |
+| **Etherscan key upgrade (Standard plan, $199/mo)** | After campaign revenue is in and proactive background scoring volume exceeds 10-key free-tier capacity (~1M calls/day), upgrade to Etherscan Standard. Key rotation infrastructure is already built (Task 19). Upgrade = swap env var to a single high-quota key — no code change. |
 | **Bot / suspicious-wallet behavioral detection** | Deliberately deferred, Ahmad, July 13, 2026 — see note below. Not scoped, not assigned. |
 
 **Note on bot/suspicious-wallet detection:** Ahmad identified this as arguably the system's primary intended use case — flagging bots, mixers/wash-trading patterns, and suspected-malicious wallets from on-chain behavior — but it currently does not exist at all; the system scores any syntactically valid address the same way regardless of behavioral red flags. This is a full new design (new signal(s) and/or a distinct classification layer), not a bug fix, and is explicitly set aside for now. Do not start scoping this until Ahmad reopens it — current priority is finishing real-data/signal-accuracy correctness work (`FIXES.md`) first.

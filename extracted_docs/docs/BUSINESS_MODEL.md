@@ -1,5 +1,5 @@
 # OTI — Business Model
-> Last updated: July 17, 2026 (session 16 — in-widget attestation flow, confirmed API tier signal-depth boundaries, partner revenue share model, Score Source Switcher as default widget data source) | Maintained by: Development Manager
+> Last updated: July 19, 2026 (session 16 — in-widget attestation flow, confirmed API tier signal-depth boundaries, partner revenue share model, Score Source Switcher as default widget data source) | Maintained by: Development Manager
 > This file captures the complete OTI business model — revenue, cost structure, growth strategy, and how every layer connects. It is the single source of truth for how OTI makes money and sustains itself. Update this file whenever Ahmad makes a strategic business decision that changes any part of the model.
 
 ---
@@ -11,6 +11,32 @@
 ---
 
 ## What OTI Sells
+
+### Layer 0 — XMTP Revenue Campaign (Bootstrap, Phase 2B — Active July 2026)
+
+Before the full attestation infrastructure is built, OTI runs a direct revenue campaign to fund continued development. This is not a permanent revenue layer — it is a bootstrap mechanism that runs once (or a small number of times) to generate immediate cash while Phase 2B Remaining is being built.
+
+**The flow:**
+1. Query `chain_scores` for Ethereum wallets with score ≥ 75 (already scored, no new API calls)
+2. Filter via XMTP `canMessage()` — keep only Coinbase Wallet-reachable addresses (~5–15% of pool)
+3. OTI signs a payload `{ wallet_address, score, expiry_timestamp }` via `POST /api/sign/score`
+4. XMTP sender script sends a `wallet_sendCalls` message to each wallet's Coinbase Wallet inbox
+5. User approves $1 in BNB → smart contract verifies OTI signature on-chain → calls `BAS.attest()` → attestation minted permanently
+6. Moralis Streams captures `AttestationMinted` event → conversion dashboard updates in real time
+
+**Why Ethereum scores work for a BNB Chain campaign (D26):** Every EVM 0x address is the same key pair on both chains. Scoring on Ethereum (live) and collecting payment on BNB Chain (cheap gas) is technically correct — same wallet owner, same behaviour history. No Etherscan Lite subscription required.
+
+**Economics:**
+- Total cost: $7–25 (smart contract gas + sender wallet ETH for XMTP signing)
+- XMTP fees: $0 currently (mainnet fees not yet enforced — run campaign before they activate)
+- Revenue at 0.25% conversion on 200K sends: ~$500
+- Revenue at 0.25% conversion on 400K sends: ~$1,000
+- Revenue at 0.50% conversion on 400K sends: ~$2,000
+- Campaign 2 is always more effective than Campaign 1 — first campaign generates targeting data
+
+**Campaign → Phase 3 unlocking mechanism:** Every attestation minted is a permanent BNB Chain record verifiable by any DeFi protocol. When Ahmad sells Phase 3 API access, he can show: "X,XXX wallets already hold OTI attestations on-chain — protocols can integrate today and verify them trustlessly." The campaign creates evidence that makes Phase 3 pricing defensible.
+
+---
 
 ### Layer 1 — Attestation (B2C, direct to wallet owners)
 OTI scores any wallet address across any supported chain and issues a cryptographically signed attestation of the result, stored on BNB Chain via BAS (BNB Attestation Service).

@@ -1,5 +1,5 @@
 # OTI — Master Task List
-> Last updated: July 10, 2026 (session 8 — full rewrite. Per Ahmad's instruction, this file now only contains genuine new-build tasks (new pages, new systems, new features). All bug fixes, corrections, hardening, and cleanup/polish work — including the former Task 11C and Task 11E — have moved to `FIXES.md`, numbered and split by Builder there. If you're looking for a fix rather than a new build, check `FIXES.md` first.) | Maintained by: Development Manager
+> Last updated: July 19, 2026 (session 17 — Phase 2B Revenue Campaign task queue added: Tasks 19–22. Etherscan key rotation moved up from Phase 4 to Task 19 — prerequisite for campaign wallet pre-scoring at scale.) | Maintained by: Development Manager
 
 ---
 
@@ -49,9 +49,136 @@ Docusaurus site covering Getting Started, API Reference (weighted signal shape),
 New page at `/services` — a portal/hub that surfaces all OTI services as clickable cards so any user (wallet owner, developer, curious visitor) can immediately find what they need without knowing the URL structure. Cards: Score a Wallet → /score, Wallet Ownership Registry (Register / Report) → /register + /report, API for Developers → /docs, Whitepaper → /whitepaper, plus placeholder cards for future services. Homepage stays unchanged. `/services` link added to the navbar. Page must use the locked OTI color system, be fully responsive (375px mobile), and match the visual quality of the rest of the app.
 **Builder's report + Ahmad live confirmation, July 15, 2026:** `Services.tsx` built with MarketingNavbar/Footer chrome, 2-col→1-col (≤720px) card grid, `.marketing-service-*` CSS on locked color system, "Services" in navbar (desktop+mobile). `npm run build` clean, 0 TS errors. Ahmad confirmed live. Closed.
 
-## 🔴 Active Queue
+## 🔴 Active Queue — Phase 2B Revenue Campaign
 
-No active tasks — Phase 1 is fully closed. Phase 2B is next (see ROADMAP.md).
+Build order is strict — each task depends on the previous one being confirmed live by Ahmad.
+One task per Builder at a time. Do not queue next task until current is verified.
+
+---
+
+### TASK 19 — Backend: Etherscan API Key Rotation
+**Builder: Backend Builder | Priority: FIRST — prerequisite for everything below**
+
+Add round-robin Etherscan API key rotation to the scoring pipeline so OTI can pre-score millions of Ethereum wallets for the XMTP campaign without hitting the 100K calls/day single-key limit.
+
+**What to build:**
+- Add Railway environment variable `ETHERSCAN_API_KEYS` — comma-separated list of up to 10 Etherscan API keys (e.g. `key1,key2,key3,...`)
+- In `chainRegistry.ts` (wherever `etherscanApiKey()` is defined), replace the single-key return with a round-robin counter across the array: keep a module-level integer index, increment on every call (mod array length), return that key
+- If `ETHERSCAN_API_KEYS` is set, use the array. If not set, fall back to the existing single `ETHERSCAN_API_KEY` env var — backward compatible, nothing breaks
+- No other file changes. No other logic changes. Scope is the `etherscanApiKey()` function only
+
+**Why first:** The XMTP sender script needs a pre-built list of Ethereum wallets with score ≥ 75 in `chain_scores`. Without rotation, scoring 1M wallets takes 30–50 days on a single free key. With 10 keys, it takes 3–5 days.
+
+**Ahmad to provide:** 10 Etherscan API keys (registered from separate email accounts, not all in one session). Manager will pass them to Builder as Railway env var values — never in code.
+
+**Evidence required to close:** Builder deploys, Ahmad confirms via a live API call that rotating keys are being used (Builder logs which key index served each request temporarily, then removes the log).
+
+---
+
+### TASK 20 — Backend: OTI Signing Endpoint + BAS Schema Registration
+**Builder: Backend Builder | Priority: SECOND — unblocks smart contract and XMTP script**
+**Depends on: Task 19 confirmed live**
+
+Two parts, done in sequence by the same Builder in the same session.
+
+**Part A — BAS Schema Registration (do this first):**
+- Register the OTI attestation schema on BNB Chain's BAS (BNB Attestation Service) — this is an on-chain transaction, not a code task
+- Schema fields: `address wallet, uint256 score, string tier, uint256 issuedAt, uint256 expiresAt`
+- Ahmad must sign and pay for this transaction (small BNB gas cost ~$0.01) — Builder provides the exact BAS schema registration transaction for Ahmad to confirm
+- The resulting schema UID (a bytes32 hash) is hardcoded into the smart contract in Task 21 — Builder must record and document it
+
+**Part B — Signing Endpoint:**
+- New file: `src/routes/sign.ts`
+- Add Railway env var: `OTI_SIGNING_KEY` (private key — Ahmad generates this key pair, stores private key in Railway, gives public key to Builder for smart contract)
+- Endpoint: `POST /api/sign/score` — protected by existing `adminAuth.ts` middleware
+- Input: `{ wallet_address, chain, expiry_timestamp }`
+- Logic:
+  1. Check `compromised_wallets` — return 403 if flagged
+  2. Look up `chain_scores` for this wallet — return 403 if score < 75 or not found
+  3. Sign payload using `ethers.solidityPackedKeccak256(['address','uint256','uint256'], [wallet_address, score, expiry_timestamp])` then `signingWallet.signMessage(hash)`
+  4. Return `{ wallet_address, score, expiry_timestamp, signature }`
+- The signing key lives only in Railway env vars — never in code, never logged
+
+**Evidence required to close:** Builder calls the endpoint with a real Ethereum wallet that has a score ≥ 75 in chain_scores, pastes the raw JSON response. Ahmad verifies the endpoint rejects a wallet with score < 75 and rejects a compromised wallet.
+
+---
+
+### TASK 21 — Backend: Smart Contract (BNB Chain) + XMTP Sender Script
+**Builder: Backend Builder | Priority: THIRD**
+**Depends on: Task 20 confirmed live + BAS schema UID from Task 20 Part A**
+
+Two parts, done in sequence.
+
+**Part A — Smart Contract (Solidity, BNB Chain):**
+- Language: Solidity 0.8.x
+- Chain: BNB Chain (chainId 56) — deploy to BNB testnet first, verify end-to-end, then mainnet
+- Deploy cost: ~$5–20 in BNB (Ahmad funds this)
+- Contract logic:
+  1. Store OTI public key (from Task 20 key pair) and BAS schema UID (from Task 20 Part A) as immutable constructor args
+  2. Store Chainlink BNB/USD price feed: `0x0567F2323251f0Aab15c8dFb1967E4eaA47d42aEE`
+  3. `getRequiredBNB()` — returns `1e26 / latestRoundData()` (exactly $1 in BNB wei)
+  4. `mintAttestation(uint256 score, uint256 expiry, bytes memory sig) external payable`
+     - `require(msg.value >= getRequiredBNB(), "Send exactly $1 in BNB")`
+     - `require(score >= 75, "Score below threshold")`
+     - `require(expiry > block.timestamp, "Signature expired")`
+     - `require(!minted[msg.sender], "Already minted")`
+     - Verify OTI signature: `ecrecover(keccak256("\x19Ethereum Signed Message:\n32", keccak256(abi.encodePacked(msg.sender, score, expiry)))) == OTI_PUBLIC_KEY`
+     - `require(verifyOTISignature(...), "Invalid OTI signature")`
+     - `minted[msg.sender] = true`
+     - Call `bas.attest(buildAttestationRequest(msg.sender, score))` — uses BAS schema UID
+     - `emit AttestationMinted(msg.sender, score, attestationUID, msg.value)`
+  5. `withdraw()` — owner only, sweeps BNB revenue to Ahmad's wallet
+- Verify on BscScan after mainnet deploy
+
+**Part B — XMTP Sender Script (Node.js):**
+- Runtime: Node.js — lives outside the Railway API server (standalone script, run locally or on a separate process)
+- SDK: `@xmtp/node-sdk` v5+
+- Dependencies: existing Railway PostgreSQL connection (read-only), `@xmtp/node-sdk`
+- Logic:
+  1. Query `chain_scores` for Ethereum wallets with `overall_score >= 75` and `scored_at > NOW() - INTERVAL '30 days'`
+  2. Batch `canMessage()` check — filter to XMTP-enabled wallets only
+  3. For each eligible wallet: call `POST /api/sign/score` to get signed payload (expiry = 24 hours from now)
+  4. Construct `wallet_sendCalls` XMTP message with the signed payload embedded as calldata, `chainId: 56` (BNB Chain), contract address, and `$1 in BNB` value
+  5. Message content (what user sees in Coinbase Wallet):
+     ```
+     Your OTI Trust Score: [score] / 100 — HIGHLY TRUSTED
+
+     You qualify for an OTI Trust Attestation — a permanent on-chain
+     record of your wallet's trustworthiness, verified across Ethereum.
+
+     This attestation is recognised by DeFi protocols for reduced
+     collateral requirements and whitelist access.
+
+     → Approve $1 in BNB to mint your attestation permanently on BNB Chain.
+
+     [Transaction Request: OTI Attestation Contract · ~$1 · BNB Chain]
+     ```
+  6. Rate: 3,000 messages per 5-min window per sender wallet
+  7. Track sent wallets in a local SQLite or flat file to avoid re-sends
+- Ahmad runs this script manually after end-to-end test confirms everything works
+
+**Evidence required to close:** Builder deploys contract to testnet. Ahmad sends $1 test BNB on testnet → attestation minted → visible on BNB testnet BAS explorer. Then mainnet deploy + same test on mainnet. Builder pastes BscScan contract address and BAS attestation UID from the test mint.
+
+---
+
+### TASK 22 — Frontend: Campaign Conversion Dashboard
+**Builder: Frontend Builder | Priority: FOURTH — revenue happens without this**
+**Depends on: Task 21 smart contract deployed to mainnet (need contract address + ABI)**
+
+Build a simple admin-only conversion dashboard inside the OTI Assessment Replit artifact that tracks campaign performance in real time.
+
+**What to build:**
+- Set up Moralis Streams webhook on the `AttestationMinted` contract event — writes to a lightweight `campaign_conversions` table (wallet, score, attestation_uid, amount_paid_bnb, amount_paid_usd, timestamp)
+- Dashboard view (React/Vite, admin-only, no public link):
+  - Total messages sent (manual input or flat file)
+  - Total attestations minted
+  - Conversion rate %
+  - Revenue in BNB + USD equivalent (live BNB price)
+  - Live-updating — no page refresh needed
+  - Simple table of recent conversions (wallet truncated, score, timestamp, USD value)
+- Moralis free tier: 40K compute units/day — sufficient for campaign volume
+
+**Evidence required to close:** Ahmad sees at least the testnet `AttestationMinted` event from Task 21 appearing in the dashboard live. No mainnet conversions required to close the task — the infrastructure just needs to be working.
 
 ---
 
