@@ -45,12 +45,13 @@ Docusaurus site covering Getting Started, API Reference (weighted signal shape),
 ### TASK 17 — Frontend: WOR UI — Phase 2 ✅
 /register (3-step: address check → MetaMask sign → passkey set) and /report (3-step: status check → sign + passkey → confirm dialog) pages live. "⚑ Report this wallet" link activated on results page. Admin WOR tab added (Registry, Compromised, Manual Override sub-views). Verified end-to-end by Ahmad with real Trust Wallet on July 14, 2026 — registration, self-report, and 0% compromised score all confirmed live. Follow-up UI/UX and ecosystem wiring polish tracked as FF24.
 
+### TASK 18 — Frontend: Services Hub Page (`/services`) ✅ — July 15, 2026
+New page at `/services` — a portal/hub that surfaces all OTI services as clickable cards so any user (wallet owner, developer, curious visitor) can immediately find what they need without knowing the URL structure. Cards: Score a Wallet → /score, Wallet Ownership Registry (Register / Report) → /register + /report, API for Developers → /docs, Whitepaper → /whitepaper, plus placeholder cards for future services. Homepage stays unchanged. `/services` link added to the navbar. Page must use the locked OTI color system, be fully responsive (375px mobile), and match the visual quality of the rest of the app.
+**Builder's report + Ahmad live confirmation, July 15, 2026:** `Services.tsx` built with MarketingNavbar/Footer chrome, 2-col→1-col (≤720px) card grid, `.marketing-service-*` CSS on locked color system, "Services" in navbar (desktop+mobile). `npm run build` clean, 0 TS errors. Ahmad confirmed live. Closed.
+
 ## 🔴 Active Queue
 
-### TASK 18 — Frontend: Services Hub Page (`/services`) 🟡 REPORTED, AWAITING AHMAD LIVE VERIFICATION — July 15, 2026
-New page at `/services` — a portal/hub that surfaces all OTI services as clickable cards so any user (wallet owner, developer, curious visitor) can immediately find what they need without knowing the URL structure. Cards: Score a Wallet → /score, Wallet Ownership Registry (Register / Report) → /register + /report, API for Developers → /docs, Whitepaper → /whitepaper, plus placeholder cards for future services. Homepage stays unchanged. `/services` link added to the navbar. Page must use the locked OTI color system, be fully responsive (375px mobile), and match the visual quality of the rest of the app. Running alongside FF25/FF26/FF27 frontend fixes and BF39 backend fix.
-
-**Builder's report, July 15, 2026:** Built `/services` (`Services.tsx`) with MarketingNavbar/Footer chrome, 2-col→1-col (≤720px) card grid for Score/WOR/Docs/Whitepaper/Coming-Soon, `.marketing-service-*` classes on the locked color system, "Services" added to navbar (desktop+mobile). `npm run build` clean, 0 TS errors. Builder verified desktop via local screenshot but **could not produce a true 375px mobile screenshot in their environment** — only reviewed the CSS media query by inspection. **Per D16 this task is not closed** — the explicit 375px-mobile requirement in this spec has not been visually confirmed by anyone, code-reading a media query is not evidence it renders correctly. Awaiting Ahmad to check `/services` live at both desktop and real mobile width, plus confirm all five cards link correctly and "Services" shows in both navbar states.
+No active tasks — Phase 1 is fully closed. Phase 2B is next (see ROADMAP.md).
 
 ---
 
