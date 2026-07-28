@@ -1,18 +1,20 @@
 # OTI — Manager Handover Document
-> Last updated: July 28, 2026 (session 19 — Infrastructure cost & capacity analysis added: full monthly/annual cost breakdown, daily throughput per chain, 209.8M total active wallet universe across 15 chains, BSC/Base/Optimism bottleneck analysis, annual coverage scenarios. Avalanche provider corrected to RouteScan Free; zkSync provider corrected to zkSync Free API.)
-> **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TASKS.md, FIXES.md, and DECISIONS.md in that order.**
-> **⚠️ D16 (evidence rule): no signal value or test result may be estimated or guessed — only real on-chain data. A Builder's "verified" claim is NOT evidence. Ask: which wallet, which raw API response, which psql output.**
-> **⚠️ Read TOKENOMICS.md before touching anything token-related — price/liquidity sections deliberately removed at Ahmad's request. Do not add them back.**
+> Last updated: July 28, 2026 (session 20 — Strategic pivot recorded: private sale first, XMTP campaign second. New token distribution model recorded. GitHub security decision recorded. Full new direction summary added. Questions for Ahmad added for next Manager session.)
+> **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TOKENOMICS.md, DECISIONS.md, and TASKS.md in that order.**
+> **D16 (evidence rule): no signal value or test result may be estimated or guessed — only real on-chain data. A Builder's "verified" claim is NOT evidence. Ask: which wallet, which raw API response, which psql output.**
+> **Read TOKENOMICS.md before touching anything token-related — price/liquidity sections deliberately absent at Ahmad's request. Do not add them.**
 
 ---
 
-## ⚠️ Where the Code Lives
+## Where the Code Lives
 
-This Replit workspace is the **Manager's workspace** — documentation, prompt writing, roadmap management ONLY. No OTI source code lives here.
+This Replit workspace is the Manager's workspace — documentation, prompt writing, roadmap management only. No OTI source code lives here.
 
 - **Backend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI- — PRIVATE
-- **Frontend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-O-T-I-Frontend- — PUBLIC
-- **Docs repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI-Docs — this workspace
+- **Frontend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-O-T-I-Frontend- — PUBLIC (needs audit — see D31)
+- **Docs repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI-Docs — this workspace (currently public — needs to go private or be stripped of internal files before private sale launches)
+
+**GitHub security — urgent (D31):** The docs repo is currently public and contains internal files: FIXES.md, TASKS.md, ARCHITECTURE.md, BUILDER_ONBOARDING.md, MANAGER_HANDOVER.md. This must be resolved before the private sale launches. Ahmad to either make the docs repo private or strip it to public-facing content only. From this point forward, Builders do not push to GitHub — Ahmad pushes only.
 
 ---
 
@@ -34,37 +36,34 @@ This Replit workspace is the **Manager's workspace** — documentation, prompt w
 | Role | Status |
 |---|---|
 | Ahmad (CEO) | Always active — sole merge authority |
-| Backend Builder | ✅ Idle — waiting for Task 19 prompt |
-| Frontend Builder | ✅ Idle — waiting for Task 22 prompt (after Task 21 is done) |
+| Backend Builder | Idle — Tasks 19–22 on hold pending private sale direction |
+| Frontend Builder | Idle — Tasks 19–22 on hold pending private sale direction |
 | Development Manager | Being replaced — you are the new Manager |
 
 ---
 
-## Current Production State (July 19, 2026)
+## Current Production State (July 28, 2026)
 
 **Live and working:**
 - Backend: `https://workspaceapi-server-production-5c0c.up.railway.app`
 - Frontend: `https://otiscore.vercel.app` (`/`, `/score`, `/whitepaper`, `/admin`, `/services`, `/register`, `/report`)
 - Developer docs: `https://otiscore.vercel.app/docs/`
-- 12 chains live (7 EVM via Etherscan V2 + TON, Solana, Sui, Bitcoin, Tron)
-- BSC/Base/Optimism intentionally return 503 (Etherscan Lite $49/mo — Ahmad's decision)
+- 12 chains scored (7 EVM + 5 non-EVM). Sui broken via BF41 (JSON-RPC deprecated — Ahmad will fix later when presale pays). BSC/Base/Optimism return 503 (need Etherscan Lite $49/mo — Ahmad subscribes when presale pays). Features for all chains remain in the code.
 - Two-tier cache: L1 LRU (500 entries, 5-min TTL) + L2 chain_scores DB (30-day rescore window)
 - Keep-highest write logic on chain_scores
-- API key + quota system live
+- API key + quota system live (anonymous limit currently 3/day — to be raised, see D33)
 - Admin panel fully secured (x-admin-secret header, adminAuth.ts middleware)
 - WOR (Wallet Ownership Registry) fully live — /register, /report, admin WOR tab
 - compromised_wallets is single source of truth for all flagged-wallet views
 - /services hub live
 - Score sharing PNG cards live
-- All fixes: BF1–BF40 ✅, FF1–FF27 ✅
-- All tasks: Task 8–18 ✅
-- **Phase 1: FULLY CLOSED. Phase 2 (WOR): FULLY LIVE.**
+- All fixes: BF1–BF40, FF1–FF27 complete
+- All tasks: Task 8–18 complete
+- Phase 1: COMPLETE. Phase 2 (WOR): COMPLETE.
 
-**Critical infrastructure note — Railway migrations:**
-Railway does NOT auto-run `drizzle-kit push`. Every schema change needs Ahmad to manually run it against the Railway production DATABASE_URL after deploy. Run from: `cd /app/lib/db` then `drizzle-kit push`. (Note: railway.json now has this in the build step — verify if live in prod before assuming it's automatic.)
-
-**Critical infrastructure note — subscriptions table:**
-Real columns: `id, api_key, plan, owner_address, created_at, expires_at, updated_at`. NO `status` column, NO `email` column. Use raw SQL on this table only — never Drizzle ORM selects.
+**Critical infrastructure notes:**
+- Railway does NOT auto-run `drizzle-kit push`. Every schema change needs Ahmad to manually run it against Railway production DATABASE_URL after deploy. Run from: `cd /app/lib/db` then `drizzle-kit push`.
+- `subscriptions` table real columns: `id, api_key, plan, owner_address, created_at, expires_at, updated_at`. NO `status` column, NO `email` column. Use raw SQL on this table only — never Drizzle ORM selects.
 
 ---
 
@@ -85,103 +84,186 @@ Real columns: `id, api_key, plan, owner_address, created_at, expires_at, updated
 |---|---|
 | scoring.ts is sacred, never modify | Core IP |
 | CORS is fully open | Intentional — public developer API |
-| BSC/Base/Optimism return 503 | Waiting for Etherscan Lite decision |
+| BSC/Base/Optimism return 503 | Waiting for Etherscan Lite — Ahmad subscribes when presale pays |
+| Sui features remain in code | BF41 — Ahmad will fix when presale pays |
 | Admin page is URL-only, no nav link | Ahmad's decision |
 | WOR self-reports are automated — no admin review queue | Ahmad's decision |
 | compromised_wallets is sole source of truth for flagged wallets | BF38/39/40 lesson |
 | One task per Builder at a time | Ahmad's hard rule |
 | Fixes never get task numbers — FIXES.md only | Ahmad's explicit correction |
-| Price/liquidity absent from TOKENOMICS.md | Deliberately removed by Ahmad — do not add back |
+| Price/liquidity absent from TOKENOMICS.md | Deliberately absent — do not add back |
 | DECISIONS.md is Manager-write, Builder-read | Ahmad's direction |
 | Homepage at / stays unchanged | Ahmad's decision July 15, 2026 |
 | OTI token is independent from FLOW | Separate tokenomics, separate fundraising |
 | Contract addresses scored same as any wallet | No address-type gatekeeping |
 | Etherscan key rotation: max 10 free keys | ToS boundary — see D25 |
-| ETH scores used for BNB campaign — BSC blocker bypassed | D26 — same 0x address across EVM chains |
-| Campaign-first Phase 2B — revenue before full stack | D27 — fund Post-Campaign Remaining with proceeds |
+| ETH scores used for BNB campaign — BSC blocker bypassed | D26 |
+| GitHub: no internal files in public repos | D31 — Ahmad July 28, 2026 |
+| No AI exposure in any public-facing content | D32 — Ahmad July 28, 2026 |
+| Free product: anonymous rate limits to be removed | D33 — Ahmad July 28, 2026 |
+| Private sale first, XMTP campaign second | D28 — Ahmad July 28, 2026 |
+| Token distribution: 25% free, 75% auto-staked daily 5 years | D29 — Ahmad July 28, 2026 |
+| All team allocations locked, daily claimable over 5 years | D30 — Ahmad July 28, 2026 |
 
 ---
 
 ## Infrastructure Cost & Capacity
 
-> Researched July 27, 2026 (session 18). All figures verified by previous Manager. Do not remove or modify without re-running the analysis.
+> Researched July 27, 2026. All figures verified by previous Manager.
 
-### Monthly & Annual Cost — Everything Included
+### Monthly & Annual Cost
 
 | Item | Monthly | Annual |
 |---|---|---|
 | Railway (backend + PostgreSQL) | $5–20 | $60–240 |
 | Vercel (frontend + docs) | $0 | $0 |
 | Domain | ~$1.25 | ~$15 |
-| Etherscan Lite ×1 key (BSC + Base + Optimism) | $49 | $588 |
+| Etherscan Lite x1 key (BSC + Base + Optimism) | $49 | $588 |
 | BAS weekly attestation gas (BNB Chain) | $5–40 | $60–480 |
-| mempool.space, TronScan, Toncenter, RouteScan, Sui GraphQL, Solana RPC, zkSync Free | $0 | $0 |
+| All other providers (mempool.space, TronScan, Toncenter, RouteScan, Sui GraphQL, Solana RPC, zkSync Free) | $0 | $0 |
 | **TOTAL lean (no active campaign)** | **~$60–65/mo** | **~$723–780/yr** |
 | **TOTAL active campaign** | **~$100–110/mo** | **~$1,200–1,320/yr** |
 
-**Hard floor (absolute minimum, no campaign):** ~$55–70/mo — Railway + Etherscan Lite + domain. Cannot go lower.
+**Hard floor (absolute minimum):** ~$55–70/mo — Railway + Etherscan Lite + domain.
 
-**BAS gas note:** The $5–40 range depends entirely on attestations pushed on-chain per week. At 100 attestations/week ($0.01–0.05 each on BNB) = $5/mo. At 1,000/week = $40/mo. Everything else is fixed.
-
----
-
-### Total Active Wallet Universe: ~209.8M Across All 15 Chains
-
-| Chain | Active Wallets | Calls/Year Needed | Provider | Cost |
-|---|---|---|---|---|
-| Ethereum | 25M | 300M | Etherscan Free | $0 |
-| Polygon | 15M | 180M | Etherscan Free | $0 |
-| Bitcoin | 50M | 400M | mempool.space | $0 |
-| Solana | 20M | 120M | Public RPC | $0 |
-| Tron | 18M | 90M | TronScan | $0 |
-| BSC | 25M | 300M | Etherscan Paid | $49/mo |
-| Base | 18M | 216M | Etherscan Paid | ^ shared |
-| Optimism | 8M | 96M | Etherscan Paid | ^ shared |
-| zkSync | 5M | 60M | zkSync Free | $0 |
-| TON | 8M | 40M | Toncenter | $0 |
-| Arbitrum | 6M | 72M | Etherscan Free | $0 |
-| Linea | 4M | 48M | Etherscan Free | $0 |
-| Avalanche | 4M | 48M | RouteScan Free | $0 |
-| Sui | 3M | 15M | Sui GraphQL* | $0 |
-| Sonic | 800K | 10M | Etherscan Free | $0 |
-| **TOTAL** | **209.8M** | **~2.0B/year** | | |
-
-*Sui blocked by BF41 until the JSON-RPC → GraphQL migration is done.*
+### Total Wallet Universe: ~209.8M Across All Chains
+Full breakdown in ARCHITECTURE.md. BSC/Base/Optimism are the bottleneck — 1 paid Etherscan key covers only 26% of those chains annually. Full coverage needs 4 keys at $196/mo.
 
 ---
 
-### Daily Throughput (continuous scoring, no cache)
+## Phase Status (July 28, 2026)
 
-| Chain Group | Wallets/Day |
+| Phase | Status |
 |---|---|
-| ETH + Polygon + Arbitrum + Linea + Sonic (9 free Etherscan keys) | 324K/day |
-| Bitcoin (mempool.space) | 270K/day |
-| Solana (Public RPC) | 216K/day |
-| Avalanche (RouteScan Free) | 360K/day |
-| Tron (TronScan) | 173K/day |
-| TON (Toncenter) | 86K/day |
-| **BSC + Base + Optimism (1 paid Etherscan key) ← bottleneck** | **36K/day** |
-| Sui post-BF41 (GraphQL) | 864K/day |
+| Phase 1 — Foundation | COMPLETE |
+| Phase 2 — WOR | COMPLETE |
+| Phase 0 (NEW) — Private Sale Infrastructure | NEXT — full design required, see below |
+| Phase 2B — XMTP Revenue Campaign (Tasks 19–22) | ON HOLD — runs after private sale raises money |
+| Phase 2B — Post-Campaign Remaining | Planned — after campaign revenue |
+| Phase 3 — Monetization + OTI Token | Planned |
+| Phase 4 — Growth Features | Planned |
+| Phase 5 — Distribution (bots, widget, extension) | Planned |
 
 ---
 
-### Annual Coverage Scenarios (rescore every wallet 1× per year)
+## The New Direction — Private Sale First (Confirmed July 28, 2026)
 
-**9 free Etherscan keys (ETH + Polygon + Arbitrum + Linea + Sonic):**
-- Capacity: 1.42B calls/year → Need: 610M → 43% utilised ✅
-- All 50.8M wallets on those 5 chains: fully covered at $0
+Ahmad has confirmed a strategic pivot. All building operations are paused until the private sale infrastructure is designed and built. The full context of this decision is in DECISIONS.md (D28).
 
-**1 paid Etherscan key ($49/mo) covering BSC + Base + Optimism:**
-- Capacity: 158M calls/year → Need: 612M → **388% overloaded** ❌
-- Can only score 13.1M / 51M wallets (26%) — top most-active wallets only
-- To cover all 51M: need 4 paid keys → $196/mo
+### What the Private Sale Is
 
-**All other non-EVM chains:** ✅ Fully covered at $0
+A private sale of OTI tokens on BNB Chain, targeted at committed buyers who understand the product and believe in the vision. Buyers access a purpose-built private sale site, read everything about OTI (whitepaper, documentation, FAQ, pricing), connect their wallet, and purchase OTI tokens. The smart contract handles distribution automatically.
 
-| Scenario | Monthly | Annual | Coverage |
-|---|---|---|---|
-| Current (9 free + 1 paid key) | $49/mo | $588/yr | ~94% (~197M wallets) |
-| Full coverage (9 free + 4 paid keys) | $196/mo | $2,352/yr | 100% (209.8M wallets) |
+**Token distribution on purchase (D29, D30):**
+- 25% of purchased tokens: sent immediately to buyer wallet / visible in OTI private sale dashboard
+- 75% of purchased tokens: auto-staked in distribution contract, claimable daily over 5 years (1,825 daily equal portions)
+- All team-controlled allocations (Team, Ecosystem, Rewards Pool, Treasury): 100% locked, daily claimable over 5 years — same mechanism
+- Only exception: Liquidity & Market Making (3M OTI) — fully available at listing for DEX depth
+
+**Sale parameters not yet decided (ask Ahmad):**
+- How many tokens in the private sale and at what price
+- Referral commission rate and whether referral tracking is on-chain or off-chain
+- Whether the private sale replaces the $10k pre-listing round from the old TOKENOMICS.md or is a new structure
+
+### What Needs to Be Built Before the Private Sale Can Open
+
+This is the complete list, in rough priority order. Ahmad must confirm the sequence before any Builder starts work.
+
+**1. GitHub cleanup (urgent — no Builder needed, Ahmad action)**
+Make the docs repo private on GitHub. Audit the frontend public repo for any internal comments or structural information that should not be public.
+
+**2. Whitepaper rewrite (Frontend Builder)**
+The current whitepaper exists at `/whitepaper` but undersells the technical depth and does not reflect the new token/presale structure. The rewrite must:
+- Show the five-signal scoring algorithm methodology (not implementation details — describe the signals, explain the approach)
+- Cover the infrastructure: chains supported, providers, the two-tier cache, keep-highest logic
+- Cover the WOR system and what makes it novel
+- Cover the BAS attestation layer and what it enables for wallet trust
+- Cover the OTI token: supply, allocation, the new distribution model (25% free / 75% auto-staked daily 5 years), team lockup
+- Cover the roadmap: what is live now, what is coming
+- Cover the market: who needs on-chain trust infrastructure and why
+- Write in clean, professional prose — no emojis, no AI-native patterns (D32)
+- All chain counts must be accurate. Do not claim 15 chains. Do not reference Scroll, Sepolia, Holesky.
+
+**3. Privacy Policy and Terms & Conditions (Frontend Builder)**
+Both pages must be live before the private sale opens. They must cover:
+- The scoring product: what data OTI processes (on-chain public data only, no PII), how it's used, what OTI does not do
+- The API: developer terms, rate limits, acceptable use
+- The private sale: what buyers are purchasing, the vesting/distribution terms, the risks, non-guarantee of returns
+- The referral system: commission structure, payout terms
+
+**4. Remove anonymous rate limits — free product (Ahmad admin panel action + Backend/Frontend Builder)**
+- Ahmad: update the `anonymous` plan in `plan_configs` table via admin panel to a high or unlimited daily limit (this is a database value, not a code change)
+- Frontend Builder: update any hardcoded "3 per day" text on the frontend to reflect the new limit
+- Backend Builder: build self-serve API key signup flow so developers can get a key without contacting Ahmad
+
+**5. Private sale site (Frontend Builder + Backend Builder)**
+A dedicated private sale page or section, professionally designed, containing:
+- Full explanation of OTI and what it's building
+- Token economics: supply, allocation breakdown, the private sale terms
+- Distribution model clearly explained (25% free / 75% daily over 5 years)
+- Roadmap overview
+- FAQ — thorough and honest
+- Referral system explanation and interface
+- Smart contract integration: connect wallet, purchase, view dashboard (staked balance, daily claimable, accumulated)
+
+**6. BNB Chain smart contracts (Backend Builder)**
+Four contracts minimum, all deployed on BNB Chain testnet first, then mainnet after Ahmad confirms:
+- Sale contract: accepts BNB or USDT, records the purchase
+- Distribution contract: executes 25%/75% split on purchase, makes 75% claimable daily over 1,825 days
+- Referral contract or backend system: tracks referrals, distributes commissions
+- Admin controls: pause sale, update parameters, withdraw raised funds
+
+**7. Docusaurus docs site audit (Frontend Builder)**
+Review all content for accuracy:
+- Chain count and chain names must be accurate
+- Remove any content that reveals internal architecture (key rotation details, how providers work, admin route structure)
+- Remove reference to Scroll, Sepolia, Holesky
+- Sui and BSC/Base/Optimism: describe honestly — supported in code, not yet enabled (not "broken", just "coming soon")
+- Update API reference to match current actual response shape
+- All writing must meet D32 standard (no AI-native patterns)
+
+---
+
+## Questions for Ahmad — Next Manager Session Must Cover These
+
+The previous Manager session ended before Ahmad could answer these. The next Manager must ask Ahmad these questions before assigning any Builder tasks.
+
+**1. Private sale token terms:**
+How many OTI tokens are available in this private sale, and at what price per token? This determines the smart contract sale cap, the dashboard display, and all the economics in the whitepaper. (Ahmad said he will decide this during the build phase — remind him we need it before the sale contract can be written.)
+
+**2. Referral system structure:**
+- What is the referral commission — a percentage of what the referred buyer pays?
+- Is referral tracking on-chain (handled by the smart contract, trustless) or off-chain (handled by the backend, simpler to build)?
+- Does the referrer receive their commission in BNB/USDT or in OTI tokens?
+
+**3. GitHub docs repo:**
+Should the docs repo go fully private, or be restructured to only contain public-facing content (whitepaper source, public docs)? This determines whether Builders still have access to the repo at all.
+
+**4. Broken chains and 503 chains — public messaging:**
+For the private sale site and whitepaper, how should Sui (broken) and BSC/Base/Optimism (503) be described? Options: (a) simply not mention them; (b) list as "coming soon" with no explanation; (c) describe as "code-complete, activation pending infrastructure subscription." Ahmad's answer determines whitepaper and docs site language.
+
+**5. Self-serve developer API keys:**
+When anonymous rate limits are removed, what is the new free developer daily limit? And what plan tiers does Ahmad want available at private sale launch — just free, or also a paid tier?
+
+**6. Domain:**
+Is Ahmad planning to acquire a proper domain (e.g. `openflowlabs.io` or `getoti.com`) before the private sale launches? The private sale site would look significantly more professional on a real domain than on `otiscore.vercel.app`.
+
+**7. Builder resumption:**
+Which Builder should start first? The recommended order is: Frontend Builder (whitepaper rewrite and privacy/T&Cs) first, while the Backend Builder designs the smart contracts. But Ahmad confirms which goes first.
+
+**8. Private sale site — separate domain or same Vercel project?**
+Should the private sale live at `otiscore.vercel.app/sale` or on a dedicated domain/subdomain? This affects the Frontend Builder's architecture for that page.
+
+---
+
+## XMTP Campaign — Still Valid, On Hold
+
+Tasks 19–22 are written and ready in TASKS.md. The XMTP campaign is NOT cancelled — it is the second funding mechanism, running after private sale money is secured. Full task prompts exist; no rework needed. When Ahmad is ready to run the campaign, the next Manager simply sends Task 19 prompt to the Backend Builder.
+
+**Ahmad's actions still required before Task 19 can start:**
+1. Register 10 Etherscan accounts (separate emails, not all in one session — ToS risk). Get 10 API keys.
+2. Manager adds them to Railway as `ETHERSCAN_API_KEYS=key1,key2,...,key10`
+3. Then send Task 19 prompt to Backend Builder.
 
 ---
 
@@ -189,93 +271,28 @@ Real columns: `id, api_key, plan, owner_address, created_at, expires_at, updated
 
 | Phase | Status |
 |---|---|
-| Phase 1 — Foundation | ✅ COMPLETE |
-| Phase 2 — WOR | ✅ COMPLETE |
-| Phase 2B — Revenue Campaign (Tasks 19–22) | 🔴 NEXT — Task 19 ready to assign |
-| Phase 2B — Post-Campaign Remaining | ⏳ After campaign revenue is in |
-| Phase 3 — Monetization + OTI Token | ⏳ Planned |
-| Phase 4 — Growth Features | ⏳ Planned |
-| Phase 5 — Distribution (bots, widget, extension) | ⏳ Planned |
-
----
-
-## WHERE TO CONTINUE — READ THIS FIRST
-
-### The Current Mission: Phase 2B Revenue Campaign
-
-Ahmad needs money to continue building and running servers. The plan: run an XMTP campaign targeting Ethereum wallets with score ≥ 75, ask them to pay $1 in BNB to mint an OTI Trust Attestation on BNB Chain via BAS. Projected revenue: $1,000–$5,000 from first campaign. Total cost: $7–25.
-
-**The key insight (D26):** No BSC scoring needed. Every EVM 0x address is the same person on Ethereum AND BNB Chain. OTI already scores on Ethereum (live). Payment collected on BNB Chain (cheap gas). The $49/mo Etherscan Lite blocker does not apply to this campaign.
-
-**The 4 components, in strict dependency order:**
-
-```
-Task 19 (Backend)  →  Task 20 (Backend)  →  Task 21 (Backend)  →  Task 22 (Frontend)
-Key Rotation           Sign Endpoint +        Smart Contract +       Conversion
-~1 hour                BAS Schema Reg         XMTP Sender Script     Dashboard
-                       ~2 hours               ~5 hours               ~2 hours
-```
-
-### Task 19 is next. Ahmad must provide these before it starts:
-
-**Ahmad's actions before Task 19:**
-1. Register 10 Etherscan accounts (separate emails, not all in one session — ToS risk). Get 10 API keys. Pass them to Manager as a comma-separated list.
-2. Manager adds them to Railway as `ETHERSCAN_API_KEYS=key1,key2,...,key10`
-3. Then send Task 19 prompt to Backend Builder
-
-**Ahmad's actions before Task 20:**
-1. Generate an ETH key pair (Ahmad stores the private key — never shares it with Builder). Provide the PUBLIC key to Manager for the smart contract.
-2. Have ~$0.01 BNB for BAS schema registration gas + ~$20 BNB for smart contract mainnet deployment.
-
-**Ahmad's actions before Task 21:**
-1. Have a funded BNB Chain wallet (~$20 in BNB) to deploy the smart contract and receive revenue
-2. Have Coinbase Wallet on mobile for testing the receive flow
-3. Have BNB testnet funds from faucet.bnbchain.org for testnet testing
-4. Decide on the XMTP message copy (exact text user sees in Coinbase Wallet inbox)
-
-**Full task prompts are written and ready in TASKS.md — Tasks 19, 20, 21, 22.**
-
----
-
-## Next Manager Actions (In Order)
-
-1. **Wait for Ahmad to provide the 10 Etherscan API keys.** When he does, add them to Railway as `ETHERSCAN_API_KEYS` and then send the Task 19 prompt (from TASKS.md) to the Backend Builder.
-
-2. **After Task 19 is verified live by Ahmad:** Send Task 20 prompt. Ahmad must have his ETH signing key pair ready before this step.
-
-3. **After Task 20 is verified live by Ahmad:** Send Task 21 prompt. Ahmad must have BNB Chain wallet funded and Coinbase Wallet on mobile ready.
-
-4. **After Task 21 smart contract is on mainnet and verified:** Send Task 22 prompt to Frontend Builder (can overlap with XMTP sender script if Ahmad wants the dashboard ready before the campaign launches).
-
-5. **After Tasks 19–22 all confirmed live:** Ahmad launches the XMTP campaign. Monitor conversion dashboard. Use revenue to fund Phase 2B Post-Campaign Remaining.
-
----
-
-## Phase 2B Post-Campaign Remaining (build after campaign revenue is in)
-
-Full list in ROADMAP.md. Summary:
-- Score Source Switcher (admin panel: OTI DB / BAS Attestation / Auto)
-- `GET /v1/badge/:wallet` — widget API endpoint
-- Embeddable JS widget (3-state: pill → hover tooltip → expanded panel)
-- Attestation claim flow inside widget (no redirect)
-- Proactive background scoring pipeline (feeds airdrop eligibility list — D22, must track from day one)
-- `wallet_attestations` DB table
-- Full BAS SDK integration in backend
-- Public `/verify/:address` page
-- Five-tier badge visuals (design finalized July 17, 2026 — all specs in ROADMAP.md)
-- Admin panel: attestation stats, Score Source selector, fee settings
+| Phase 1 — Foundation | COMPLETE |
+| Phase 2 — WOR | COMPLETE |
+| Private Sale Infrastructure (new, highest priority) | NEXT — design required before any Builder starts |
+| Phase 2B — Revenue Campaign (Tasks 19–22) | ON HOLD — runs after private sale money secured |
+| Phase 2B — Post-Campaign Remaining | Planned |
+| Phase 3 — Monetization + OTI Token (full) | Planned |
+| Phase 4 — Growth Features | Planned |
+| Phase 5 — Distribution | Planned |
 
 ---
 
 ## Standing Rules Every Session
 
-1. **D16 evidence standard:** Builder's "verified" is not evidence. Always ask: which wallet address, which raw curl/psql output, was it a fresh call or cached. No exceptions.
+1. **D16 evidence standard:** Builder's "verified" is not evidence. Always ask: which wallet address, which raw curl/psql output, was it a fresh call or cached.
 2. **One active task per Builder at a time.** Queue next task only after Ahmad confirms current one live.
-3. **Builder never marks ✅ themselves.** Manager tells Builder to mark ✅ only after Ahmad confirms live.
+3. **Builder never marks complete themselves.** Manager tells Builder to mark complete only after Ahmad confirms live.
 4. **Builder file copies never auto-sync.** Manager must explicitly tell each Builder to update their own TASKS.md/FIXES.md copy every time status changes.
-5. **Before ending any session:** Update this file's "Current Production State" and "Next Manager Actions". Update TASKS.md active queue. If a fix was closed, update FIXES.md. Never close a session with stale docs.
+5. **Before ending any session:** Update this file's "Current Production State" and next Manager actions. Update TASKS.md active queue. If a fix was closed, update FIXES.md. Never close a session with stale docs.
 6. **Fixes never get task numbers.** FIXES.md only. BF## for backend, FF## for frontend.
-7. **Next BF number: BF41. Next FF number: FF28. Next Task number: Task 23** (Tasks 19–22 are already assigned to the campaign).
+7. **Next BF number: BF42. Next FF number: FF28. Next Task number: Task 23** (Tasks 19–22 are the campaign, on hold but written.)
+8. **No AI exposure (D32).** All public-facing content written by any Builder must be reviewed against this standard before it goes live. No emojis, no AI-native writing patterns.
+9. **Builders do not push to GitHub.** Ahmad pushes only.
 
 ---
 
@@ -285,9 +302,10 @@ Full list in ROADMAP.md. Summary:
 - **compromised_wallets is the single source of truth.** Score endpoint, admin WOR Compromised view, dashboard stats — ALL must query this table. Never split across compromised_wallets and wallet_ownership.status. BF38/39/40 all caused by this.
 - **Railway migrations don't auto-run.** Ahmad manually runs drizzle-kit push after every schema change.
 - **Builder onboarding gap.** New Builder starts with zero API keys/secrets. Re-add all of them. Always full onboarding before resuming work.
-- **XMTP fees are $0 now — run campaign before they activate.** When mainnet fees kick in (~$50–100 per 1M messages), Campaign 2 economics change. First campaign should run ASAP while it's free.
-- **BAS schema UID must be registered before smart contract is written** (Task 20 Part A). This is an on-chain transaction — Ahmad signs it. The resulting schema UID is hardcoded into the smart contract. Missing this step = can't write the contract.
+- **XMTP fees are $0 now — run campaign before they activate.** When mainnet fees kick in (~$50–100 per 1M messages), Campaign 2 economics change.
+- **BAS schema UID must be registered before smart contract is written** (Task 20 Part A). Ahmad pays the gas (~$0.01 BNB). The resulting schema UID is hardcoded into the smart contract.
 - **Main app uses npm. oti-docs/ uses pnpm.** Never mix.
+- **Private sale smart contracts hold real money.** All contracts must be thoroughly tested on BNB testnet before mainnet deployment. Never skip testnet.
 
 ---
 
@@ -298,29 +316,29 @@ Ahmad uses multiple Replit free-tier accounts:
 - **Frontend Builder account** — React/Vite on Vercel
 - **Backend Builder account** — Node.js/Express on Railway
 
-When credits exhaust → Ahmad pushes to GitHub via Replit Git → opens new account → handover → continue. All context lives in the GitHub docs — never in chat memory.
+When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account, and the new Manager reads this file to continue. All context lives in the GitHub docs — never in chat memory.
 
 **Doc files (all in extracted_docs/docs/ in this workspace):**
 - `MANAGER_HANDOVER.md` — this file, start here
 - `ARCHITECTURE.md` — what every piece of the codebase is
 - `ROADMAP.md` — all planned features with full specs
-- `TASKS.md` — master task list with full Builder prompts (Tasks 19–22 are written and ready)
+- `TASKS.md` — master task list with full Builder prompts (Tasks 19–22 are written and on hold)
 - `FIXES.md` — all bug fixes by Builder
-- `DECISIONS.md` — why things exist the way they do
-- `BUSINESS_MODEL.md` — revenue layers including campaign (Layer 0)
-- `TOKENOMICS.md` — OTI token (30M fixed supply, BSC first, independent of FLOW)
+- `DECISIONS.md` — why things exist the way they do (D28–D33 are new from session 20)
+- `BUSINESS_MODEL.md` — revenue layers
+- `TOKENOMICS.md` — OTI token (30M fixed supply, BSC first, new distribution model as of session 20)
 
 ---
 
 ## Critical Context That Must Never Be Lost
 
-1. **Phase 2B campaign uses Ethereum scores for BNB Chain campaign.** Same 0x address = same person on both chains. No BSC Etherscan Lite subscription needed. This is the core insight that makes the campaign viable now.
-2. **Etherscan key rotation: 10 keys maximum.** Above 10 = ToS violation risk. Scale beyond 10 = Etherscan Standard plan ($199/mo). See D25.
-3. **OTI signing private key is Ahmad's.** Builder generates the key pair, Ahmad stores the private key (never shares it), Builder gets the public key for the smart contract. Private key lives in Railway env vars only.
-4. **BAS schema UID** must be registered before Task 21 smart contract is written. Ahmad pays the gas (~$0.01 BNB).
-5. **XMTP penetration is 5–15% of all EVM wallets.** Real send list from 3M scored eligibles = ~150K–450K wallets. Revenue at 0.25% conversion on 200K sends = ~$500. At 0.5% on 400K = ~$2,000.
-6. **Airdrop eligibility tracking (D22):** The first 1M wallets in OTI's scoring database receive OTI tokens. Counter starts when proactive background scoring begins (Phase 2B Post-Campaign). Tracking list must be built into the background scorer from day one — cannot be retroactively reconstructed.
-7. **Score Source Switcher (D23):** Widget data source (OTI DB / BAS / Auto) is a server-side system_settings value — never hardcoded in embed code. One admin panel change propagates to all embedded widgets worldwide within 60 seconds.
-8. **Widget embed (D24): 4 hard constraints** — zero external dependencies, scoped styles, graceful empty state (renders nothing if no score), no redirect on any interaction.
-9. **Partner Revenue Share:** Partners earn % of attestation fees from their widget. Attribution tracking is required from Phase 3 day one — cannot be retrofitted.
-10. **Task numbering:** Tasks 8–18 complete. Tasks 19–22 = Phase 2B Campaign (prompts written). Next new task = Task 23.
+1. **Private sale is the immediate priority.** All Builders are idle. No tasks are assigned. The next work is designing and building the private sale site and its prerequisites. Get answers to the open questions above before assigning any Builder.
+2. **Token distribution model (D29/D30):** 25% free immediately, 75% auto-staked daily over 5 years. All team allocations same mechanism. Only Liquidity bucket (3M OTI) is fully unlocked at listing. This is locked — do not change without Ahmad's explicit direction.
+3. **GitHub is a security risk right now (D31).** The docs repo is public with internal files. Ahmad must make it private before the private sale launches. Remind Ahmad of this at the start of the next session.
+4. **No AI exposure anywhere in public content (D32).** Review everything against this standard before it goes live.
+5. **XMTP campaign (Tasks 19–22) is on hold, not cancelled.** Task prompts are written and ready in TASKS.md. Campaign runs after private sale money is secured.
+6. **Sui is broken (BF41), BSC/Base/Optimism return 503.** Ahmad will fix/subscribe when presale pays. Do not remove their features from the code. Do not add them to public-facing chain counts until they are working.
+7. **Ahmad has not yet answered:** token price, token amount for sale, referral commission rate, referral on-chain vs off-chain, which Builder starts first. These are open questions for next session.
+8. **Phase 2B campaign uses Ethereum scores for BNB Chain.** Same 0x address = same person. No BSC Etherscan Lite needed for the campaign (D26).
+9. **BAS schema UID** must be registered before Task 21 smart contract is written (Task 20 Part A). Ahmad pays the gas.
+10. **Task numbering:** Tasks 8–18 complete. Tasks 19–22 = XMTP Campaign (on hold, prompts written). Next new task = Task 23.

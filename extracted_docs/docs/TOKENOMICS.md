@@ -1,10 +1,10 @@
 # OTI Token — Supply, Sale Structure & Revenue Distribution
 
-> Last updated: July 17, 2026 (session 16 — Section 7.2 airdrop eligibility expanded to include proactively pre-scored wallets; passive discovery mechanic documented; tracking requirement added) | Maintained by: Development Manager
-> **Status: Ahmad-approved design, locked — EXCEPT price and liquidity, which are explicitly out of scope here.** This is OTI's own independent token — it is NOT the OpenFlow "FLOW" ecosystem token discussed in earlier planning. OTI can live with or without OpenFlow, so it has its own token, its own supply, and its own economics. Launch chain: BNB Smart Chain (BSC) first, with cross-chain expansion planned later.
-> **Build + presale timing (Ahmad, July 14, 2026):** Token creation, ecosystem integration, and presale all happen in Phase 3 (alongside monetization infrastructure). Exchange listing is a separate, later event — after Phase 3 revenue streams are live and working. Do not conflate presale with listing.
-> **Price and liquidity pool design are intentionally NOT covered in this document.** Ahmad decided the team will determine token price and liquidity pool structure later, closer to launch. Do not infer or reconstruct pricing/liquidity numbers from earlier versions of this file — they were removed on purpose.
-> Regulatory note: Ahmad has explicitly decided this raise is small enough not to require formal securities/regulatory review at this stage. This decision was flagged to him once by the Manager and is his call to make.
+> Last updated: July 28, 2026 (session 20 — Complete rewrite. New token distribution model confirmed by Ahmad. Previous 36-month monthly linear vesting model deleted and replaced. All team-controlled allocations now locked with daily linear claim. Private sale structure updated. Price and exact sale token amount deferred to build phase.)
+> **Status: Direction confirmed by Ahmad July 28, 2026 — exact price and token amount for private sale to be decided during build.**
+> **This is OTI's own independent token — NOT the OpenFlow "FLOW" ecosystem token. OTI has its own supply, its own economics, and can operate with or without OpenFlow.**
+> **Launch chain: BNB Smart Chain (BSC). Cross-chain expansion planned later.**
+> **Do not add price or liquidity pool design — Ahmad decides these during the build phase.**
 
 ---
 
@@ -12,7 +12,7 @@
 
 **30,000,000 OTI — fixed supply, no inflation, no mint function after launch.**
 
-Fixed supply is a deliberate trust signal: no bucket can be silently expanded, and total dilution is knowable from day one.
+Fixed supply is a deliberate trust signal. Total dilution is knowable from day one. No bucket can be silently expanded.
 
 ---
 
@@ -20,9 +20,9 @@ Fixed supply is a deliberate trust signal: no bucket can be silently expanded, a
 
 | Bucket | % | Tokens | Purpose |
 |---|---|---|---|
-| Sale (Pre-Listing + Future Discount Sales) | 15% | 4,500,000 | Funds building OTI; sold in one pre-listing round plus later as-needed discounted rounds |
+| Private Sale | 15% | 4,500,000 | Funds building OTI — private sale runs before exchange listing |
 | Team & Founders | 15% | 4,500,000 | Long-term founder ownership (Ahmad + Musty) |
-| Ecosystem & Partnerships | 15% | 4,500,000 | Developer grants, integration incentives, protocol/exchange partnerships that drive real API usage |
+| Ecosystem & Partnerships | 15% | 4,500,000 | Developer grants, integration incentives, protocol/exchange partnerships |
 | Revenue-Backed Rewards Pool | 30% | 9,000,000 | Staking/holder rewards — funded by real OTI API revenue via buyback, not token inflation |
 | Liquidity & Market Making | 10% | 3,000,000 | DEX trading pool depth, exchange listing support |
 | Treasury / Reserve | 15% | 4,500,000 | Operating costs, security audits, contingency — multisig-controlled |
@@ -30,106 +30,118 @@ Fixed supply is a deliberate trust signal: no bucket can be silently expanded, a
 
 ---
 
-## 3. Vesting
+## 3. Token Distribution Model (Ahmad — confirmed July 28, 2026)
 
-**Universal rule:** every bucket except Liquidity vests linearly over **36 months**, releasing 1/36th each month, starting from that bucket's (or that specific sale's) own release date. No cliff, no lump-sum unlock — a steady monthly drip for 3 years.
+This is the core distribution mechanism. Every allocation follows this logic:
 
-- **Liquidity & Market Making — the one exception.** Fully unlocked at listing, with no vesting. Liquidity has to be tradeable from day one; vesting it would leave the token illiquid at launch.
-- **Sale round tokens** each get their own independent 36-month clock starting from their own purchase date — the pre-listing round starts at listing; each later discount sale starts its own clock from when that sale happens.
-- **Team, Ecosystem, Rewards Pool, Treasury** — all 36-month monthly linear from their respective start dates.
-- **Revenue-Backed Rewards Pool** has a second gate on top of vesting: even as tokens vest into availability, actual payout to stakers still depends on real API revenue funding the pool (see Section 6). Vesting caps the *maximum* release rate; revenue availability governs whether a payout actually happens that month.
+### 3.1 Private Sale Buyers
+
+When a buyer purchases OTI tokens in the private sale:
+
+- **25% of their purchased tokens are released immediately** — visible in their wallet or in the OTI private sale dashboard from the moment of purchase. No lock, no wait.
+- **75% of their purchased tokens are automatically staked** at the point of purchase. This 75% is claimable daily in equal portions over 5 years (1,825 days). Each day, the buyer can claim their daily portion. There is no penalty for not claiming — unclaimed daily portions accumulate and remain claimable.
+
+**Example:** A buyer purchases 10,000 OTI.
+- 2,500 OTI arrive in their wallet immediately.
+- 7,500 OTI are auto-staked. Daily claimable amount: 7,500 / 1,825 = ~4.11 OTI/day for 5 years.
+
+**Only the 25% free portion represents immediate available supply.** The 75% staked is locked in the distribution contract and releases gradually — this protects price stability during the early growth phase.
+
+### 3.2 All Team-Controlled Allocations
+
+Every allocation that is under team or protocol control — Team & Founders, Ecosystem & Partnerships, Revenue-Backed Rewards Pool, Treasury / Reserve — is **100% locked** from day one, claimable daily in equal portions over the same 5-year period (1,825 days).
+
+No team member, no founder, no treasury wallet receives a lump sum at any point. The team's tokens release at the same daily rate as private sale buyers' staked portions. This is a deliberate trust signal to private buyers: the team cannot dump.
+
+### 3.3 Liquidity & Market Making — Exception
+
+The Liquidity & Market Making bucket (10%, 3,000,000 OTI) is the one exception. It must be fully available at listing to provide real DEX trading depth. Vesting liquidity would leave the token illiquid at launch.
+
+### 3.4 Available Supply Summary
+
+At the moment of private sale close and exchange listing:
+
+| Source | Tokens | Status |
+|---|---|---|
+| Private sale — 25% free portions | Up to 1,125,000 OTI (25% of 4.5M sold) | Immediately in buyer wallets |
+| Liquidity & Market Making | 3,000,000 OTI | In DEX pool at listing |
+| All other allocations | 26,625,000 OTI | Locked, claimable daily over 5 years |
+
+This means at launch, only ~4,125,000 OTI (13.75% of total supply) is liquid — the rest releases gradually. This is intentional.
 
 ---
 
-## 4. Token Sale Structure
+## 4. Private Sale Structure
 
-### 4.1 Pre-Listing Sale Round (the only round before launch)
+### 4.1 Private Sale (Runs Before Exchange Listing)
 
 | | |
 |---|---|
-| Target raise | $10,000 |
-| Tokens sold | 500,000 OTI (≈1.7% of total supply) |
-| Vesting | 36-month monthly linear, from listing date |
+| Purpose | Fund building OTI — keeps servers running, funds the XMTP campaign, funds Phase 3 development |
+| Chain | BNB Smart Chain (BSC) |
 | Accepted currency | BNB / USDT on BSC |
+| Token amount for sale | To be decided by Ahmad during build phase |
+| Price per token | To be decided by Ahmad during build phase |
+| Distribution on purchase | 25% immediate to buyer wallet / dashboard; 75% auto-staked, daily claimable over 5 years |
+| Referral system | Yes — buyers who refer others earn a commission. Structure to be designed during build phase. |
+| Sale closes | When target raise amount is reached — no fixed date |
 
-Price, any TGE unlock %, and liquidity pool structure are **not defined here** — the team will decide these later, closer to launch.
+The private sale runs through a purpose-built private sale site with a smart contract on BNB Chain handling all distribution automatically. Buyers see their full allocation breakdown in the OTI private sale dashboard: immediate balance, staked balance, daily claimable amount, and accumulated unclaimed tokens.
 
-This is a deliberately small, single public round — there is no separate private/KYC'd round, since Ahmad does not currently have private investors lined up. All buyers go through the same public terms.
+### 4.2 Post-Listing Sales (As-Needed)
 
-### 4.2 Post-Listing Discount Sales (as-needed, not scheduled)
-
-These are **not** a second fixed round. They happen only when OTI genuinely needs additional capital, at any point after listing:
-
-- **Price:** to be decided per sale by the team at that time (not defined here)
-- **Source:** drawn from the ≈4,000,000 OTI remaining in the Sale bucket after the pre-listing round
-- **Vesting:** 36-month monthly linear, starting from that specific sale's own purchase date
-- **Transparency:** every future discount sale is logged publicly with its date, amount raised, price, and vesting terms — no ambiguity about how much of the Sale bucket has been used vs. still reserved
-
-**Why this shape:** committing to only one round now, and treating every later raise as need-based rather than calendar-based, avoids selling supply the business doesn't yet need.
+After exchange listing, additional tokens from the Private Sale bucket can be sold in as-needed rounds to fund specific development goals. Each post-listing sale:
+- Uses tokens from the remaining Private Sale allocation
+- Follows the same 25%/75% distribution model
+- Is announced publicly with the date, amount, price, and terms
 
 ---
 
 ## 5. Revenue Distribution
 
-Once OTI's paid API tiers (Pro/Enterprise, per the existing Revenue Model in TASKS.md) begin generating real revenue, that revenue is split every month as follows — **starting from day one, immediately after the pre-listing sale round completes** (not gated behind any revenue threshold):
+Once OTI's paid API tiers generate real revenue, that revenue is split monthly — starting from day one after the private sale closes:
 
 | Category | % | What it's for |
 |---|---|---|
-| Operating Costs | 40% | Hosting (Railway), any paid data providers/APIs, tools, infra — always covered first |
-| Revenue-Backed Rewards Pool (buyback) | 25% | Buys OTI on the open market and routes it into the Rewards Pool for stakers — **only executes when the market is down**; held as cash reserve otherwise, deployed opportunistically |
-| Team | 20% | Cash payout to the founders (Ahmad + Musty) — split decided internally between them. This is separate from the Team's fixed token allocation (Section 2), which is equity-like, not cash |
-| Treasury/Reserve top-up | 15% | Cash reinvested into growth — marketing, audits, partnerships, legal. Separate from the fixed Treasury token allocation; this is a cash reserve, not tokens |
+| Operating Costs | 40% | Hosting (Railway), paid data providers, tools, infrastructure — paid first |
+| Revenue-Backed Rewards Pool (buyback) | 25% | Buys OTI on the open market and routes into the Rewards Pool for stakers — **only executes when the market is down**; held as cash reserve otherwise |
+| Team | 20% | Cash payout to founders (Ahmad + Musty) — separate from their token allocation |
+| Treasury/Reserve top-up | 15% | Cash reinvested into growth: marketing, audits, partnerships, legal |
 
-**Why the buyback is conditional, not automatic:** buying back tokens every month regardless of price would mean routinely overpaying when the market is already strong. Restricting the buyback to down-market conditions makes the Rewards Pool a genuine value-accrual mechanism (buy low) rather than a fixed monthly expense.
+**Why the buyback is conditional:** Buying tokens regardless of price would mean routinely overpaying when the market is already strong. Restricting buybacks to down-market conditions makes the Rewards Pool a genuine value-accrual mechanism rather than a fixed monthly expense.
 
 ---
 
 ## 6. Chain & Cross-Chain Plan
 
-- **Launch chain:** BNB Smart Chain (BSC) — chosen for low fees and fast settlement, matching the presale mechanics above (BNB/USDT accepted).
-- **Cross-chain expansion:** planned for later, once OTI's token is established on BSC. Not yet designed in detail — when this becomes active work, it should be scoped as its own task (likely via a standard bridging solution such as LayerZero or Wormhole, rather than a custom-built bridge, consistent with the "don't reinvent solved infrastructure" principle applied to vesting).
+- **Launch chain:** BNB Smart Chain (BSC) — low fees, fast settlement, matches private sale mechanics.
+- **Cross-chain expansion:** Planned after OTI token is established on BSC. Not yet scoped — will be addressed separately when Ahmad reopens it (likely via LayerZero or Wormhole, not a custom bridge).
 
 ---
 
 ## 7. Token Utility — What OTI Token Actually Does
 
-This section documents the genuine, functional uses of the OTI token — not speculative value drivers, but concrete things the token does inside the OTI ecosystem from the moment it launches.
-
-**Ahmad's explicit direction (July 14, 2026):** OTI token must be a real utility token from creation day. It should not launch as an empty speculative asset waiting for utility to be bolted on later. Utility is built in Phase 3 alongside the token itself.
+OTI token must be a real utility token from creation day. It does not launch as an empty speculative asset.
 
 ### 7.1 Pay for Attestation
-The primary utility. Users who want an OTI Verified Badge attestation can pay the attestation fee in OTI token. This creates immediate, recurring demand — every new attestation (after the first 10M free tier closes) is a potential token transaction.
+Users who want an OTI Verified Badge attestation can pay the attestation fee in OTI token. Token payment receives a discount versus BNB or fiat. Fee amount and discount rate are configured via admin panel — not hardcoded.
 
-- **Discount for token payment** — users who pay in OTI token receive a discount versus paying in BNB or fiat. This makes token acquisition actively worth doing for wallet holders, not just for speculators.
-- **Fee amount and discount rate** — configured via admin panel. Not hardcoded. Ahmad adjusts as market conditions change.
+### 7.2 Staking (Revenue-Backed Rewards Pool)
+Token holders who stake OTI receive rewards from the Revenue-Backed Rewards Pool. Rewards are funded by real API and attestation revenue — not by token inflation. Note: the 75% auto-staked private sale allocation is a separate distribution mechanic from voluntary staking. Staking design detail to be finalized once OTI has real usage and revenue.
 
-### 7.2 Early Adopter Rewards — First 1 Million Wallets in OTI's Scoring Database
-**Ahmad's decision (amended July 17, 2026 — original July 14, 2026):** The first 1 million wallet addresses in OTI's scoring database receive OTI tokens — including wallets that OTI has **proactively pre-scored**, regardless of whether the wallet owner has ever visited OTI or knows OTI exists.
+### 7.3 Early Adopter Rewards — First 1 Million Wallets in OTI's Scoring Database
+The first 1 million wallet addresses in OTI's scoring database receive OTI tokens — including wallets OTI has proactively pre-scored, regardless of whether the wallet owner has ever visited OTI. Token source: Ecosystem & Partnerships bucket. Amount per user: Ahmad to decide before Phase 3.
 
-**Why the eligibility was expanded (July 17, 2026):** The original definition ("first 1M wallets that register for OTI attestation") targeted people who have already discovered OTI — the discovery moment was already lost. The strategic purpose of an early-adopter airdrop is *discovery*, not loyalty. With proactive pre-scoring, OTI sends tokens to wallet owners who didn't know they had a score. They check their wallet, see unfamiliar tokens, search "OTI," and discover they already have a trust score. **Discovery happens as a consequence of the airdrop** rather than being a prerequisite for it.
-
-Why this is strategically important:
-- Token has **real holders with real utility** on day one — not a launch into empty hands
-- **Passive acquisition:** wallet owners discover OTI without OTI spending on marketing or outreach
-- Launch narrative becomes: *"1 million scored wallets, tokens already in real hands"* — credible and backed by real usage
-- Proactively pre-scored wallets represent a far larger, faster-growing pool than attested wallets during the early growth phase
-
-**Tracking requirement (critical infrastructure):** The eligibility counter starts when proactive background scoring begins — not at attestation launch. Every wallet OTI proactively scores from Phase 2B onwards is a potential airdrop recipient. **The tracking list must be built into the background scorer from day one — it cannot be reconstructed after the fact.** Phase 3 token distribution infrastructure reads from this list.
-
-Token source for this reward: drawn from the **Ecosystem & Partnerships** bucket (4,500,000 OTI). Amount per user to be decided by Ahmad before Phase 3 — not defined here.
-
-### 7.3 Staking (Revenue-Backed Rewards Pool)
-Token holders who stake OTI receive rewards from the Revenue-Backed Rewards Pool. Rewards are funded by OTI's real API and attestation revenue — not by token inflation. See Section 6 (Revenue Distribution) for the buyback mechanic. Staking design detail deferred until OTI has real usage and revenue to build around.
+**Tracking requirement (critical):** The eligibility counter starts when proactive background scoring begins (Phase 2B Post-Campaign). This tracking list must be built into the background scorer from day one — it cannot be reconstructed after the fact.
 
 ### 7.4 Future Widget / API Access (Planned)
-As the ecosystem matures, OTI token may gate or discount access to premium widget tiers and API plans. Not part of Phase 3 — documented here as the intended direction so the token design is not made incompatible with it.
+As the ecosystem matures, OTI token may gate or discount access to premium widget tiers and API plans. Documented here as the intended direction — not part of the immediate build.
 
 ---
 
 ## 8. Explicitly Out of Scope For Now
 
-- **Price and liquidity pool design:** intentionally not part of this document. The team will decide token price and liquidity structure later, closer to launch.
-- **Token redesign:** Ahmad noted (July 14, 2026) that the token design may need a broader rethink at a later point. This is deferred — current design stands until Ahmad reopens it explicitly.
-- **Staking/derivative system (e.g., a "locked OTI" derivative used as collateral):** discussed as a future phase, not part of this design. To be scoped separately once OTI has real usage and revenue to build the mechanism around.
-- **Governance:** not part of this design. No DAO or voting mechanism defined yet for OTI token holders.
-- **Formal legal/securities review:** flagged once to Ahmad; his explicit decision is that the raise is small enough not to require this at this stage.
+- **Price and liquidity pool design:** Ahmad decides during the build phase. Do not add, infer, or reconstruct pricing numbers.
+- **Staking derivative system:** Deferred until OTI has real usage and revenue to build around.
+- **Governance:** No DAO or voting mechanism defined for this phase.
+- **Formal legal/securities review:** Ahmad's explicit decision — the raise is small enough not to require this at this stage. This was flagged once by the Manager; it is Ahmad's call.
