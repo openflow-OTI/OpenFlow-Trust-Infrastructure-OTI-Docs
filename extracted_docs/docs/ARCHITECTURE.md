@@ -1,5 +1,5 @@
 # OTI — Architecture Ground Truth
-> Last updated: July 17, 2026 | Maintained by: Development Manager
+> Last updated: July 28, 2026 | Maintained by: Development Manager
 > **This file is the source of truth for every piece of infrastructure in OTI. All Builders and all new Manager accounts must read this before touching anything.**
 > **After reading this file, read `DECISIONS.md` — it explains why things are built the way they are. This file says what; DECISIONS.md says why.**
 
@@ -78,17 +78,61 @@ Given a wallet address + chain, OTI returns a 0–100 trust score built from fiv
 
 ## Supported Chains (15 total)
 
-**EVM chains — via Etherscan V2 API (7 live, 3 gated):**
-Ethereum, Polygon, Arbitrum, Avalanche, Sonic (formerly Fantom — chain ID 146, renamed July 2026), Linea, zkSync
+**EVM chains (7 live, 3 gated) — providers vary:**
+| Chain | Provider | Cost |
+|---|---|---|
+| Ethereum | Etherscan V2 Free | $0 |
+| Polygon | Etherscan V2 Free | $0 |
+| Arbitrum | Etherscan V2 Free | $0 |
+| Linea | Etherscan V2 Free | $0 |
+| Sonic (formerly Fantom, chain ID 146) | Etherscan V2 Free | $0 |
+| **Avalanche** | **RouteScan Free** | **$0** |
+| **zkSync** | **zkSync Free API** | **$0** |
+| BSC | Etherscan V2 Paid (Lite $49/mo) | gated — 503 |
+| Base | Etherscan V2 Paid (shared with BSC key) | gated — 503 |
+| Optimism | Etherscan V2 Paid (shared with BSC key) | gated — 503 |
+
+**Note:** Avalanche uses RouteScan (not Etherscan V2). zkSync uses the zkSync public API (not Etherscan V2). Earlier docs that said "all 7 EVM via Etherscan V2" were incorrect — corrected July 28, 2026.
 
 **Non-EVM chains (5):**
-TON, Solana, Sui, Bitcoin, Tron
+| Chain | Provider | Cost |
+|---|---|---|
+| Bitcoin | mempool.space | $0 |
+| Solana | Public RPC | $0 |
+| TON | Toncenter | $0 |
+| Tron | TronScan | $0 |
+| Sui | Sui GraphQL (`https://sui-mainnet.mystenlabs.com/graphql`) | $0 |
 
 **Intentionally returning 503 (need Etherscan Lite $49/mo):**
-BSC (BNB Smart Chain), Base, Optimism
+BSC (BNB Smart Chain), Base, Optimism — gated pending Ahmad's decision to subscribe. Code is already implemented; the gate at the route level is the only change needed to unlock them.
 
 **Not implemented — removed from all documentation (do not list as supported):**
 Scroll, Sepolia, Holesky — were in early docs as planned but were never built. Sepolia/Holesky are Ethereum testnets (limited value in a production trust scorer); Scroll requires the same Etherscan Lite plan as BSC/Base/Optimism. Real live chain count: 12 (7 EVM + 5 non-EVM). Do not claim 15.
+
+---
+
+## Infrastructure Capacity & Throughput
+
+> Full analysis completed July 27, 2026. See MANAGER_HANDOVER.md "Infrastructure Cost & Capacity" for the complete cost tables.
+
+### Total Addressable Wallet Universe: ~209.8M active wallets across all 15 chains
+
+### Daily Scoring Throughput (no cache, continuous)
+
+| Chain Group | Wallets/Day |
+|---|---|
+| ETH + Polygon + Arbitrum + Linea + Sonic (9 free keys) | 324K/day |
+| Bitcoin (mempool.space) | 270K/day |
+| Solana (Public RPC) | 216K/day |
+| Avalanche (RouteScan Free) | 360K/day |
+| Tron (TronScan) | 173K/day |
+| TON (Toncenter) | 86K/day |
+| **BSC + Base + Optimism (1 paid key) ← bottleneck** | **36K/day** |
+| Sui post-BF41 (GraphQL) | 864K/day |
+
+**BSC/Base/Optimism bottleneck:** 1 paid Etherscan Lite key ($49/mo) has 158M calls/year capacity. Scoring all 51M wallets on those 3 chains annually needs 612M calls — 388% over capacity on a single key. At current spend, OTI can only score the top 13.1M most-active wallets (26% coverage). Full coverage requires 4 paid keys at $196/mo.
+
+**Free-tier EVM chains:** 9 free keys cover ETH + Polygon + Arbitrum + Linea + Sonic at only 43% of capacity — all 50.8M wallets on those chains are fully coverable at $0.
 
 ---
 

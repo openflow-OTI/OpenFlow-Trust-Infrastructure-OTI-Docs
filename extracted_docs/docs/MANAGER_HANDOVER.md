@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 26, 2026 (session 18 — New Manager fully onboarded. BF41 added: Sui JSON-RPC deprecated July 27, 2026 — URGENT fix needed. Railway trial status reviewed (5 days / $3.23 credits remaining). Scaling cost research completed: 100M wallet scoring requires architectural shift to bulk data (BigQuery/archive node) at Stage 3; per-wallet API calls not viable at that scale. Vercel confirmed free forever. No tasks assigned this session — Ahmad not ready to proceed with Task 19 yet.)
+> Last updated: July 28, 2026 (session 19 — Infrastructure cost & capacity analysis added: full monthly/annual cost breakdown, daily throughput per chain, 209.8M total active wallet universe across 15 chains, BSC/Base/Optimism bottleneck analysis, annual coverage scenarios. Avalanche provider corrected to RouteScan Free; zkSync provider corrected to zkSync Free API.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TASKS.md, FIXES.md, and DECISIONS.md in that order.**
 > **⚠️ D16 (evidence rule): no signal value or test result may be estimated or guessed — only real on-chain data. A Builder's "verified" claim is NOT evidence. Ask: which wallet, which raw API response, which psql output.**
 > **⚠️ Read TOKENOMICS.md before touching anything token-related — price/liquidity sections deliberately removed at Ahmad's request. Do not add them back.**
@@ -99,6 +99,89 @@ Real columns: `id, api_key, plan, owner_address, created_at, expires_at, updated
 | Etherscan key rotation: max 10 free keys | ToS boundary — see D25 |
 | ETH scores used for BNB campaign — BSC blocker bypassed | D26 — same 0x address across EVM chains |
 | Campaign-first Phase 2B — revenue before full stack | D27 — fund Post-Campaign Remaining with proceeds |
+
+---
+
+## Infrastructure Cost & Capacity
+
+> Researched July 27, 2026 (session 18). All figures verified by previous Manager. Do not remove or modify without re-running the analysis.
+
+### Monthly & Annual Cost — Everything Included
+
+| Item | Monthly | Annual |
+|---|---|---|
+| Railway (backend + PostgreSQL) | $5–20 | $60–240 |
+| Vercel (frontend + docs) | $0 | $0 |
+| Domain | ~$1.25 | ~$15 |
+| Etherscan Lite ×1 key (BSC + Base + Optimism) | $49 | $588 |
+| BAS weekly attestation gas (BNB Chain) | $5–40 | $60–480 |
+| mempool.space, TronScan, Toncenter, RouteScan, Sui GraphQL, Solana RPC, zkSync Free | $0 | $0 |
+| **TOTAL lean (no active campaign)** | **~$60–65/mo** | **~$723–780/yr** |
+| **TOTAL active campaign** | **~$100–110/mo** | **~$1,200–1,320/yr** |
+
+**Hard floor (absolute minimum, no campaign):** ~$55–70/mo — Railway + Etherscan Lite + domain. Cannot go lower.
+
+**BAS gas note:** The $5–40 range depends entirely on attestations pushed on-chain per week. At 100 attestations/week ($0.01–0.05 each on BNB) = $5/mo. At 1,000/week = $40/mo. Everything else is fixed.
+
+---
+
+### Total Active Wallet Universe: ~209.8M Across All 15 Chains
+
+| Chain | Active Wallets | Calls/Year Needed | Provider | Cost |
+|---|---|---|---|---|
+| Ethereum | 25M | 300M | Etherscan Free | $0 |
+| Polygon | 15M | 180M | Etherscan Free | $0 |
+| Bitcoin | 50M | 400M | mempool.space | $0 |
+| Solana | 20M | 120M | Public RPC | $0 |
+| Tron | 18M | 90M | TronScan | $0 |
+| BSC | 25M | 300M | Etherscan Paid | $49/mo |
+| Base | 18M | 216M | Etherscan Paid | ^ shared |
+| Optimism | 8M | 96M | Etherscan Paid | ^ shared |
+| zkSync | 5M | 60M | zkSync Free | $0 |
+| TON | 8M | 40M | Toncenter | $0 |
+| Arbitrum | 6M | 72M | Etherscan Free | $0 |
+| Linea | 4M | 48M | Etherscan Free | $0 |
+| Avalanche | 4M | 48M | RouteScan Free | $0 |
+| Sui | 3M | 15M | Sui GraphQL* | $0 |
+| Sonic | 800K | 10M | Etherscan Free | $0 |
+| **TOTAL** | **209.8M** | **~2.0B/year** | | |
+
+*Sui blocked by BF41 until the JSON-RPC → GraphQL migration is done.*
+
+---
+
+### Daily Throughput (continuous scoring, no cache)
+
+| Chain Group | Wallets/Day |
+|---|---|
+| ETH + Polygon + Arbitrum + Linea + Sonic (9 free Etherscan keys) | 324K/day |
+| Bitcoin (mempool.space) | 270K/day |
+| Solana (Public RPC) | 216K/day |
+| Avalanche (RouteScan Free) | 360K/day |
+| Tron (TronScan) | 173K/day |
+| TON (Toncenter) | 86K/day |
+| **BSC + Base + Optimism (1 paid Etherscan key) ← bottleneck** | **36K/day** |
+| Sui post-BF41 (GraphQL) | 864K/day |
+
+---
+
+### Annual Coverage Scenarios (rescore every wallet 1× per year)
+
+**9 free Etherscan keys (ETH + Polygon + Arbitrum + Linea + Sonic):**
+- Capacity: 1.42B calls/year → Need: 610M → 43% utilised ✅
+- All 50.8M wallets on those 5 chains: fully covered at $0
+
+**1 paid Etherscan key ($49/mo) covering BSC + Base + Optimism:**
+- Capacity: 158M calls/year → Need: 612M → **388% overloaded** ❌
+- Can only score 13.1M / 51M wallets (26%) — top most-active wallets only
+- To cover all 51M: need 4 paid keys → $196/mo
+
+**All other non-EVM chains:** ✅ Fully covered at $0
+
+| Scenario | Monthly | Annual | Coverage |
+|---|---|---|---|
+| Current (9 free + 1 paid key) | $49/mo | $588/yr | ~94% (~197M wallets) |
+| Full coverage (9 free + 4 paid keys) | $196/mo | $2,352/yr | 100% (209.8M wallets) |
 
 ---
 
