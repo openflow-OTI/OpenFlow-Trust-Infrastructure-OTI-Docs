@@ -65,10 +65,14 @@
 ### TASK 17 — WOR UI — Phase 2 ✅
 /register (3-step: address check → MetaMask sign → passkey set) and /report (3-step: status check → sign + passkey → confirm dialog). "⚑ Report this wallet" link activated on results page. Admin WOR tab (Registry, Compromised, Manual Override). Verified live by Ahmad July 14, 2026. Follow-up polish tracked as FF24.
 
+### TASK 18 — Services Hub Page (`/services`) ✅ — July 15, 2026
+New page at `/services`. Built with MarketingNavbar/Footer chrome, 2-col→1-col (≤720px) card grid. Ahmad confirmed live July 15, 2026. Closed.
+
+---
+
 ## 🔴 Your Task Queue
 
-### TASK 18 — Services Hub Page (`/services`) 🔴 ACTIVE — July 15, 2026
-New page at `/services`. Full prompt in the Manager's task message. Running alongside FF25/FF26/FF27 in FIXES.md — do all four together.
+**As of July 29, 2026 — you have NO active task.** All completed tasks and fixes through Task 18 / FF27 are done. Next tasks (Phase 0 Whitelist Infrastructure) are being written by the Manager. Wait for the Manager to send the next prompt before starting anything.
 
 ---
 

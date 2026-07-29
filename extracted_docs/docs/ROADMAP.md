@@ -1,6 +1,6 @@
 # OTI — Product Roadmap
-> Last updated: July 28, 2026 (session 20 — Strategic pivot: Phase 0 (Private Sale Infrastructure) added as new highest priority. Phase 2B XMTP campaign moved to On Hold — runs after private sale. New token distribution model (25%/75% daily) reflected throughout. GitHub security, free product access, no AI exposure decisions added.)
-> Source document: OTI Full Distribution & Technical Development Strategy (Founder's Playbook, July 2026) + Ahmad direction session 20.
+> Last updated: July 29, 2026 (session 21 — Full whitelist pivot applied. All "private sale" / "presale" language replaced with Ecosystem Whitelist framing throughout. Supply updated to 35M. Token distribution model updated to match new OTI Economics. D34 vocabulary enforcement applies to this file and everything derived from it.)
+> Source document: OTI Full Distribution & Technical Development Strategy (Founder's Playbook, July 2026) + Ahmad direction sessions 20–21.
 
 ---
 
@@ -21,118 +21,122 @@ OTI is not a wallet checker website. It is on-chain behavioral intelligence as a
 
 ---
 
-## Current State (July 28, 2026)
+## Current State (July 29, 2026)
 
 **What is live in production:**
-- Backend scoring API on Railway, 12 chains working
+- Backend scoring API on Railway, 12 chains working (7 EVM + 5 non-EVM)
 - Frontend at otiscore.vercel.app: homepage, /score, /whitepaper, /services, /register, /report, /admin
 - Developer docs at otiscore.vercel.app/docs/
 - WOR (Wallet Ownership Registry) fully live
 - Admin panel secured
 - Score sharing PNG cards live
+- Anonymous rate limits removed (Ahmad via admin panel, D33)
 
 **What is not yet live:**
-- Private sale site and smart contracts
+- /whitelist page and Ecosystem Whitelist Node Program infrastructure
 - Self-serve developer API key signup
-- Free product access (anonymous limit currently 3/day — to be raised)
-- Privacy policy and terms and conditions
-- Whitepaper rewrite (current version undersells technical depth and does not reflect new token structure)
+- Privacy Policy and Terms & Conditions (whitelist versions)
+- Whitepaper rewrite (current version does not reflect 35M supply, new economics, or whitelist framing)
+- GitHub frontend repo cleanup (internal workspace files present — needs removal before whitelist launches)
+- Docusaurus docs audit (sensitive internal architecture details may be exposed)
 - BAS attestation layer and widget
 - Bots, extension, and other distribution channels
 
 ---
 
-## PHASE 0 — PRIVATE SALE INFRASTRUCTURE
-**Owner: Both Builders | Status: NEXT — full design required. No Builder starts until Ahmad answers open questions in MANAGER_HANDOVER.md.**
-**Strategic context (D28):** Ahmad's decision July 28, 2026. The private sale is the primary funding mechanism. It runs before the XMTP campaign. Money raised keeps servers running and funds continued development.
+## PHASE 0 — ECOSYSTEM WHITELIST INFRASTRUCTURE
+**Owner: Both Builders | Status: NEXT — task prompts being written. Awaiting Ahmad's confirmation of bonding curve target raise figure before final task prompt for whitelist smart contracts.**
+**Strategic context (D34):** Ahmad's decision July 29, 2026. The Ecosystem Whitelist Node Program is the primary ecosystem funding mechanism and the launch event for the OTI token. It runs before the XMTP campaign. All "private sale / presale / token sale / ICO / invest / ROI / yield" language is permanently banned. Full vocabulary map in DECISIONS.md D34.
 
 ---
 
-### 0A — GitHub Security (Ahmad action — no Builder)
-The docs repo is currently public and contains internal files (FIXES.md, TASKS.md, ARCHITECTURE.md, BUILDER_ONBOARDING.md, MANAGER_HANDOVER.md). Ahmad must make the docs repo private OR strip it to only public-facing content before the private sale launches.
+### 0A — GitHub Frontend Repo Cleanup (Ahmad + Frontend Builder)
+The public frontend GitHub repo currently contains internal workspace documentation files (TASKS.md, FIXES.md, ARCHITECTURE.md, BUILDER_ONBOARDING.md, etc.) that were pushed alongside source code. The repo must look professional — only actual built source code visible.
 
-From this point forward, Builders do not push to GitHub. Ahmad pushes only. No internal files (task files, fix files, architecture docs) ever reach any public repo.
+- **Frontend Builder:** Identify and remove all internal documentation files from the repo. Ensure no internal architecture comments, no key rotation strategy, no admin route structure details appear anywhere in the public codebase or its commit history.
+- **From this point forward:** Builders do not push to GitHub. Ahmad pushes only. No internal files ever reach any public repo again.
 
 ---
 
-### 0B — Anonymous Rate Limit Removal (Ahmad admin panel + Builders)
-The scoring product must be genuinely free to use before private buyers arrive.
-
-- **Ahmad (admin panel — no code deploy needed):** Update the `anonymous` plan in the `plan_configs` table to a high or unlimited daily limit. This is a database value Ahmad controls directly from the admin panel.
-- **Frontend Builder:** Remove or update any hardcoded "3 per day" text in the frontend to reflect the real new limit.
-- **Backend Builder:** Build self-serve API key signup flow so developers can obtain a key without contacting Ahmad.
+### 0B — Anonymous Rate Limit Removal ✅ — DONE
+Ahmad removed the anonymous rate limit directly via the admin panel. No code change needed. Frontend Builder still needs to remove any hardcoded "3 per day" text from the frontend once assigned. Backend Builder still needs to build self-serve API key signup.
 
 ---
 
 ### 0C — Whitepaper Rewrite (Frontend Builder)
-The current whitepaper exists at `/whitepaper` but does not reflect the technical depth of what has been built or the new token/presale structure.
+The current whitepaper at `/whitepaper` is outdated — does not reflect the 35M supply, OTI Economics, whitelist framing, or the full technical depth of what has been built.
 
 **The rewrite must cover:**
-- The five-signal scoring algorithm methodology: what each signal measures, why it was chosen, how the weighted score is computed. Do not name internal files or expose implementation code.
-- The infrastructure: chains supported and how scoring works across different chain architectures (EVM, Bitcoin, Solana, TON, Tron). Explain the two-tier cache and keep-highest logic in plain terms — these are trust signals for buyers, not just technical details.
-- Chain-specific weight redistribution: Bitcoin is the primary example — Token Holding and Smart Contract signals are inapplicable to Bitcoin and their weight is redistributed to the three remaining signals. This is honest and shows methodological rigor.
-- The Wallet Ownership Registry: what it is, why the passkey pre-registration model is novel, why it solves what other compromise-detection systems don't.
-- The BAS attestation layer: what on-chain attestation means, why BNB Chain was chosen, what the five trust tiers are and how they map to scores.
-- The OTI token: 30M fixed supply, allocation breakdown, the distribution model (25% free immediately to buyers, 75% auto-staked daily over 5 years, all team allocations locked daily claimable over 5 years — the team cannot dump).
-- The roadmap: what is live today, what is being built, what the private sale funds.
-- The market: who needs on-chain trust infrastructure, what the total addressable market looks like, why this problem is unsolved by existing tools.
+- The five-signal scoring algorithm: what each signal measures, why it was chosen, how weighted score is computed. Do not name internal files or expose implementation code.
+- Infrastructure: 12 chains supported (7 EVM + 5 non-EVM), two-tier cache, keep-highest logic.
+- Chain-specific weight redistribution: Bitcoin as the primary example (Token Holding and Smart Contract signals inapplicable — weight redistributed proportionally). Methodological honesty.
+- The Wallet Ownership Registry: what it is, why passkey pre-registration is novel, what problem it solves.
+- The BAS attestation layer: what on-chain attestation means, why BNB Chain, what the five trust tiers are.
+- OTI Economics: 35M fixed supply, allocation breakdown, the Dynamic Contribution Scale (bonding curve) for the Whitelist Allocation, vesting structure. Framed as utility infrastructure, not investment.
+- The roadmap: what is live today, what is being built, what the ecosystem growth funds.
+- The market: who needs on-chain trust infrastructure, why this problem is unsolved by existing tools.
+
+**Source material:** Merge the current /whitepaper content with the additions in `docs/whitepaper-additions-draft.md`. Note: the chain table in the additions draft is stale — Fantom/Scroll/Sepolia/Holesky entries must be corrected. Current live chains: 12 (7 EVM + 5 non-EVM). Sui (BF41 open) and BSC/Base/Optimism (503) use Ahmad-approved neutral language — do not list as broken.
 
 **Writing standards (D32):**
-- Clean, professional prose — no emojis, no AI-native writing patterns
+- Clean professional prose — no emojis, no AI-native patterns
 - Direct and precise — no hollow filler sentences
 - Written as if a senior technical team produced it
-- All chain counts must be accurate: 12 chains currently scored (7 EVM + 5 non-EVM). Do not mention Scroll, Sepolia, or Holesky. For Sui (broken) and BSC/Base/Optimism (503), use language Ahmad approves — see open questions in MANAGER_HANDOVER.md.
+- All numbers and chains must be accurate to the live system
 
 ---
 
 ### 0D — Privacy Policy and Terms & Conditions (Frontend Builder)
-Both pages must be live before the private sale opens. New pages at `/privacy` and `/terms`, accessible from the footer.
+New pages at `/privacy` and `/terms`, accessible from the footer. Delete all previous presale versions entirely. Use the verbatim text Ahmad provided — do not rewrite.
 
-**Privacy Policy must cover:**
-- What data OTI processes: on-chain public blockchain data only (wallet addresses, transaction histories, token balances). No personally identifiable information is collected or stored.
-- How scores are computed and stored
-- What data is shared with third parties (none, except as required by law)
-- User rights: how to request data deletion
-- Cookie and analytics policy
-
-**Terms and Conditions must cover:**
-- Use of the scoring product
-- API developer terms: acceptable use, rate limits, prohibited uses (scraping, reselling without authorization)
-- WOR terms: what registration and compromise reports commit the user to
-- Private sale terms: what buyers are purchasing, the token distribution schedule (25%/75%), the risks of purchasing a pre-exchange token, the non-guarantee of returns or exchange listing
-- Referral program terms: eligibility, commission calculation, payout schedule
-- Limitation of liability
+The T&C and Privacy Policy text is documented in full in MANAGER_HANDOVER.md under "The New Direction — Ecosystem Whitelist Program." Copy exactly — no rewriting, no summarising.
 
 ---
 
-### 0E — Private Sale Site (Frontend Builder + Backend Builder)
-The core of Phase 0. A purpose-built private sale experience that converts informed visitors into buyers.
+### 0E — Ecosystem Whitelist Page + System (Frontend Builder + Backend Builder)
+The core of Phase 0. The gated entry point for the Ecosystem Whitelist Node Program.
 
-**Information that must be present:**
-- What OTI is and what it's building — the product, the technical infrastructure, the market
-- Why this is the right time to buy: what the private sale funds, what milestones unlock
-- Token economics: supply (30M fixed), allocation breakdown, the private sale terms
-- Distribution model clearly explained: 25% free to your wallet immediately, 75% auto-staked and claimable daily over 5 years. The team's tokens work exactly the same way — the team cannot dump.
-- A live dashboard for buyers: see your immediate balance, your staked balance, your daily claimable amount, your accumulated unclaimed tokens
-- Referral system: your referral link, how commissions work, your earnings
-- Complete FAQ: thorough and honest answers to every objection a serious buyer would raise
-- Roadmap: what is live, what is being built, what the money funds
+**Entry gate (what unauthenticated visitors see):**
+A professional locked portal — "OTI Infrastructure Hub — Private Whitelist Node Platform. Access is restricted to whitelisted node operators and infrastructure partners." No wallet connect buttons, no token charts, no contract details visible to anyone without a valid code.
 
-**Technical requirements:**
-- Smart contracts on BNB Chain: sale contract (accepts BNB/USDT), distribution contract (25%/75% split executed on purchase, daily claim function), referral tracking, admin controls (pause, parameters, withdraw)
-- All contracts deployed and tested on BNB testnet before mainnet — Ahmad confirms testnet behavior before mainnet deploy
-- Smart contracts hold real money — no shortcuts in testing
-- The sale closes automatically when the target raise is reached (cap enforced in contract)
-- Design standard: professional, matches OTI's black/mint visual system, no emojis, reads like a serious investment opportunity
+**After code verification (what whitelisted operators see):**
+- Live progress bar: "Total Ecosystem Committed Allocation Tracker" — pulling from `protocol_state` table, showing progress toward Milestone 2 ($5k) and Milestone 3 ($15k)
+- Wallet connect + allocation claim flow
+- T&C checkbox (mandatory before code redemption)
+- Three-milestone roadmap display
+
+**Milestone display:**
+- Milestone 1 — Alpha Core Genesis: Launch /whitelist. First batch of whitelisted operators via invite codes.
+- Milestone 2 — Phase 1 Liquidity Seeding: At $5,000 committed allocation. Public Utility Liquidity Layer deployed. OTI becomes redeemable externally.
+- Milestone 3 — Deep Liquidity Scaling: At $15,000 committed allocation. Secondary AMM pool. Utility swap rate stabilisation for B2B clients.
+
+**Backend requirements:**
+- New DB tables: `whitelist_invites` and `protocol_state` (schemas in MANAGER_HANDOVER.md)
+- `POST /api/verify-invite` endpoint: validates invite code + wallet + terms acceptance, marks code used, increments `protocol_state` totals
+- Batch code generator API
+
+**Smart contracts (BNB Chain):**
+- Vesting/lockup contract: 25% immediate access fuel + 75% Node Collateral Lockup with linear daily vesting
+- Dynamic Contribution Scale: bonding curve pricing (starting price and multiplier — Ahmad confirms exact figures; see DECISIONS.md when added)
+- All vesting/lockup parameters admin-configurable — nothing hardcoded
+- Deploy to BNB testnet first, Ahmad confirms end-to-end, then mainnet
+
+**Admin dashboard additions:**
+- Batch invite code generator (generates OTI-XXXX-XXXX codes, saves to `whitelist_invites`)
+- Code management panel: all codes, redeemer wallets, funding metrics, slots remaining (cap: 10,000)
+- Ban toggle: per code/wallet → status 'banned' → frontend immediately blocks
+- Live metric override: manual `total_committed_usd` adjustment in `protocol_state`
+
+**Stack reminder:** Sample code in Ahmad's brief used MongoDB syntax — must be translated to PostgreSQL + Drizzle ORM + Express throughout.
 
 ---
 
 ### 0F — Docusaurus Docs Site Audit (Frontend Builder)
-Review and update all docs content:
-- Remove any content that reveals internal architecture (key rotation details, how providers work, admin route structure)
+Review and update all developer docs content before the whitelist launches:
+- Remove anything that reveals internal architecture: key rotation strategy, how providers work, admin route structure
 - Remove Scroll, Sepolia, Holesky from all chain lists
-- Update chain count to accurate figure
-- Sui and BSC/Base/Optimism: use Ahmad-approved language (see open questions in MANAGER_HANDOVER.md)
+- Update chain count to 12 (7 EVM + 5 non-EVM) throughout
+- Sui and BSC/Base/Optimism: neutral language (do not describe as broken)
 - Update API reference to match current actual response shape
 - All writing must meet D32 standard: no AI-native patterns, no emojis, professional prose
 
@@ -153,11 +157,9 @@ All foundation work is live. Homepage, scoring tool at /score, developer docs at
 ---
 
 ## PHASE 2B — OTI REVENUE CAMPAIGN (XMTP)
-**Status: ON HOLD — runs after private sale money is secured**
+**Status: ONGOING PROGRAM — runs when funded. Not cancelled, not second priority. Tasks 19–22 written and ready in TASKS.md.**
 
-Tasks 19–22 are written and ready in TASKS.md. The campaign is not cancelled — it is the second funding mechanism. When Ahmad is ready to run it, the next Manager sends Task 19 prompt to the Backend Builder.
-
-Full campaign detail preserved below for continuity.
+This is a continuous wallet acquisition and attestation revenue program. When Ahmad is ready to run it, send Task 19 prompt to the Backend Builder.
 
 ### What the campaign is
 A targeted XMTP message campaign to Ethereum wallets with OTI score 75 or above. Each message invites the wallet to pay $1 in BNB to mint an OTI Trust Attestation on BNB Chain via BAS. Revenue: $1,000–$5,000 projected from first campaign. Total cost: $7–25.
@@ -200,7 +202,7 @@ A targeted XMTP message campaign to Ethereum wallets with OTI score 75 or above.
 
 ## PHASE 2B — ATTESTATION STACK (After Campaign Revenue)
 
-Fund with campaign proceeds. Full specifications in ROADMAP.md (prior version) — preserved in TASKS.md.
+Fund with campaign proceeds.
 
 **Backend:**
 - `GET /v1/badge/:wallet` — widget API endpoint
@@ -239,8 +241,8 @@ Compromised override: any wallet in `compromised_wallets` gets the Compromised b
 | Pro/Enterprise plan tiers | `plan_configs` table ready, needs new rows + payment checkout |
 | Fiat payments | Stripe |
 | Crypto payments | Coinbase Commerce (hosted checkout) |
-| BSC/Base/Optimism unlock | Ahmad subscribes to Etherscan Lite when presale pays |
-| OTI token full ecosystem integration | Revenue-Backed Rewards Pool, staking, discount on attestation fee |
+| BSC/Base/Optimism unlock | Ahmad subscribes to Etherscan Lite when ecosystem funds arrive |
+| OTI token full ecosystem integration | Revenue-Backed Rewards Pool (15% of revenue buys OTI on market), staking, discount on attestation fee |
 | Voluntary staking design | Deferred until OTI has real usage and revenue to build around |
 | Exchange listing | Post-Phase 3 milestone — Ahmad decides timing |
 | Partner attribution tracking | Required from Phase 3 day one — cannot be retrofitted. Every attestation payment record must carry partner attribution metadata. |
@@ -294,7 +296,9 @@ Four hard constraints per D24: zero external dependencies, scoped styles, gracef
 
 | Milestone | Target |
 |---|---|
-| Private sale target raise | Ahmad to confirm — sale runs until target is reached |
+| Whitelist total raise target | Ahmad to confirm — Dynamic Contribution Scale runs until all 8,750,000 whitelist OTI is claimed or target is reached |
+| Milestone 2 trigger | $5,000 committed allocation → Public Utility Liquidity Layer deployed |
+| Milestone 3 trigger | $15,000 committed allocation → Secondary AMM pool funded |
 | 1,000 active API users | 90 days after distribution launches |
 | 3 paying business integrations | 6 months after distribution |
 | First enterprise exchange contract | 12 months after distribution |

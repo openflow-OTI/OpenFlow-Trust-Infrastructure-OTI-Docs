@@ -75,7 +75,7 @@ OTI token is not speculative — it is a functional payment rail within the OTI 
 - **Pay for attestation in OTI token** — primary utility, creates immediate demand
 - **Discount for token payment** — incentivises token acquisition over fiat/crypto payment
 - **Early adopter rewards** — first 1 million users who register for attestation receive OTI tokens before the token launches. This is not a gimmick. It creates: real utility from launch day, token holders with skin in the game who promote OTI organically, and a launch story of "1 million verified wallets, tokens already in real hands."
-- **Revenue buyback** — 25% of API/widget revenue buys OTI on the open market and routes into the Rewards Pool for stakers (buyback only executes in down-market conditions — see TOKENOMICS.md)
+- **Revenue buyback** — 15% of platform revenue buys OTI on the open market and routes into the Rewards Pool for stakers. This is the mechanism that funds staking and ecosystem incentives without minting new tokens (see TOKENOMICS.md — OTI Economics)
 
 ---
 
@@ -170,7 +170,7 @@ But they cannot get the signal weights, the per-chain scores, or any other intel
 | Now (post Phase 1) | Free API tier (anonymous, limited) | Live |
 | Phase 2B | Attestation fee (post-10M free tier), admin panel managed | To build |
 | Phase 3 | Paid API tiers (Pro/Enterprise), self-serve portal, Stripe + Coinbase Commerce | To build |
-| Phase 3 | OTI token presale ($10k raise) | To build |
+| Phase 0 | Ecosystem Whitelist Node Program — Dynamic Contribution Scale on 8,750,000 OTI (25% allocation) | To build |
 | Phase 5+ | Widget subscription (B2B, after adoption established) | Future |
 | Phase 3+ | Token buyback from revenue → Rewards Pool | Ongoing after token launch |
 
