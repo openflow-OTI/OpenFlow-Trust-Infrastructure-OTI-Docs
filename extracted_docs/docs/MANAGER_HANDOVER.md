@@ -1,8 +1,7 @@
 # OTI — Manager Handover Document
-> Last updated: July 28, 2026 (session 20 — Strategic pivot recorded: private sale first, XMTP campaign second. New token distribution model recorded. GitHub security decision recorded. Full new direction summary added. Questions for Ahmad added for next Manager session.)
-> **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, TOKENOMICS.md, DECISIONS.md, and TASKS.md in that order.**
+> Last updated: July 29, 2026 (session 21 — Full corrections session with Ahmad. Whitelist pivot confirmed (not presale). GitHub situation clarified (frontend repo only). Anonymous rate limit already removed by Ahmad. Tokenomics full redesign pending advisor session. Whitelist system spec received. All corrections recorded below.)
+> **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, DECISIONS.md, and TASKS.md in that order. TOKENOMICS.md is being redesigned — do not use it as reference until Ahmad returns from advisor session.**
 > **D16 (evidence rule): no signal value or test result may be estimated or guessed — only real on-chain data. A Builder's "verified" claim is NOT evidence. Ask: which wallet, which raw API response, which psql output.**
-> **Read TOKENOMICS.md before touching anything token-related — price/liquidity sections deliberately absent at Ahmad's request. Do not add them.**
 
 ---
 
@@ -10,11 +9,19 @@
 
 This Replit workspace is the Manager's workspace — documentation, prompt writing, roadmap management only. No OTI source code lives here.
 
-- **Backend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI- — PRIVATE
-- **Frontend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-O-T-I-Frontend- — PUBLIC (needs audit — see D31)
-- **Docs repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI-Docs — this workspace (currently public — needs to go private or be stripped of internal files before private sale launches)
+- **Backend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI- — **PRIVATE** (contains scoring algorithm IP + sensitive files)
+- **Frontend repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-O-T-I-Frontend- — **PUBLIC** (intentional — transparency. Problem: Builder workspace files got pushed here by Ahmad. Needs cleanup — see GitHub section below.)
+- **Docs repo:** https://github.com/openflow-OTI/OpenFlow-Trust-Infrastructure-OTI-Docs — this workspace — **PRIVATE** (contains internal docs)
 
-**GitHub security — urgent (D31):** The docs repo is currently public and contains internal files: FIXES.md, TASKS.md, ARCHITECTURE.md, BUILDER_ONBOARDING.md, MANAGER_HANDOVER.md. This must be resolved before the private sale launches. Ahmad to either make the docs repo private or strip it to public-facing content only. From this point forward, Builders do not push to GitHub — Ahmad pushes only.
+**GitHub situation (updated session 21):**
+The issue is NOT the docs repo — it is already private. The issue is the **frontend public repo**. When Builders push code, their workspace copies of internal files (TASKS.md, FIXES.md, ARCHITECTURE.md, BUILDER_ONBOARDING.md, etc.) have been pushed alongside the source code. The frontend repo must be:
+- Cleaned of all internal workspace documentation files
+- Redesigned to show only the actual built product code
+- Made to look professional and transparent — exactly what was built, nothing internal
+
+The backend repo stays private (scoring algorithm IP + sensitive infrastructure). The docs repo stays private (internal project documentation). Only the frontend repo is public, and only for code transparency.
+
+**Builders do not push to GitHub. Ahmad pushes only.**
 
 ---
 
@@ -36,34 +43,38 @@ This Replit workspace is the Manager's workspace — documentation, prompt writi
 | Role | Status |
 |---|---|
 | Ahmad (CEO) | Always active — sole merge authority |
-| Backend Builder | Idle — Tasks 19–22 on hold pending private sale direction |
-| Frontend Builder | Idle — Tasks 19–22 on hold pending private sale direction |
-| Development Manager | Being replaced — you are the new Manager |
+| Backend Builder | Idle — waiting for Ahmad's return from advisor session |
+| Frontend Builder | Idle — waiting for Ahmad's return from advisor session |
+| Development Manager | Active — you are reading this |
 
 ---
 
-## Current Production State (July 28, 2026)
+## Current Production State (July 29, 2026)
 
 **Live and working:**
 - Backend: `https://workspaceapi-server-production-5c0c.up.railway.app`
 - Frontend: `https://otiscore.vercel.app` (`/`, `/score`, `/whitepaper`, `/admin`, `/services`, `/register`, `/report`)
 - Developer docs: `https://otiscore.vercel.app/docs/`
-- 12 chains scored (7 EVM + 5 non-EVM). Sui broken via BF41 (JSON-RPC deprecated — Ahmad will fix later when presale pays). BSC/Base/Optimism return 503 (need Etherscan Lite $49/mo — Ahmad subscribes when presale pays). Features for all chains remain in the code.
+- 12 chains scored (7 EVM + 5 non-EVM)
+- Sui broken via BF41 (JSON-RPC deprecated — Ahmad will fix later when funded)
+- BSC/Base/Optimism return 503 (need Etherscan Lite $49/mo — Ahmad subscribes when funded)
 - Two-tier cache: L1 LRU (500 entries, 5-min TTL) + L2 chain_scores DB (30-day rescore window)
 - Keep-highest write logic on chain_scores
-- API key + quota system live (anonymous limit currently 3/day — to be raised, see D33)
+- API key + quota system live
+- **Anonymous rate limit: already removed by Ahmad directly via admin panel** (session 21)
 - Admin panel fully secured (x-admin-secret header, adminAuth.ts middleware)
 - WOR (Wallet Ownership Registry) fully live — /register, /report, admin WOR tab
 - compromised_wallets is single source of truth for all flagged-wallet views
 - /services hub live
 - Score sharing PNG cards live
-- All fixes: BF1–BF40, FF1–FF27 complete
+- All fixes: BF1–BF40, FF1–FF27 complete (BF41 open — Sui broken)
 - All tasks: Task 8–18 complete
 - Phase 1: COMPLETE. Phase 2 (WOR): COMPLETE.
 
 **Critical infrastructure notes:**
 - Railway does NOT auto-run `drizzle-kit push`. Every schema change needs Ahmad to manually run it against Railway production DATABASE_URL after deploy. Run from: `cd /app/lib/db` then `drizzle-kit push`.
 - `subscriptions` table real columns: `id, api_key, plan, owner_address, created_at, expires_at, updated_at`. NO `status` column, NO `email` column. Use raw SQL on this table only — never Drizzle ORM selects.
+- Developer API limits: Ahmad sets these himself through the admin panel. Manager and Builders never set or hardcode API limit amounts.
 
 ---
 
@@ -84,34 +95,174 @@ This Replit workspace is the Manager's workspace — documentation, prompt writi
 |---|---|
 | scoring.ts is sacred, never modify | Core IP |
 | CORS is fully open | Intentional — public developer API |
-| BSC/Base/Optimism return 503 | Waiting for Etherscan Lite — Ahmad subscribes when presale pays |
-| Sui features remain in code | BF41 — Ahmad will fix when presale pays |
+| BSC/Base/Optimism return 503 | Waiting for funding — leave as-is, no public language change |
+| Sui features remain in code | BF41 — Ahmad will fix when funded — leave as-is |
 | Admin page is URL-only, no nav link | Ahmad's decision |
 | WOR self-reports are automated — no admin review queue | Ahmad's decision |
 | compromised_wallets is sole source of truth for flagged wallets | BF38/39/40 lesson |
 | One task per Builder at a time | Ahmad's hard rule |
 | Fixes never get task numbers — FIXES.md only | Ahmad's explicit correction |
-| Price/liquidity absent from TOKENOMICS.md | Deliberately absent — do not add back |
 | DECISIONS.md is Manager-write, Builder-read | Ahmad's direction |
 | Homepage at / stays unchanged | Ahmad's decision July 15, 2026 |
 | OTI token is independent from FLOW | Separate tokenomics, separate fundraising |
 | Contract addresses scored same as any wallet | No address-type gatekeeping |
 | Etherscan key rotation: max 10 free keys | ToS boundary — see D25 |
 | ETH scores used for BNB campaign — BSC blocker bypassed | D26 |
-| GitHub: no internal files in public repos | D31 — Ahmad July 28, 2026 |
-| No AI exposure in any public-facing content | D32 — Ahmad July 28, 2026 |
-| Free product: anonymous rate limits to be removed | D33 — Ahmad July 28, 2026 |
-| Private sale first, XMTP campaign second | D28 — Ahmad July 28, 2026 |
-| Token distribution: 25% free, 75% auto-staked daily 5 years | D29 — Ahmad July 28, 2026 |
-| All team allocations locked, daily claimable over 5 years | D30 — Ahmad July 28, 2026 |
+| No AI exposure in any public-facing content | D32 |
+| Anonymous rate limits removed — free product | D33 — already done by Ahmad via admin panel |
+| Whitelist not presale — regulatory compliance | Session 21 — see full direction below |
+| Off-chain referral/invite tracking | Session 21 — referral relationships tracked in DB, not on-chain |
+| All vesting/lockup percentages configurable via admin dashboard | Session 21 — nothing hardcoded |
+| Referral commissions paid in OTI token, not BNB/USDT | Session 21 |
+| TOKENOMICS.md is being redesigned — do not reference until Ahmad returns | Session 21 |
+| Frontend GitHub repo needs cleanup of internal workspace files | Session 21 |
+| Developer API limits set by Ahmad via admin panel only | Session 21 |
+| Private sale domain: /whitelist on existing Vercel project | Session 21 |
+
+---
+
+## The New Direction — Ecosystem Whitelist Program (Confirmed Session 21)
+
+**All previous "presale" or "private sale" framing is replaced by "Ecosystem Whitelist Node Program."** This is a regulatory compliance decision. The product and mechanics are the same — the framing, vocabulary, and legal structure are completely different.
+
+### Vocabulary — Enforced Everywhere
+
+| OLD (banned) | NEW (required) |
+|---|---|
+| Token Sale / Private Sale / ICO / Presale | Ecosystem Whitelist / Node Testing Program |
+| Buy Tokens / Invest | Acquire Network Access Fuel / Claim Allocation |
+| Staking Payouts / ROI / Yield | Node Collateral Lockup / Linear Network Vesting |
+| Investors | Whitelisted Operators / Community Contributors |
+| Trading / Listing | Public Utility Liquidity Pool Seeding |
+
+### What the Whitelist Program Is
+
+A gated, invite-code-only access system. A public web crawler or automated scanner sees a locked private network onboarding tool — not a token sale. Only users manually approved by the admin can unlock the portal.
+
+- Access gated by single-use invite codes (format: OTI-XXXX-XXXX), admin-generated in batches
+- Target: 10,000 unique whitelisted slots over 12 months
+- Total whitelist allocation: **25% of total token supply** — covers all whitelist events (direct claims, referral rewards, social media rewards, community contributor rewards)
+- Vesting/lockup parameters: **all configurable via admin dashboard** — not hardcoded in smart contracts
+- Off-chain referral tracking: tracked in `whitelist_invites` DB table — admin has full control and adjustability
+- Referral commissions: paid in OTI token
+- Mandatory Terms & Conditions + Privacy Policy checkbox before code redemption
+- Geographic restrictions enforced (US, China, sanctioned nations blocked)
+
+### Milestones
+
+- **Milestone 1 — Alpha Core Genesis:** Launch /whitelist. First batch of whitelisted operators via invite codes.
+- **Milestone 2 — Phase 1 Liquidity Seeding:** At $5,000 committed allocation. Deploy initial Public Utility Liquidity Layer on decentralized protocols. OTI token becomes redeemable externally.
+- **Milestone 3 — Deep Liquidity Scaling:** At $15,000 committed allocation. Secondary AMM pool funding. Stabilization of utility swap rates for B2B clients.
+
+### Database Tables Required (New)
+
+```sql
+-- Invite code management
+CREATE TABLE whitelist_invites (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    invite_code VARCHAR(50) UNIQUE NOT NULL,
+    is_used BOOLEAN DEFAULT false,
+    used_by_wallet VARCHAR(42) DEFAULT NULL,
+    amount_contributed_usd NUMERIC(10, 2) DEFAULT 0.00,
+    status VARCHAR(20) DEFAULT 'active', -- 'active', 'banned', 'expired'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Protocol global aggregates (serves frontend live counter)
+CREATE TABLE protocol_state (
+    id INT PRIMARY KEY DEFAULT 1,
+    total_committed_usd NUMERIC(10, 2) DEFAULT 0.00,
+    total_slots_claimed INT DEFAULT 0,
+    CONSTRAINT single_row CHECK (id = 1)
+);
+```
+
+### New Admin Dashboard Features Required
+
+1. **Batch Code Generator:** Admin button to generate X unique OTI-XXXX-XXXX codes → saved to `whitelist_invites` with status 'active'.
+2. **Code Management Panel:** Table showing all codes, which wallet redeemed each, funding metrics, slots remaining out of 10,000.
+3. **Ban System:** Toggle per code/wallet → changes status to 'banned' → frontend immediately blocks banned addresses from accessing their vesting allocation.
+4. **Live Metric Override:** Input field to manually adjust `total_committed_usd` in `protocol_state` (sync from off-chain contributions).
+
+### Frontend /whitelist Page Requirements
+
+- Entry gate: unauthenticated visitors see only a professional security box — "OTI Infrastructure Hub — Private Whitelist Node Platform. Access is restricted to whitelisted node operators and infrastructure partners." No wallet connect buttons, no token charts, no contract details visible to anyone without a valid code.
+- Live progress bar: "Total Ecosystem Committed Allocation Tracker" pulling from `protocol_state`. Shows progress toward Milestone 2 ($5k) and Milestone 3 ($15k).
+- Invite code text input + mandatory Terms/Privacy checkbox.
+- Once verified: wallet connect + allocation claim flow.
+
+### Backend API Required
+
+`POST /api/verify-invite` — validates invite code + wallet address + terms acceptance, marks code as used, increments `protocol_state` totals.
+
+### Terms & Conditions (verbatim — provided by Ahmad, do not rewrite)
+
+"1. PURPOSE OF THE WHITELIST: The OTI Whitelist Token Onboarding Program is strictly built to distribute network utility vouchers (Access Fuel) to future network testers, node operators, and B2B developers.
+2. NO EXPECTATION OF PROFIT: Participants explicitly acknowledge that OTI tokens are utility tools used for wallet attestation fees and API queries. This program is not an investment, security, or financial contract. There is zero promise of future financial returns, passive yield, or profit.
+3. PROTOCOL LOCKUP & VESTING: By accessing this software, the user agrees to the automatic 75% Node Collateral Lockup. Tokens will release linearly on a daily schedule to maintain network stability and protect circulating supply from systemic spamming.
+4. GEOGRAPHIC RESTRICTIONS: This program is prohibited to residents, citizens, or IP addresses originating from high-risk or strictly regulated jurisdictions, including but not limited to the United States of America, China, and sanctioned nations.
+5. ADMINISTRATIVE RIGHTS: The OTI core administration team reserves the absolute right to delete, freeze, or ban any invite code or wallet address found to be operating maliciously or misrepresenting the technical nature of the protocol."
+
+### Privacy Policy (verbatim — provided by Ahmad, do not rewrite)
+
+"1. DATA COLLECTION PRINCIPLES: The OTI platform operates under true Web3 data minimization protocols. We do not collect, request, or store your real name, physical address, phone number, or government identity documentation.
+2. TYPES OF DATA LOGGED: The system strictly logs decentralized interaction points: (a) Public crypto wallet addresses used to claim allocations, (b) Validated single-use admin invite codes, and (c) Basic on-chain transaction hashes.
+3. COOKIES & TRACKING: We do not deploy advertising tracker cookies or pixel trackers. Local device session storage may be temporarily used to verify your password token state for active sessions.
+4. THIRD-PARTY DISCLOSURE: No collected Web3 identifier data is sold, rented, or passed to corporate advertisers. Data remains siloed in decentralized server instances solely used to manage active whitelist states."
+
+---
+
+## XMTP Campaign — Ongoing Program (Not Cancelled, Not "Second")
+
+The XMTP campaign is an **ongoing acquisition program**, not a one-time event and not ranked second to anything. It runs continuously as the wallet database grows. When funded and ready:
+
+**What to do next (in order):**
+1. Ahmad registers 10 Etherscan accounts (separate emails, not all in one session). Gets 10 API keys.
+2. Manager adds them to Railway as `ETHERSCAN_API_KEYS=key1,key2,...,key10`
+3. Send Task 19 prompt to Backend Builder (Etherscan key rotation)
+4. Task 20: BAS schema registration (Ahmad pays ~$0.01 gas) + signing endpoint
+5. Task 21: Smart contract (BNB testnet first, mainnet after Ahmad confirms) + XMTP sender script
+6. Task 22: Conversion dashboard (Frontend Builder)
+
+Task prompts 19–22 are fully written in TASKS.md. No rework needed. Campaign targets Ethereum wallets with score ≥75, messages via XMTP, collects $1 BNB per attestation on BNB Chain. Uses ETH scores for BNB chain (same 0x address = same person — D26). Runs continuously, scales with wallet database.
+
+---
+
+## OTI Economics — PENDING ADVISOR SESSION
+
+**TOKENOMICS.md is being completely redesigned.** Ahmad has consulted an advisor. When Ahmad returns:
+
+1. Full docs vs. reality review — every document checked against what is actually live
+2. OTI Economics redesign — total token supply (30M was incorrect), full allocation, vesting architecture, revenue distribution, regulatory framing, token utility list
+
+**What is confirmed so far:**
+- Fixed supply (no inflation, no post-launch mint) — exact number TBD
+- Whitelist allocation: 25% of total supply (covers all whitelist program events)
+- All vesting/lockup percentages: configurable via admin dashboard, not hardcoded
+- Off-chain referral tracking
+- Commissions paid in OTI token
+- Token has genuine utility (not speculative) — see OTI utilities list below
+
+**Token utilities confirmed (growing list — not exhaustive):**
+- Whitelist ecosystem access (Access Fuel)
+- Wallet attestation fee payment (with discount vs other methods)
+- API plan subscription payment
+- Widget commercial access payment
+- Developer staking for priority API access
+- Revenue-backed staking rewards (real revenue buyback, not inflation)
+- Early adopter/discovery rewards (proactively pre-scored wallets)
+- Partner revenue share (commission for attestation conversions through embedded widget)
+- Enterprise compliance data access
+- Cross-chain expansion unlock fuel
+- Score history & analytics access
+- Webhook alert subscriptions
+- Governance (future phase)
+
+**DO NOT update TOKENOMICS.md until Ahmad returns with advisor output.**
 
 ---
 
 ## Infrastructure Cost & Capacity
-
-> Researched July 27, 2026. All figures verified by previous Manager.
-
-### Monthly & Annual Cost
 
 | Item | Monthly | Annual |
 |---|---|---|
@@ -119,166 +270,44 @@ This Replit workspace is the Manager's workspace — documentation, prompt writi
 | Vercel (frontend + docs) | $0 | $0 |
 | Domain | ~$1.25 | ~$15 |
 | Etherscan Lite x1 key (BSC + Base + Optimism) | $49 | $588 |
-| BAS weekly attestation gas (BNB Chain) | $5–40 | $60–480 |
-| All other providers (mempool.space, TronScan, Toncenter, RouteScan, Sui GraphQL, Solana RPC, zkSync Free) | $0 | $0 |
-| **TOTAL lean (no active campaign)** | **~$60–65/mo** | **~$723–780/yr** |
-| **TOTAL active campaign** | **~$100–110/mo** | **~$1,200–1,320/yr** |
+| All other providers | $0 | $0 |
+| **TOTAL lean** | **~$60–65/mo** | **~$723–780/yr** |
 
-**Hard floor (absolute minimum):** ~$55–70/mo — Railway + Etherscan Lite + domain.
-
-### Total Wallet Universe: ~209.8M Across All Chains
-Full breakdown in ARCHITECTURE.md. BSC/Base/Optimism are the bottleneck — 1 paid Etherscan key covers only 26% of those chains annually. Full coverage needs 4 keys at $196/mo.
+Domain plan: acquire `otiscore.com` once committed whitelist funds are in the ecosystem.
 
 ---
 
-## Phase Status (July 28, 2026)
+## Phase Status (July 29, 2026)
 
 | Phase | Status |
 |---|---|
 | Phase 1 — Foundation | COMPLETE |
 | Phase 2 — WOR | COMPLETE |
-| Phase 0 (NEW) — Private Sale Infrastructure | NEXT — full design required, see below |
-| Phase 2B — XMTP Revenue Campaign (Tasks 19–22) | ON HOLD — runs after private sale raises money |
-| Phase 2B — Post-Campaign Remaining | Planned — after campaign revenue |
-| Phase 3 — Monetization + OTI Token | Planned |
+| Phase 0 (NEW) — Ecosystem Whitelist Infrastructure | NEXT — pending Ahmad return from advisor session |
+| XMTP Campaign (Tasks 19–22) | ONGOING PROGRAM — runs when funded, tasks written and ready |
+| Phase 2B — Post-Campaign Remaining | Planned |
+| Phase 3 — Monetization + OTI Token full ecosystem | Planned |
 | Phase 4 — Growth Features | Planned |
 | Phase 5 — Distribution (bots, widget, extension) | Planned |
 
 ---
 
-## The New Direction — Private Sale First (Confirmed July 28, 2026)
+## What to Build Next (Full List — in order, when Ahmad returns)
 
-Ahmad has confirmed a strategic pivot. All building operations are paused until the private sale infrastructure is designed and built. The full context of this decision is in DECISIONS.md (D28).
+**1. Frontend GitHub Repo Cleanup (Frontend Builder)**
+Strip all internal workspace files from the public frontend repo. No TASKS.md, FIXES.md, ARCHITECTURE.md, BUILDER_ONBOARDING.md, or any internal documentation. The repo must show only actual source code and look professional.
 
-### What the Private Sale Is
+**2. Docusaurus Docs Site Audit (Frontend Builder)**
+Check for any sensitive internal workspace information exposed in the public developer docs. Differentiate between: (a) public information for transparency — API reference, supported chains, rate limits, code examples; (b) private information that must not be online — key rotation strategy, admin route structure, internal architecture details, bug history. Strip everything in category (b). Update chain counts. D32 standard throughout.
 
-A private sale of OTI tokens on BNB Chain, targeted at committed buyers who understand the product and believe in the vision. Buyers access a purpose-built private sale site, read everything about OTI (whitepaper, documentation, FAQ, pricing), connect their wallet, and purchase OTI tokens. The smart contract handles distribution automatically.
+**3. Whitepaper Rewrite (Frontend Builder)**
+Single merged task combining: (a) the original whitepaper update task + (b) the previous Manager's additions draft (in `docs/whitepaper-additions-draft.md`). Must reflect: new whitelist framing (not presale), accurate chain count (12 working), five-signal methodology, WOR, BAS attestation layer, OTI Economics (once designed), roadmap. D32 standard. Chain table in the additions draft is stale — Fantom/Scroll/Sepolia/Holesky entries must be corrected before use.
 
-**Token distribution on purchase (D29, D30):**
-- 25% of purchased tokens: sent immediately to buyer wallet / visible in OTI private sale dashboard
-- 75% of purchased tokens: auto-staked in distribution contract, claimable daily over 5 years (1,825 daily equal portions)
-- All team-controlled allocations (Team, Ecosystem, Rewards Pool, Treasury): 100% locked, daily claimable over 5 years — same mechanism
-- Only exception: Liquidity & Market Making (3M OTI) — fully available at listing for DEX depth
+**4. Privacy Policy + Terms & Conditions (Frontend Builder)**
+New pages at `/privacy` and `/terms`. Use the verbatim text provided by Ahmad in the Whitelist section above. Delete the old presale versions entirely.
 
-**Sale parameters not yet decided (ask Ahmad):**
-- How many tokens in the private sale and at what price
-- Referral commission rate and whether referral tracking is on-chain or off-chain
-- Whether the private sale replaces the $10k pre-listing round from the old TOKENOMICS.md or is a new structure
-
-### What Needs to Be Built Before the Private Sale Can Open
-
-This is the complete list, in rough priority order. Ahmad must confirm the sequence before any Builder starts work.
-
-**1. GitHub cleanup (urgent — no Builder needed, Ahmad action)**
-Make the docs repo private on GitHub. Audit the frontend public repo for any internal comments or structural information that should not be public.
-
-**2. Whitepaper rewrite (Frontend Builder)**
-The current whitepaper exists at `/whitepaper` but undersells the technical depth and does not reflect the new token/presale structure. The rewrite must:
-- Show the five-signal scoring algorithm methodology (not implementation details — describe the signals, explain the approach)
-- Cover the infrastructure: chains supported, providers, the two-tier cache, keep-highest logic
-- Cover the WOR system and what makes it novel
-- Cover the BAS attestation layer and what it enables for wallet trust
-- Cover the OTI token: supply, allocation, the new distribution model (25% free / 75% auto-staked daily 5 years), team lockup
-- Cover the roadmap: what is live now, what is coming
-- Cover the market: who needs on-chain trust infrastructure and why
-- Write in clean, professional prose — no emojis, no AI-native patterns (D32)
-- All chain counts must be accurate. Do not claim 15 chains. Do not reference Scroll, Sepolia, Holesky.
-
-**3. Privacy Policy and Terms & Conditions (Frontend Builder)**
-Both pages must be live before the private sale opens. They must cover:
-- The scoring product: what data OTI processes (on-chain public data only, no PII), how it's used, what OTI does not do
-- The API: developer terms, rate limits, acceptable use
-- The private sale: what buyers are purchasing, the vesting/distribution terms, the risks, non-guarantee of returns
-- The referral system: commission structure, payout terms
-
-**4. Remove anonymous rate limits — free product (Ahmad admin panel action + Backend/Frontend Builder)**
-- Ahmad: update the `anonymous` plan in `plan_configs` table via admin panel to a high or unlimited daily limit (this is a database value, not a code change)
-- Frontend Builder: update any hardcoded "3 per day" text on the frontend to reflect the new limit
-- Backend Builder: build self-serve API key signup flow so developers can get a key without contacting Ahmad
-
-**5. Private sale site (Frontend Builder + Backend Builder)**
-A dedicated private sale page or section, professionally designed, containing:
-- Full explanation of OTI and what it's building
-- Token economics: supply, allocation breakdown, the private sale terms
-- Distribution model clearly explained (25% free / 75% daily over 5 years)
-- Roadmap overview
-- FAQ — thorough and honest
-- Referral system explanation and interface
-- Smart contract integration: connect wallet, purchase, view dashboard (staked balance, daily claimable, accumulated)
-
-**6. BNB Chain smart contracts (Backend Builder)**
-Four contracts minimum, all deployed on BNB Chain testnet first, then mainnet after Ahmad confirms:
-- Sale contract: accepts BNB or USDT, records the purchase
-- Distribution contract: executes 25%/75% split on purchase, makes 75% claimable daily over 1,825 days
-- Referral contract or backend system: tracks referrals, distributes commissions
-- Admin controls: pause sale, update parameters, withdraw raised funds
-
-**7. Docusaurus docs site audit (Frontend Builder)**
-Review all content for accuracy:
-- Chain count and chain names must be accurate
-- Remove any content that reveals internal architecture (key rotation details, how providers work, admin route structure)
-- Remove reference to Scroll, Sepolia, Holesky
-- Sui and BSC/Base/Optimism: describe honestly — supported in code, not yet enabled (not "broken", just "coming soon")
-- Update API reference to match current actual response shape
-- All writing must meet D32 standard (no AI-native patterns)
-
----
-
-## Questions for Ahmad — Next Manager Session Must Cover These
-
-The previous Manager session ended before Ahmad could answer these. The next Manager must ask Ahmad these questions before assigning any Builder tasks.
-
-**1. Private sale token terms:**
-How many OTI tokens are available in this private sale, and at what price per token? This determines the smart contract sale cap, the dashboard display, and all the economics in the whitepaper. (Ahmad said he will decide this during the build phase — remind him we need it before the sale contract can be written.)
-
-**2. Referral system structure:**
-- What is the referral commission — a percentage of what the referred buyer pays?
-- Is referral tracking on-chain (handled by the smart contract, trustless) or off-chain (handled by the backend, simpler to build)?
-- Does the referrer receive their commission in BNB/USDT or in OTI tokens?
-
-**3. GitHub docs repo:**
-Should the docs repo go fully private, or be restructured to only contain public-facing content (whitepaper source, public docs)? This determines whether Builders still have access to the repo at all.
-
-**4. Broken chains and 503 chains — public messaging:**
-For the private sale site and whitepaper, how should Sui (broken) and BSC/Base/Optimism (503) be described? Options: (a) simply not mention them; (b) list as "coming soon" with no explanation; (c) describe as "code-complete, activation pending infrastructure subscription." Ahmad's answer determines whitepaper and docs site language.
-
-**5. Self-serve developer API keys:**
-When anonymous rate limits are removed, what is the new free developer daily limit? And what plan tiers does Ahmad want available at private sale launch — just free, or also a paid tier?
-
-**6. Domain:**
-Is Ahmad planning to acquire a proper domain (e.g. `openflowlabs.io` or `getoti.com`) before the private sale launches? The private sale site would look significantly more professional on a real domain than on `otiscore.vercel.app`.
-
-**7. Builder resumption:**
-Which Builder should start first? The recommended order is: Frontend Builder (whitepaper rewrite and privacy/T&Cs) first, while the Backend Builder designs the smart contracts. But Ahmad confirms which goes first.
-
-**8. Private sale site — separate domain or same Vercel project?**
-Should the private sale live at `otiscore.vercel.app/sale` or on a dedicated domain/subdomain? This affects the Frontend Builder's architecture for that page.
-
----
-
-## XMTP Campaign — Still Valid, On Hold
-
-Tasks 19–22 are written and ready in TASKS.md. The XMTP campaign is NOT cancelled — it is the second funding mechanism, running after private sale money is secured. Full task prompts exist; no rework needed. When Ahmad is ready to run the campaign, the next Manager simply sends Task 19 prompt to the Backend Builder.
-
-**Ahmad's actions still required before Task 19 can start:**
-1. Register 10 Etherscan accounts (separate emails, not all in one session — ToS risk). Get 10 API keys.
-2. Manager adds them to Railway as `ETHERSCAN_API_KEYS=key1,key2,...,key10`
-3. Then send Task 19 prompt to Backend Builder.
-
----
-
-## Phase Status
-
-| Phase | Status |
-|---|---|
-| Phase 1 — Foundation | COMPLETE |
-| Phase 2 — WOR | COMPLETE |
-| Private Sale Infrastructure (new, highest priority) | NEXT — design required before any Builder starts |
-| Phase 2B — Revenue Campaign (Tasks 19–22) | ON HOLD — runs after private sale money secured |
-| Phase 2B — Post-Campaign Remaining | Planned |
-| Phase 3 — Monetization + OTI Token (full) | Planned |
-| Phase 4 — Growth Features | Planned |
-| Phase 5 — Distribution | Planned |
+**5. Whitelist Page + System (Frontend Builder + Backend Builder)**
+Full spec is in the "New Direction" section above. Frontend: /whitelist page with entry gate, live progress counter, invite code input, terms checkbox. Backend: new DB tables, `/api/verify-invite` endpoint, batch code generator, code management API. Admin dashboard: batch generator UI, code management panel, ban toggle, metric override input. Smart contracts on BNB Chain: vesting parameters all admin-configurable, testnet first.
 
 ---
 
@@ -288,57 +317,61 @@ Tasks 19–22 are written and ready in TASKS.md. The XMTP campaign is NOT cancel
 2. **One active task per Builder at a time.** Queue next task only after Ahmad confirms current one live.
 3. **Builder never marks complete themselves.** Manager tells Builder to mark complete only after Ahmad confirms live.
 4. **Builder file copies never auto-sync.** Manager must explicitly tell each Builder to update their own TASKS.md/FIXES.md copy every time status changes.
-5. **Before ending any session:** Update this file's "Current Production State" and next Manager actions. Update TASKS.md active queue. If a fix was closed, update FIXES.md. Never close a session with stale docs.
+5. **Before ending any session:** Update this file and TASKS.md. If a fix was closed, update FIXES.md. Never close a session with stale docs.
 6. **Fixes never get task numbers.** FIXES.md only. BF## for backend, FF## for frontend.
-7. **Next BF number: BF42. Next FF number: FF28. Next Task number: Task 23** (Tasks 19–22 are the campaign, on hold but written.)
-8. **No AI exposure (D32).** All public-facing content written by any Builder must be reviewed against this standard before it goes live. No emojis, no AI-native writing patterns.
+7. **Next BF number: BF42. Next FF number: FF28. Next Task number: Task 23**
+8. **No AI exposure (D32).** All public-facing content must be reviewed before going live.
 9. **Builders do not push to GitHub.** Ahmad pushes only.
+10. **Ahmad sets all API limits and rate limits himself via admin panel.** Manager and Builders never set or hardcode amounts.
+11. **All vesting/lockup/distribution percentages are admin-configurable.** Nothing token-related is hardcoded.
 
 ---
 
 ## Key Lessons — Carry Forward Every Session
 
 - **WalletConnect challenge TTL = 15 minutes.** Full sign flow must complete within this window or it silently hits the 400 branch.
-- **compromised_wallets is the single source of truth.** Score endpoint, admin WOR Compromised view, dashboard stats — ALL must query this table. Never split across compromised_wallets and wallet_ownership.status. BF38/39/40 all caused by this.
+- **compromised_wallets is the single source of truth.** Score endpoint, admin WOR Compromised view, dashboard stats — ALL must query this table.
 - **Railway migrations don't auto-run.** Ahmad manually runs drizzle-kit push after every schema change.
-- **Builder onboarding gap.** New Builder starts with zero API keys/secrets. Re-add all of them. Always full onboarding before resuming work.
-- **XMTP fees are $0 now — run campaign before they activate.** When mainnet fees kick in (~$50–100 per 1M messages), Campaign 2 economics change.
-- **BAS schema UID must be registered before smart contract is written** (Task 20 Part A). Ahmad pays the gas (~$0.01 BNB). The resulting schema UID is hardcoded into the smart contract.
+- **Builder onboarding gap.** New Builder starts with zero API keys/secrets. Re-add all of them.
 - **Main app uses npm. oti-docs/ uses pnpm.** Never mix.
-- **Private sale smart contracts hold real money.** All contracts must be thoroughly tested on BNB testnet before mainnet deployment. Never skip testnet.
+- **Whitelist smart contracts hold real committed allocation.** All contracts must be thoroughly tested on BNB testnet before mainnet deployment. Never skip testnet.
+- **BAS schema UID must be registered before smart contract is written** (Task 20 Part A). Ahmad pays the gas (~$0.01 BNB).
+- **TOKENOMICS.md is being redesigned.** Do not reference the old file for any token-related decisions until Ahmad returns with advisor output.
+- **All vocabulary in public-facing content must use whitelist framing** — no "sale", "invest", "ROI", "yield", "investor" language anywhere.
 
 ---
 
 ## The Replit Multi-Account System
 
 Ahmad uses multiple Replit free-tier accounts:
-- **Manager account** — docs, prompts, roadmap
+- **Manager account** — docs, prompts, roadmap (this workspace)
 - **Frontend Builder account** — React/Vite on Vercel
 - **Backend Builder account** — Node.js/Express on Railway
 
-When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account, and the new Manager reads this file to continue. All context lives in the GitHub docs — never in chat memory.
+When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account, and the new Manager reads this file to continue.
 
 **Doc files (all in extracted_docs/docs/ in this workspace):**
 - `MANAGER_HANDOVER.md` — this file, start here
 - `ARCHITECTURE.md` — what every piece of the codebase is
-- `ROADMAP.md` — all planned features with full specs
-- `TASKS.md` — master task list with full Builder prompts (Tasks 19–22 are written and on hold)
-- `FIXES.md` — all bug fixes by Builder
-- `DECISIONS.md` — why things exist the way they do (D28–D33 are new from session 20)
-- `BUSINESS_MODEL.md` — revenue layers
-- `TOKENOMICS.md` — OTI token (30M fixed supply, BSC first, new distribution model as of session 20)
+- `ROADMAP.md` — all planned features with full specs (needs update — whitelist framing)
+- `TASKS.md` — master task list (Tasks 19–22 written and ready; new whitelist tasks to be added when Ahmad returns)
+- `FIXES.md` — all bug fixes by Builder (BF41 open — Sui broken)
+- `DECISIONS.md` — why things exist the way they do
+- `BUSINESS_MODEL.md` — revenue layers (needs update — whitelist framing)
+- `TOKENOMICS.md` — **BEING REDESIGNED. Do not use until Ahmad returns from advisor session.**
+- `docs/whitepaper-additions-draft.md` — previous Manager's whitepaper additions (chain table is stale, merge with whitepaper task)
 
 ---
 
 ## Critical Context That Must Never Be Lost
 
-1. **Private sale is the immediate priority.** All Builders are idle. No tasks are assigned. The next work is designing and building the private sale site and its prerequisites. Get answers to the open questions above before assigning any Builder.
-2. **Token distribution model (D29/D30):** 25% free immediately, 75% auto-staked daily over 5 years. All team allocations same mechanism. Only Liquidity bucket (3M OTI) is fully unlocked at listing. This is locked — do not change without Ahmad's explicit direction.
-3. **GitHub is a security risk right now (D31).** The docs repo is public with internal files. Ahmad must make it private before the private sale launches. Remind Ahmad of this at the start of the next session.
-4. **No AI exposure anywhere in public content (D32).** Review everything against this standard before it goes live.
-5. **XMTP campaign (Tasks 19–22) is on hold, not cancelled.** Task prompts are written and ready in TASKS.md. Campaign runs after private sale money is secured.
-6. **Sui is broken (BF41), BSC/Base/Optimism return 503.** Ahmad will fix/subscribe when presale pays. Do not remove their features from the code. Do not add them to public-facing chain counts until they are working.
-7. **Ahmad has not yet answered:** token price, token amount for sale, referral commission rate, referral on-chain vs off-chain, which Builder starts first. These are open questions for next session.
-8. **Phase 2B campaign uses Ethereum scores for BNB Chain.** Same 0x address = same person. No BSC Etherscan Lite needed for the campaign (D26).
-9. **BAS schema UID** must be registered before Task 21 smart contract is written (Task 20 Part A). Ahmad pays the gas.
-10. **Task numbering:** Tasks 8–18 complete. Tasks 19–22 = XMTP Campaign (on hold, prompts written). Next new task = Task 23.
+1. **Ahmad is in an advisor session.** When he returns: full docs vs. reality review, then OTI Economics redesign, then write all task prompts.
+2. **Whitelist not presale — everywhere.** Every piece of public content, every task prompt, every piece of code the Builders write must use the correct vocabulary.
+3. **Frontend GitHub repo has internal files in it** from Builder pushes. Must be cleaned before whitelist launches.
+4. **TOKENOMICS.md is being redesigned.** Total supply is not 30M. Do not reference old tokenomics.
+5. **Anonymous rate limit already removed** by Ahmad via admin panel.
+6. **XMTP campaign is an ongoing program**, not a one-off, not ranked second. Runs when funded. Task prompts 19–22 are written and ready.
+7. **All vesting/lockup parameters must be admin-configurable** — this is a hard requirement, not a preference.
+8. **Docusaurus audit required** before whitelist launches — sensitive internal info may be exposed in public developer docs.
+9. **Task numbering:** Tasks 8–18 complete. Tasks 19–22 = XMTP Campaign (ready, waiting for funding). New whitelist tasks start at Task 23.
+10. **Next session starts with:** Ahmad shares advisor output on OTI Economics → full docs vs. reality review → update all files → write task prompts → assign first Builder.
