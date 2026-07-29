@@ -1,22 +1,24 @@
 ---
-name: Tokenomics Redesign Pending
-description: TOKENOMICS.md is being fully redesigned. Old file (30M supply, 25/75 split hardcoded) is WRONG. Do not reference it. Wait for Ahmad's advisor session output.
+name: OTI Economics (Confirmed)
+description: TOKENOMICS.md fully rewritten July 29, 2026 as "OTI Economics." 35M fixed supply. Full allocation and revenue distribution confirmed post-advisor session.
 ---
 
-## The Rule
-Do not reference TOKENOMICS.md for any token-related decision until Ahmad returns from the advisor session with new figures. The total supply is not 30M — the correct number is TBD.
+## Confirmed Supply & Allocations (use these — supersedes everything prior)
+- **Total supply: 35,000,000 OTI. Fixed. No inflation. No future mint.**
+- Ecosystem Whitelist: 25% (8,750,000) — only public distribution during Genesis
+- Network Reserve: 20% (7,000,000) — locked
+- Founders: 15% (5,250,000) — 5-year linear vesting, no cliff, locked
+- Strategic Partnerships: 10% (3,500,000) — locked, released as needed
+- Liquidity: 10% (3,500,000) — locked, liquidity ops only
+- Rewards Pool: 10% (3,500,000) — funded by revenue buybacks, not inflation
+- Future Strategic Investment: 5% (1,750,000) — reserved
+- Operations Reserve: 5% (1,750,000) — locked
 
-**Why:** Ahmad consulted a strategic advisor on July 29, 2026 to redesign OTI Economics from scratch — total supply, allocation breakdown, vesting architecture, revenue distribution, regulatory framing, and utility token credibility.
+## Revenue Distribution (internal operational — not to token holders)
+- Operations: 35% | Network Reserve: 25% | Rewards Pool: 15% (buys OTI on market) | Team Operations: 20% | R&D: 5%
 
-## What IS confirmed (use these)
-- Fixed supply, no inflation, no post-launch mint — exact number TBD
-- Whitelist allocation: 25% of total supply (all whitelist events)
-- All vesting/lockup percentages: admin-configurable, not hardcoded
-- Token has genuine utility (not speculative)
-- Off-chain referral tracking, commissions in OTI
-
-## What to do when Ahmad returns
-1. Get advisor output on: total supply, allocation breakdown, vesting architecture, revenue distribution, regulatory framing
-2. Full docs vs. reality review across all files
-3. Rewrite TOKENOMICS.md from scratch as "OTI Economics"
-4. Then write all task prompts for Builders
+## Key rules that never change
+- Rewards Pool is funded by open-market OTI purchases from revenue — never by minting
+- All vesting/lockup percentages are admin-configurable via dashboard — never hardcoded
+- Referral commissions paid in OTI, tracked off-chain in DB
+- TOKENOMICS.md is now the correct reference document ("OTI Economics" header)

@@ -1,147 +1,283 @@
-# OTI Token — Supply, Sale Structure & Revenue Distribution
-
-> Last updated: July 28, 2026 (session 20 — Complete rewrite. New token distribution model confirmed by Ahmad. Previous 36-month monthly linear vesting model deleted and replaced. All team-controlled allocations now locked with daily linear claim. Private sale structure updated. Price and exact sale token amount deferred to build phase.)
-> **Status: Direction confirmed by Ahmad July 28, 2026 — exact price and token amount for private sale to be decided during build.**
-> **This is OTI's own independent token — NOT the OpenFlow "FLOW" ecosystem token. OTI has its own supply, its own economics, and can operate with or without OpenFlow.**
-> **Launch chain: BNB Smart Chain (BSC). Cross-chain expansion planned later.**
-> **Do not add price or liquidity pool design — Ahmad decides these during the build phase.**
+# OTI Economics
+> **Document version:** July 29, 2026 — Full redesign following advisor session. Previous TOKENOMICS.md content is superseded entirely.
+> **Regulatory framing:** OTI is a utility access token. All language in this document and in any public content derived from it must reflect utility-first framing. No investment language, no return expectations, no yield framing. See DECISIONS.md for the vocabulary enforcement rule.
 
 ---
 
-## 1. Total Supply
+## What OTI Is
 
-**30,000,000 OTI — fixed supply, no inflation, no mint function after launch.**
+OTI (OpenFlow Trust Infrastructure) is a utility access token. It is the unit of account for interacting with the OpenFlow Trust Infrastructure network — paying for wallet attestations, API subscriptions, analytics access, and infrastructure services.
 
-Fixed supply is a deliberate trust signal. Total dilution is knowable from day one. No bucket can be silently expanded.
+OTI does not represent equity, ownership, profit rights, revenue rights, or any claim against OpenFlow Labs. It is a software access credential in token form. Its value is determined entirely by demand for the services it unlocks.
 
 ---
 
-## 2. Allocation
+## Total Supply
 
-| Bucket | % | Tokens | Purpose |
+**35,000,000 OTI**
+
+- Fixed supply.
+- No inflation mechanism.
+- No future minting authority.
+- No additional token creation under any condition.
+
+The 35,000,000 cap is final at genesis and cannot be altered.
+
+---
+
+## Genesis Mode
+
+Genesis Mode is the initial operational phase of the OTI network. During Genesis, OpenFlow Labs operates the network directly, distributes access fuel through the Ecosystem Whitelist Allocation, builds commercial adoption, and prepares the infrastructure for long-term expansion.
+
+Genesis Mode characteristics:
+- One staking system (Founder + internal allocation lockup only)
+- No governance layer
+- Fixed token supply in force
+- All internal allocations locked
+- Public access fuel distribution occurs **only** through the Ecosystem Whitelist Allocation
+
+Genesis Mode continues until OpenFlow Labs determines the network has reached the operational maturity required for expanded governance and liquidity phases.
+
+---
+
+## Token Allocation
+
+| Allocation | % | OTI | Status During Genesis |
 |---|---|---|---|
-| Private Sale | 15% | 4,500,000 | Funds building OTI — private sale runs before exchange listing |
-| Team & Founders | 15% | 4,500,000 | Long-term founder ownership (Ahmad + Musty) |
-| Ecosystem & Partnerships | 15% | 4,500,000 | Developer grants, integration incentives, protocol/exchange partnerships |
-| Revenue-Backed Rewards Pool | 30% | 9,000,000 | Staking/holder rewards — funded by real OTI API revenue via buyback, not token inflation |
-| Liquidity & Market Making | 10% | 3,000,000 | DEX trading pool depth, exchange listing support |
-| Treasury / Reserve | 15% | 4,500,000 | Operating costs, security audits, contingency — multisig-controlled |
-| **Total** | **100%** | **30,000,000** | |
+| Ecosystem Whitelist | 25% | 8,750,000 | Active — distributed via whitelist program |
+| Network Reserve | 20% | 7,000,000 | Locked |
+| Founders | 15% | 5,250,000 | Locked — 5-year linear vesting |
+| Strategic Partnerships | 10% | 3,500,000 | Locked — released as needed |
+| Liquidity | 10% | 3,500,000 | Locked — released for liquidity operations only |
+| Rewards Pool | 10% | 3,500,000 | Active — funded by revenue buybacks |
+| Future Strategic Investment | 5% | 1,750,000 | Reserved |
+| Operations Reserve | 5% | 1,750,000 | Locked |
+| **Total** | **100%** | **35,000,000** | |
 
 ---
 
-## 3. Token Distribution Model (Ahmad — confirmed July 28, 2026)
+### Ecosystem Whitelist Allocation — 8,750,000 OTI (25%)
 
-This is the core distribution mechanism. Every allocation follows this logic:
+The Ecosystem Whitelist Allocation is the **only** allocation intended for public distribution during Genesis.
 
-### 3.1 Private Sale Buyers
+It covers the entire scope of the Ecosystem Whitelist Node Program:
+- Invite-only onboarding (access fuel claims by whitelisted operators)
+- Referral reward programs
+- Community contributor recognition
+- Early ecosystem participant rewards
+- Social media and awareness campaign rewards
+- Network testing participant rewards
 
-When a buyer purchases OTI tokens in the private sale:
+All distribution from this allocation is subject to the 75% Node Collateral Lockup. When a whitelisted operator claims access fuel, 25% is immediately accessible and 75% enters a linear daily vesting schedule. The vesting parameters are configured by OpenFlow Labs via the admin dashboard and may be adjusted operationally.
 
-- **25% of their purchased tokens are released immediately** — visible in their wallet or in the OTI private sale dashboard from the moment of purchase. No lock, no wait.
-- **75% of their purchased tokens are automatically staked** at the point of purchase. This 75% is claimable daily in equal portions over 5 years (1,825 days). Each day, the buyer can claim their daily portion. There is no penalty for not claiming — unclaimed daily portions accumulate and remain claimable.
-
-**Example:** A buyer purchases 10,000 OTI.
-- 2,500 OTI arrive in their wallet immediately.
-- 7,500 OTI are auto-staked. Daily claimable amount: 7,500 / 1,825 = ~4.11 OTI/day for 5 years.
-
-**Only the 25% free portion represents immediate available supply.** The 75% staked is locked in the distribution contract and releases gradually — this protects price stability during the early growth phase.
-
-### 3.2 All Team-Controlled Allocations
-
-Every allocation that is under team or protocol control — Team & Founders, Ecosystem & Partnerships, Revenue-Backed Rewards Pool, Treasury / Reserve — is **100% locked** from day one, claimable daily in equal portions over the same 5-year period (1,825 days).
-
-No team member, no founder, no treasury wallet receives a lump sum at any point. The team's tokens release at the same daily rate as private sale buyers' staked portions. This is a deliberate trust signal to private buyers: the team cannot dump.
-
-### 3.3 Liquidity & Market Making — Exception
-
-The Liquidity & Market Making bucket (10%, 3,000,000 OTI) is the one exception. It must be fully available at listing to provide real DEX trading depth. Vesting liquidity would leave the token illiquid at launch.
-
-### 3.4 Available Supply Summary
-
-At the moment of private sale close and exchange listing:
-
-| Source | Tokens | Status |
-|---|---|---|
-| Private sale — 25% free portions | Up to 1,125,000 OTI (25% of 4.5M sold) | Immediately in buyer wallets |
-| Liquidity & Market Making | 3,000,000 OTI | In DEX pool at listing |
-| All other allocations | 26,625,000 OTI | Locked, claimable daily over 5 years |
-
-This means at launch, only ~4,125,000 OTI (13.75% of total supply) is liquid — the rest releases gradually. This is intentional.
+No tokens from any other allocation may be distributed publicly during Genesis.
 
 ---
 
-## 4. Private Sale Structure
+### Network Reserve — 7,000,000 OTI (20%)
 
-### 4.1 Private Sale (Runs Before Exchange Listing)
+Held by OpenFlow Labs to fund long-term network sustainability.
 
-| | |
+Covers:
+- Infrastructure expansion (new chain integrations, scoring expansions)
+- Ecosystem development initiatives
+- Strategic technical partnerships
+- Long-term operational continuity
+
+Locked during Genesis. Released by OpenFlow Labs decision as specific requirements arise.
+
+---
+
+### Founders — 5,250,000 OTI (15%)
+
+Commitment allocation for OpenFlow Labs founders.
+
+- 100% locked at genesis.
+- Five-year linear vesting.
+- No cliff period.
+- No early unlock mechanism.
+
+The five-year lockup structure aligns founder incentives with long-term network health. Founders cannot exit ahead of the network they are building.
+
+---
+
+### Strategic Partnerships — 3,500,000 OTI (10%)
+
+Reserved for infrastructure-level partnerships that require token-based alignment:
+- Exchange and DEX partnerships
+- Wallet provider integrations
+- Enterprise platform integrations
+- Infrastructure and tooling partnerships
+
+Released only when a specific partnership requires it. Locked otherwise.
+
+---
+
+### Liquidity Allocation — 3,500,000 OTI (10%)
+
+Reserved exclusively for liquidity operations:
+- DEX liquidity pool seeding
+- CEX listing requirements
+- Market operations to support utility swap access
+
+Not used for any purpose other than establishing and maintaining liquidity. Locked until liquidity operations begin.
+
+---
+
+### Rewards Pool — 3,500,000 OTI (10%)
+
+Funds staking and ecosystem incentive programs.
+
+The Rewards Pool is replenished through revenue-backed open-market purchases. OpenFlow Labs allocates a portion of platform revenue (see Revenue Distribution) to purchase OTI on the open market. Purchased tokens are transferred into the Rewards Pool.
+
+This means staking rewards and incentive programs are funded by real platform revenue — not by inflation and not by minting new tokens. The total supply cap is never breached.
+
+---
+
+### Future Strategic Investment — 1,750,000 OTI (5%)
+
+Reserved for future fundraising rounds with strategic investors.
+
+Not distributed during Genesis. Reserved only.
+
+---
+
+### Operations Reserve — 1,750,000 OTI (5%)
+
+Operational contingency reserve.
+
+- Infrastructure emergencies
+- Unplanned operational costs
+- Business continuity requirements
+
+Locked. Released only under OpenFlow Labs decision for defined operational needs.
+
+---
+
+## Staking
+
+Genesis uses one staking system.
+
+**What is staked:** Founder allocation and internal locked allocations are subject to the staking lockup schedule described above.
+
+**What public participants receive:** Whitelisted operators receive access fuel according to the 25%/75% vesting structure configured by the platform. The 75% Node Collateral Lockup is a network stability mechanism, not an investment product. It protects circulating supply from systemic dumping during early network phases.
+
+**Governance staking:** Not available during Genesis. No governance exists during Genesis.
+
+---
+
+## Governance
+
+Genesis includes no governance layer.
+
+OTI is managed operationally by OpenFlow Labs during the Genesis phase. OpenFlow Labs makes all decisions regarding:
+- Vesting parameter configuration
+- Reserve allocation decisions
+- Liquidity timing
+- Partnership token releases
+- Revenue distribution ratios
+
+Governance mechanisms are a future-phase consideration, not a Genesis feature.
+
+---
+
+## Platform Revenue Sources
+
+OTI generates platform revenue from:
+
+| Revenue Stream | Description |
 |---|---|
-| Purpose | Fund building OTI — keeps servers running, funds the XMTP campaign, funds Phase 3 development |
-| Chain | BNB Smart Chain (BSC) |
-| Accepted currency | BNB / USDT on BSC |
-| Token amount for sale | To be decided by Ahmad during build phase |
-| Price per token | To be decided by Ahmad during build phase |
-| Distribution on purchase | 25% immediate to buyer wallet / dashboard; 75% auto-staked, daily claimable over 5 years |
-| Referral system | Yes — buyers who refer others earn a commission. Structure to be designed during build phase. |
-| Sale closes | When target raise amount is reached — no fixed date |
+| Wallet Attestations | Per-attestation fees (BNB Chain BAS) |
+| API Subscriptions | Developer monthly/annual API plan subscriptions |
+| Enterprise API | High-volume enterprise API contracts |
+| Widget Subscriptions | Widget commercial license subscriptions |
+| Premium Analytics | Score history, analytics, and reporting access |
+| Webhook Subscriptions | Real-time wallet alert subscriptions |
+| Future Infrastructure Services | New products and services as OTI expands |
 
-The private sale runs through a purpose-built private sale site with a smart contract on BNB Chain handling all distribution automatically. Buyers see their full allocation breakdown in the OTI private sale dashboard: immediate balance, staked balance, daily claimable amount, and accumulated unclaimed tokens.
-
-### 4.2 Post-Listing Sales (As-Needed)
-
-After exchange listing, additional tokens from the Private Sale bucket can be sold in as-needed rounds to fund specific development goals. Each post-listing sale:
-- Uses tokens from the remaining Private Sale allocation
-- Follows the same 25%/75% distribution model
-- Is announced publicly with the date, amount, price, and terms
+Revenue is generated in fiat-equivalent or BNB, not OTI. Revenue feeds back into the ecosystem through the Revenue Distribution model below.
 
 ---
 
-## 5. Revenue Distribution
+## Revenue Distribution
 
-Once OTI's paid API tiers generate real revenue, that revenue is split monthly — starting from day one after the private sale closes:
+All platform revenue is distributed across five operational categories. These are internal operational allocations — they represent how OpenFlow Labs manages the business, not distributions to token holders.
 
-| Category | % | What it's for |
+| Category | % | Purpose |
 |---|---|---|
-| Operating Costs | 40% | Hosting (Railway), paid data providers, tools, infrastructure — paid first |
-| Revenue-Backed Rewards Pool (buyback) | 25% | Buys OTI on the open market and routes into the Rewards Pool for stakers — **only executes when the market is down**; held as cash reserve otherwise |
-| Team | 20% | Cash payout to founders (Ahmad + Musty) — separate from their token allocation |
-| Treasury/Reserve top-up | 15% | Cash reinvested into growth: marketing, audits, partnerships, legal |
+| Operations | 35% | Infrastructure, servers, development costs, customer support, business operations |
+| Network Reserve | 25% | Long-term sustainability fund, future expansion, infrastructure scaling |
+| Rewards Pool | 15% | Open-market OTI purchases — transferred to Rewards Pool, no new tokens minted |
+| Team Operations | 20% | Founder and team salaries, operational workforce, long-term development continuity |
+| Research & Development | 5% | New infrastructure, security improvements, product research, future protocol development |
 
-**Why the buyback is conditional:** Buying tokens regardless of price would mean routinely overpaying when the market is already strong. Restricting buybacks to down-market conditions makes the Rewards Pool a genuine value-accrual mechanism rather than a fixed monthly expense.
-
----
-
-## 6. Chain & Cross-Chain Plan
-
-- **Launch chain:** BNB Smart Chain (BSC) — low fees, fast settlement, matches private sale mechanics.
-- **Cross-chain expansion:** Planned after OTI token is established on BSC. Not yet scoped — will be addressed separately when Ahmad reopens it (likely via LayerZero or Wormhole, not a custom bridge).
+**The Rewards Pool allocation (15%) is the mechanism that connects platform revenue to the OTI ecosystem.** Rather than minting new tokens, OpenFlow Labs uses 15% of revenue to buy OTI from the open market and transfer it to the Rewards Pool. This creates utility-backed demand and sustains staking/incentive programs without inflation.
 
 ---
 
-## 7. Token Utility — What OTI Token Actually Does
+## OTI Utility
 
-OTI token must be a real utility token from creation day. It does not launch as an empty speculative asset.
+OTI unlocks access to OTI network services:
 
-### 7.1 Pay for Attestation
-Users who want an OTI Verified Badge attestation can pay the attestation fee in OTI token. Token payment receives a discount versus BNB or fiat. Fee amount and discount rate are configured via admin panel — not hardcoded.
+| Use Case | Description |
+|---|---|
+| Wallet Attestations | Pay attestation fees (with discount vs. non-OTI payment methods) |
+| API Subscriptions | Pay for developer API plan access |
+| Enterprise API | Pay for enterprise API contracts |
+| Widget Subscriptions | Pay for commercial widget embedding rights |
+| Premium Analytics | Unlock score history, wallet analytics, reporting dashboards |
+| Webhook Subscriptions | Pay for real-time wallet alert webhooks |
+| Developer Staking | Stake OTI for priority API access and reduced fees |
+| Ecosystem Incentives | Earn OTI through early-adopter rewards, referral programs, contributor programs |
+| Partner Revenue Share | Partners earn OTI commission on attestation conversions through the embedded widget |
+| Future Infrastructure Services | Access new OTI network products as they launch |
 
-### 7.2 Staking (Revenue-Backed Rewards Pool)
-Token holders who stake OTI receive rewards from the Revenue-Backed Rewards Pool. Rewards are funded by real API and attestation revenue — not by token inflation. Note: the 75% auto-staked private sale allocation is a separate distribution mechanic from voluntary staking. Staking design detail to be finalized once OTI has real usage and revenue.
-
-### 7.3 Early Adopter Rewards — First 1 Million Wallets in OTI's Scoring Database
-The first 1 million wallet addresses in OTI's scoring database receive OTI tokens — including wallets OTI has proactively pre-scored, regardless of whether the wallet owner has ever visited OTI. Token source: Ecosystem & Partnerships bucket. Amount per user: Ahmad to decide before Phase 3.
-
-**Tracking requirement (critical):** The eligibility counter starts when proactive background scoring begins (Phase 2B Post-Campaign). This tracking list must be built into the background scorer from day one — it cannot be reconstructed after the fact.
-
-### 7.4 Future Widget / API Access (Planned)
-As the ecosystem matures, OTI token may gate or discount access to premium widget tiers and API plans. Documented here as the intended direction — not part of the immediate build.
+OTI has no utility outside the OTI network and its integrations. It is not a general-purpose currency.
 
 ---
 
-## 8. Explicitly Out of Scope For Now
+## Core Principles
 
-- **Price and liquidity pool design:** Ahmad decides during the build phase. Do not add, infer, or reconstruct pricing numbers.
-- **Staking derivative system:** Deferred until OTI has real usage and revenue to build around.
-- **Governance:** No DAO or voting mechanism defined for this phase.
-- **Formal legal/securities review:** Ahmad's explicit decision — the raise is small enough not to require this at this stage. This was flagged once by the Manager; it is Ahmad's call.
+1. **Fixed supply.** 35,000,000 OTI. No exceptions.
+2. **No inflation.** Rewards are funded by revenue buybacks, not new minting.
+3. **No governance during Genesis.** OpenFlow Labs operates the network directly.
+4. **One staking system.** Founder lockup + internal allocation lockup only. No public speculation layer.
+5. **Revenue-backed ecosystem.** Rewards Pool is funded by real revenue, not by printing tokens.
+6. **Utility-driven demand.** OTI demand grows as network usage grows — attestations, API calls, subscriptions.
+7. **Infrastructure-first.** Economic model designed for long-term sustainability, not short-term speculation.
+8. **Long-term alignment.** Founders locked five years. Internal allocations locked during Genesis. All incentives point toward building.
+
+---
+
+## Whitelist Program Economics
+
+The Ecosystem Whitelist Allocation (8,750,000 OTI, 25%) is distributed through the Ecosystem Whitelist Node Program.
+
+Key mechanics:
+- Access is invite-only (single-use OTI-XXXX-XXXX codes, admin-generated)
+- 10,000 maximum whitelisted slots during Genesis (12-month program)
+- 25% of claimed allocation immediately accessible as Access Fuel
+- 75% enters Node Collateral Lockup — linear daily vesting schedule
+- All vesting parameters configurable by OpenFlow Labs via admin dashboard
+- Referral rewards tracked off-chain (PostgreSQL DB) — not on smart contract
+- Referral commissions denominated in OTI
+- Geographic restrictions enforced (US, China, sanctioned jurisdictions blocked)
+
+**Public milestone commitments (from the /whitelist page):**
+- At $5,000 committed ecosystem allocation → Public Utility Liquidity Layer deployed on decentralized protocols. OTI becomes redeemable through utility swap.
+- At $15,000 committed ecosystem allocation → Secondary AMM pool funded. Utility swap rates stabilised for B2B clients.
+
+These milestones are operational commitments, not investment return promises. They describe what OpenFlow Labs will build as the ecosystem grows.
+
+---
+
+## What This Document Is Not
+
+This document describes the operational and technical economics of the OTI utility token. It is not:
+- An investment prospectus
+- A securities offering document
+- A guarantee of future value or returns
+- A profit-sharing arrangement
+- A financial product of any kind
+
+OTI tokens are software access credentials. All token-related activity is governed by the OTI Terms & Conditions and Privacy Policy.

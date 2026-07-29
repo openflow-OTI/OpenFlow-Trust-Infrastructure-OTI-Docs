@@ -258,7 +258,7 @@ Task prompts 19–22 are fully written in TASKS.md. No rework needed. Campaign t
 - Webhook alert subscriptions
 - Governance (future phase)
 
-**DO NOT update TOKENOMICS.md until Ahmad returns with advisor output.**
+**TOKENOMICS.md has been rewritten as "OTI Economics" — July 29, 2026. Total supply confirmed: 35,000,000 OTI. Full allocation breakdown and revenue distribution documented. Correct file to reference going forward.**
 
 ---
 
@@ -358,7 +358,7 @@ When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account
 - `FIXES.md` — all bug fixes by Builder (BF41 open — Sui broken)
 - `DECISIONS.md` — why things exist the way they do
 - `BUSINESS_MODEL.md` — revenue layers (needs update — whitelist framing)
-- `TOKENOMICS.md` — **BEING REDESIGNED. Do not use until Ahmad returns from advisor session.**
+- `TOKENOMICS.md` — **Rewritten July 29, 2026 as "OTI Economics." 35M supply, full allocation and revenue distribution documented. Use this version.**
 - `docs/whitepaper-additions-draft.md` — previous Manager's whitepaper additions (chain table is stale, merge with whitepaper task)
 
 ---

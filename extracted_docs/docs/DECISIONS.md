@@ -252,6 +252,59 @@ This file records the reasoning behind how OTI was built — not what the code d
 
 ---
 
+### D34 — Whitelist Program Replaces Private Sale — Regulatory Compliance
+**Status:** INTENTIONAL — NON-NEGOTIABLE
+**What this means:** The entire "private sale / presale / ICO / token sale" direction has been replaced by the "Ecosystem Whitelist Node Program." This is a permanent vocabulary and framing change. Banned vocabulary: token sale, private sale, presale, ICO, buy tokens, invest, ROI, yield, investors, trading, listing. Required vocabulary: Ecosystem Whitelist, Acquire Network Access Fuel, Claim Allocation, Node Collateral Lockup, Linear Network Vesting, Whitelisted Operators, Public Utility Liquidity Pool Seeding.
+**Why:** Ahmad's direction, July 29, 2026. Running an open public token checkout while marketing on social media triggers "Unregistered Public Offering" under local and international regulatory frameworks. The whitelist framing converts the launch into a private technical ecosystem onboarding program — a gated, invite-only access system that looks like a locked private network onboarding tool to a public crawler or regulator, not a token sale.
+**Scope:** Every piece of public-facing content (website, whitepaper, docs site, GitHub README, social media), every task prompt written to Builders, and every piece of code Builders write must use whitelist vocabulary exclusively.
+**Confirmed by:** Ahmad, July 29, 2026.
+
+---
+
+### D35 — Off-Chain Referral Tracking
+**Status:** INTENTIONAL
+**What this means:** Referral and invite relationships are tracked in the PostgreSQL backend database (`whitelist_invites` table), not on-chain. The admin has full visibility and control over all referral data and can adjust commission records operationally.
+**Why:** Ahmad's decision, July 29, 2026. On-chain referral tracking would make all commission relationships and wallet connections permanently public and auditable by anyone, removing operational flexibility and potentially creating regulatory exposure. Off-chain tracking keeps the admin in full control — commissions can be corrected, adjusted, or managed without gas fees and without public visibility.
+**Implementation:** `whitelist_invites` table stores invite code, redeemer wallet, contribution amount. Commission calculation and distribution managed by backend.
+**Confirmed by:** Ahmad, July 29, 2026.
+
+---
+
+### D36 — All Vesting and Lockup Parameters Are Admin-Configurable
+**Status:** INTENTIONAL — NON-NEGOTIABLE
+**What this means:** No vesting percentage, lockup duration, or distribution parameter for the whitelist program may be hardcoded in smart contracts or backend logic. All parameters must be configurable by OpenFlow Labs via the admin dashboard. This includes: the 75% Node Collateral Lockup percentage, the linear vesting schedule duration, the daily release rate, and any other distribution parameter.
+**Why:** Ahmad's direction, July 29, 2026. Hardcoded vesting means any change requires a contract redeployment — expensive, risky, and requiring public announcement. Admin-configurable parameters mean OpenFlow Labs can adjust the vesting schedule operationally as the ecosystem evolves, without on-chain upgrades.
+**Implication for Builders:** Any Builder implementing the whitelist smart contract or backend vesting logic must read parameters from a configurable admin-set source, not from constants. Flag this to the Manager if it creates a technical constraint.
+**Confirmed by:** Ahmad, July 29, 2026.
+
+---
+
+### D37 — OTI Total Supply Is 35,000,000 (Fixed)
+**Status:** INTENTIONAL
+**What this means:** The final, correct total supply of OTI is 35,000,000 tokens. Fixed. No inflation, no future minting, no additional creation under any condition. Previous references to 30M or any other figure are incorrect and superseded.
+**Allocation breakdown:** Ecosystem Whitelist 25% (8.75M), Network Reserve 20% (7M), Founders 15% (5.25M), Strategic Partnerships 10% (3.5M), Liquidity 10% (3.5M), Rewards Pool 10% (3.5M), Future Strategic Investment 5% (1.75M), Operations Reserve 5% (1.75M).
+**Rewards Pool mechanism:** Funded by revenue-backed open-market OTI purchases (15% of platform revenue) — not by inflation. Total supply cap is never breached.
+**Confirmed by:** Ahmad, July 29, 2026 (post-advisor session).
+
+---
+
+### D38 — Referral Commissions Denominated in OTI Token
+**Status:** INTENTIONAL
+**What this means:** All referral and invitation reward commissions are paid in OTI token, not in BNB or any fiat-equivalent stablecoin.
+**Why:** Ahmad's decision, July 29, 2026. Paying commissions in OTI keeps demand for OTI circulating within the ecosystem, strengthens utility-driven demand, and avoids creating a cash-out mechanism that bypasses the token entirely.
+**Confirmed by:** Ahmad, July 29, 2026.
+
+---
+
+### D39 — Frontend GitHub Repo Requires Cleanup Before Whitelist Launch
+**Status:** REQUIRED ACTION
+**What this means:** The public frontend GitHub repo currently contains internal workspace files (TASKS.md, FIXES.md, ARCHITECTURE.md, BUILDER_ONBOARDING.md, etc.) that were pushed alongside source code. The repo must be cleaned to show only actual built source code — no internal documentation, no Builder workspace files, no references to internal project management, no key rotation strategy, no admin route structure details.
+**Why:** Ahmad's direction, July 29, 2026. The frontend repo is intentionally public for code transparency. Potential enterprise clients, developers, and press will inspect it before engaging. Finding internal bug lists and architecture docs alongside the source code looks unprofessional and exposes strategic information.
+**Task:** Frontend Builder cleanup task must be written and assigned before whitelist launches.
+**Confirmed by:** Ahmad, July 29, 2026.
+
+---
+
 ## Pending Answers — Awaiting Builder Response
 
 ---

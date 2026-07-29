@@ -3,7 +3,7 @@
 - [Vercel docs proxy gotchas](vercel-docs-proxy.md) — trailing-slash routes need their own explicit rewrite rule; Docusaurus baseUrl ≠ physical output nesting.
 - [Builder file sync](builder-file-sync.md) — Frontend/Backend Builders hold separate physical copies of task files; Manager must explicitly instruct them to update their own copy every time, never assume sync.
 - [OTI token is independent from FLOW](oti-token-independent.md) — OTI has its own token/tokenomics (see TOKENOMICS.md), deliberately decoupled from OpenFlow's FLOW ecosystem token so OTI's fundraising/growth isn't gated by OpenFlow's timeline.
-- [OTI token price & liquidity deferred](oti-token-price-liquidity-deferred.md) — price/liquidity pool design intentionally stripped from TOKENOMICS.md; team decides later, don't reconstruct or re-add without Ahmad reopening it.
+- [OTI Economics (Confirmed)](tokenomics-redesign-pending.md) — 35M fixed supply; full allocation confirmed July 29 2026; TOKENOMICS.md rewritten as "OTI Economics"; Rewards Pool funded by revenue buybacks, never by minting.
 - [Signal-first scoring QA](signal-first-scoring-qa.md) — Ahmad's preferred test method: sweep one signal across all chains before moving to the next, not chain-by-chain; this is how BF33/BF34 were found.
 - [Builder onboarding secrets gap](builder-onboarding-secrets-gap.md) — new Builder Replit environments start with zero API keys; all secrets must be manually re-added each time a Builder is replaced/recreated.
 - [D16 evidence standard, applied retroactively](d16-evidence-standard.md) — a Builder's claim of "verified" is not evidence; check whether it was a real wallet/fresh call or code-inspection/cached response before accepting a close.
@@ -12,3 +12,4 @@
 - [compromised_wallets is single source of truth](compromised-wallets-source-of-truth.md) — score endpoint, admin WOR Compromised view, and dashboard stats must ALL query compromised_wallets. BF38/BF39/BF40 all caused by splitting this across compromised_wallets and wallet_ownership.status.
 - [WalletConnect challenge TTL trap](walletconnect-challenge-ttl.md) — self-report challenge expires in 15 min; any test taking longer silently hits the 400 branch. Ahmad's early self-reports failed this way and looked like backend bugs.
 - [/services hub decision](services-hub-decision.md) — Ahmad decided July 15 2026: homepage at / stays unchanged; new service portal lives at /services with navbar link. Cards: Score, WOR, API Docs, Whitepaper, Coming Soon placeholders.
+- [Whitelist pivot vocabulary](whitelist-pivot.md) — all "presale/sale/invest/ROI" language replaced by whitelist vocabulary everywhere; regulatory compliance decision July 29 2026; vocabulary map in topic file.
