@@ -83,51 +83,74 @@ Extract the OTI docs zip from the project root if it is present, or access them 
 2. DECISIONS.md — why things exist the way they do. Read D1 through D60. Do NOT treat anything in there as a bug or change it without Manager instruction.
 3. TOKENOMICS.md — OTI Economics: 35M fixed supply, DCS bonding curve (7M OTI, $0.001190→$0.005952), ERP inverse rewards pool (1.75M OTI). Understand both sub-pools before touching whitelist code.
 4. FIXES.md — especially BF38/BF39/BF40 (compromised_wallets lesson) and BF41 (Sui broken — open, leave it).
-5. BACKEND_TASKS.md — your task queue. Task 28 is your first and currently only task.
+5. BACKEND_TASKS.md — your task queue. Task 28 is your active task.
 
 ---
 
-## Your First Task: Task 28 — Whitelist System
+## Current Task 28 Status — What Is Already Done
 
-This is urgent — read BACKEND_TASKS.md for the full prompt. Summary:
+A previous Builder worked on Task 28 before hitting their quota. Here is exactly where things stand:
 
-Build the complete backend infrastructure for the Ecosystem Whitelist Node Program:
-- Part A: 10 new DB tables + whitelist_config seed
-- Part B: Full API endpoint set (verify-invite, state, participant, tasks, connect-telegram, connect-x, daily-score, one-time tasks, social tasks, whitepaper questions)
-- Part C: Admin Whitelist tab (code management, whitepaper questions CRUD, flagged accounts panel, protocol config)
-- Part D: Two smart contracts on BNB testnet → mainnet:
-  (1) OTIDCSContribution.sol — accepts BNB + 9 BEP-20 tokens (USDT, USDC, WETH, BTCB, BUSD, XRP-BSC, ADA-BSC, DOGE-BSC, MATIC-BSC), Chainlink oracle price feeds, records USD-equivalent contributions
-  (2) OTIWhitelistVesting.sol — OTI token distribution (25% immediate + 75% linear daily vesting)
+**Part A — COMPLETE.** All 14 whitelist DB tables are live on Railway production. Ahmad ran drizzle-kit push and confirmed every table exists with the correct schema. whitelist_config and protocol_state are seeded. Do not recreate or modify any of these tables.
 
-Deployer wallet: you generate it yourself offline (Step 1 of Part D) and immediately send the address to the Manager. Testnet gas is free (BNB testnet faucet). For mainnet you cannot fund the deployer yourself — Ahmad sends BNB to the address after the Manager relays it to him. Do not proceed to mainnet until the Manager confirms Ahmad has sent the funds.
+**Part B — NEARLY COMPLETE.** The previous Builder built all 11 endpoints in src/routes/whitelist.ts and registered the router in the main Express app. The build succeeds (esbuild compiles and server runs). One issue remains: TS7006 implicit-any TypeScript errors on db.transaction async (tx) callbacks and a .map() callback inside whitelist.ts. The fix is to look at how wallet.ts types its db.transaction(async (tx) => { callbacks and apply the same pattern. Do not use @ts-ignore.
 
-Parts A, B, and C can be built and tested today without any BNB. Part D (contracts) comes after A, B, C are complete and deployed.
+**Part C — NOT STARTED.**
+**Part D — NOT STARTED.**
+
+Your job: fix the one TypeScript issue in Part B, confirm a clean build, then complete D16 evidence testing for every Part B endpoint. Then move to Part C.
 
 ---
 
-## Secrets You Will Need
+## The Whitelist System — What You Are Building
 
-The Manager will confirm these are set in your Railway environment before you need them:
+OTI is launching an Ecosystem Whitelist Node Program — a gated, invite-code-only access system for early network operators. This is NOT a token sale — it is a utility access program. All public-facing language uses whitelist vocabulary only (no "presale", "invest", "ROI", "yield" — ever).
+
+**How it works:**
+- Ahmad generates invite codes (format OTI-XXXX-XXXX) via the admin panel
+- Users enter a code + accept Terms & Conditions to unlock the portal
+- Once verified, they can: claim their OTI allocation, connect Telegram + X, complete reward tasks, answer whitepaper questions
+- All rewards are tracked in DB and paid in OTI token
+
+**Two token pools (read TOKENOMICS.md for full detail):**
+- DCS (Dynamic Contribution Scale): 7M OTI, linear bonding curve. Rate starts at $0.001190/OTI and rises to $0.005952/OTI as allocation fills. Raises $25,000 total.
+- ERP (Ecosystem Rewards Pool): 1.75M OTI, inverse curve. Reward = Base Reward × (DCS Remaining ÷ 7,000,000). As DCS fills, ERP rewards shrink. Covers referrals, social tasks, daily scoring, WOR actions, whitepaper rounds.
+
+**The reward gate:** Before any reward endpoint pays out, three conditions must all be true: participant status = 'active', telegram_verified = true, x_handle IS NOT NULL. All three are checked via a shared internal helper — not copy-pasted per endpoint.
+
+**Session fingerprinting:** On every registration and reward claim, the backend silently records IP + user agent + accept-language + client fingerprint data, builds a SHA-256 hash, and checks for collisions. If the same IP or fingerprint hash is shared by too many wallets (thresholds from whitelist_config), flag rows are written to whitelist_flags for Ahmad's review. Flagging NEVER blocks the user — it is silent admin-review only.
+
+**All parameters come from whitelist_config at runtime.** Reward amounts, vesting percentages, slot caps, flag thresholds — nothing token-related is hardcoded anywhere.
+
+---
+
+## Secrets Already Set on Railway
+
+All of these are already in the Railway environment — you do not need to ask Ahmad to set them:
 - DATABASE_URL — Railway PostgreSQL
 - ADMIN_SECRET — for adminAuth.ts middleware
-- TELEGRAM_BOT_TOKEN — for Telegram phone verification (Task 28 Part B)
-- TWITTER_CLIENT_ID and TWITTER_CLIENT_SECRET — for X OAuth (Task 28 Part B)
+- SESSION_SECRET — for JWT signing (whitepaper question sessions)
+- TELEGRAM_BOT_TOKEN — for Telegram HMAC-SHA256 hash verification
+- TWITTER_CLIENT_ID — for X OAuth 2.0
+- TWITTER_CLIENT_SECRET — for X OAuth 2.0
 
-New env vars you will add for Task 28 (tell the Manager when you need each one set):
-- DEPLOYER_PRIVATE_KEY — your generated deployer wallet key (Replit env var only, never in code)
+New env vars needed for Part D only (tell the Manager when you reach Part D):
+- DEPLOYER_PRIVATE_KEY — your generated deployer wallet key (Replit env var only, never in any file)
 
 ---
 
 ## Confirm Your Understanding
 
-Before I give you the full Task 28 prompt, answer these questions so I know you are oriented:
+Before I give you the continuation details for Part B, answer these questions so I know you are properly oriented:
 
-1. What is the compromised_wallets table and why is it the single source of truth for flagged wallets?
-2. What does Ahmad have to do manually after every schema change you deploy to Railway?
-3. What is the DCS and how does its bonding curve work? What are the start and end rates?
-4. What is the ERP and how does its reward multiplier work?
-5. What percentage of a whitelist participant's OTI allocation is immediately accessible, and where is that percentage stored?
-6. What does D16 mean in practice — give an example of what a valid evidence report looks like vs. an invalid one.
+1. What is the DCS and how does its bonding curve work? What are the two rate values?
+2. What is the ERP multiplier formula? What happens to ERP rewards as DCS fills up?
+3. A participant calls POST /api/whitelist/task/daily-score but their telegram_verified is false. What does the endpoint return?
+4. A user registers with invite code OTI-ABCD-1234. Two other wallets have already registered from the same IP address, and flag_ip_threshold in whitelist_config is set to 3. Does their registration succeed? What happens in the DB?
+5. What does D16 mean in practice? Give one example of valid evidence and one example of invalid evidence.
+6. Where is the vesting_lockup_pct stored and why is it stored there instead of hardcoded in the contract?
+
+Answer all six correctly and I will give you the full continuation brief for Part B.
 
 Answer these correctly and I will send you the full Task 28 prompt.
 ```
