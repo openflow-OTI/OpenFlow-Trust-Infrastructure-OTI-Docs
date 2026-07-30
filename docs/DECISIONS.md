@@ -372,3 +372,143 @@ This file records the reasoning behind how OTI was built — not what the code d
 - Handover package is delivered to the Manager, not directly to Ahmad
 - If the real OTI BEP-20 mainnet token address is not yet available at deploy time, use a placeholder and document clearly — Ahmad updates the contract owner address after handover
 **Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D58 — Session Fingerprinting and Multi-Account Detection
+**Status:** INTENTIONAL — ANTI-EXPLOIT SYSTEM
+**What this means:** The whitelist backend tracks IP address, browser fingerprint (hashed user-agent + screen info + timezone), and session metadata at every entry point: invite code verification, social identity connection, and every reward claim. When multiple wallet addresses share the same IP or fingerprint hash, the system automatically flags all involved accounts for review. Flagged accounts are visible in the admin dashboard and Ahmad can ban them with one click.
+**Fingerprint hash is built server-side** from: IP address, User-Agent header, Accept-Language header, and any browser fingerprint data passed from the frontend (screen resolution, timezone offset, canvas fingerprint if available). Never logged in plain text — hashed before storage.
+**Flagging thresholds (all admin-configurable via whitelist_config):**
+- Same IP → 3 or more registered wallets: flag all
+- Same fingerprint hash → 2 or more registered wallets: flag all immediately
+**Flagged status does not auto-ban** — it surfaces to Ahmad in admin for manual action. Ahmad bans or clears via the admin panel.
+**Why:** Ahmad's direction, July 30, 2026. Without fingerprinting, one person can register many wallet addresses and farm all one-time rewards repeatedly.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D43 — All ERP Task Reward Amounts Are Admin-Configurable
+**Status:** INTENTIONAL — CONFIRMED DESIGN
+**What this means:** Every reward amount for every ERP task (referral, social tasks, daily wallet scoring, WOR registration, WOR compromise report, Developer API creation, whitepaper reading rounds) is stored in `whitelist_config` and editable through the admin dashboard. No reward amount is hardcoded anywhere. The ERP pool is small, so Ahmad needs direct control over all amounts without a code deploy.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D44 — Expanded ERP Engagement Tasks: Daily Scoring, WOR Actions, Developer API, Whitepaper
+**Status:** INTENTIONAL — CONFIRMED DESIGN
+**What this means:** The ERP reward system is expanded beyond referrals and social tasks to cover all of OTI's core product touchpoints. These tasks live on the /whitelist page for authenticated users:
+
+**Daily repeatable task (unlimited, once per calendar day per wallet):**
+- Daily Wallet Score — user scores their own connected wallet once per day → earns OTI. Tracks by wallet_address + calendar date. Behaves like daily phone mining: streak-based daily action, not one-time.
+
+**One-time tasks (once per wallet, ever):**
+- WOR Wallet Registration — register your wallet in the Wallet Ownership Registry → earn OTI
+- WOR Compromise Report — report a wallet as compromised → earn OTI
+- Developer API Key Creation — obtain a Developer API key → earn OTI
+
+**Whitepaper reading (up to 10 reward rounds per wallet):**
+- 100 questions stored in DB. Each session delivers 3 random, non-technical questions about OTI's mission and use case.
+- Answer all 3 correctly → earn OTI (one reward per 3-question round).
+- User can keep answering in sets of 3 up to 30 total questions (10 reward rounds maximum per wallet).
+- Questions are admin-manageable via dashboard.
+
+**Why:** Ahmad's direction, July 30, 2026. The ERP system should promote everything OTI has built. Each task drives real product usage: scoring, WOR, API, and whitepaper engagement.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D45 — /whitelist UX Flow: Connect Wallet First, Then Enter Invite Code
+**Status:** INTENTIONAL — CONFIRMED DESIGN
+**What this means:** The /whitelist page flow is: (1) user arrives at locked gate, (2) connects wallet, (3) invite code input appears, (4) user enters code + accepts T&C, (5) portal opens. Wallet address is known before invite code submission. The backend `POST /api/verify-invite` receives both wallet_address and invite_code together.
+**Why:** Ahmad's direction, July 30, 2026. Wallet-first is the natural auth pattern — it also means the portal immediately knows who the user is once the code is validated.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D46 — Developer API Signup Is Wallet-Only — No Email Required
+**Status:** INTENTIONAL — CONFIRMED DESIGN
+**What this means:** Users who want a Developer API key sign up by connecting their wallet. No email, no password, no OAuth. If a user is already connected (whitelist portal, scoring page, etc.) that same wallet is their identity across all OTI services.
+**Why:** Ahmad's direction, July 30, 2026. Consistent with the wallet-first identity model across the whole platform.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D47 — /whitelist Gate Copy Simplified
+**Status:** INTENTIONAL — CONFIRMED DESIGN
+**What this means:** The unauthenticated gate on /whitelist shows only: "Access is restricted to whitelisted users." No mention of wallet connect, prices, token charts, or node operator framing on the gate itself. Clean and minimal.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D48 — "Committed Rate" Not "Contribution Rate"
+**Status:** INTENTIONAL — VOCABULARY RULE
+**What this means:** The DCS live counter label reads "Current Committed Rate" (the rate at which OTI is committed per dollar). Never "contribution rate." Apply this everywhere: UI labels, API response keys, DB column comments, admin dashboard.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D49 — Social Tasks Are Auto-Verified via Submitted URL — No Manual Admin Review
+**Status:** INTENTIONAL — CONFIRMED DESIGN
+**What this means:** When a user submits a social task (post + tag, share link), they provide a URL as proof. The backend auto-verifies the submission via the submitted link (URL reachability + basic content check). No admin review queue. The Social Task Review Queue sub-view in the admin panel is removed.
+**Why:** Ahmad's direction, July 30, 2026. Removes the 48-hour manual bottleneck and scales automatically.
+**Implementation note:** If a URL check fails, return a clear error to the user. Log the attempt. Do not silently approve or silently reject.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D50 — Telegram Phone Verification Required Before Claiming Any Reward
+**Status:** INTENTIONAL — ANTI-EXPLOIT GATE
+**What this means:** Before a user can claim any ERP task reward (any task type, one-time or daily), they must have completed Telegram phone number verification. This is done once per wallet. The backend checks `whitelist_participants.telegram_verified = true` before crediting any reward.
+**Why:** Ahmad's direction, July 30, 2026. Prevents wallet farming and bot abuse of the reward system.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D51 — X (Twitter) Account Connection Required Before Claiming Any Reward
+**Status:** INTENTIONAL — ANTI-EXPLOIT GATE
+**What this means:** Before claiming any ERP task reward, users must also have their X (Twitter) account connected. Combined with D50 (Telegram), this means two social accounts must be linked before any reward is claimable. Both checks run server-side at every reward claim endpoint.
+**Why:** Ahmad's direction, July 30, 2026. Two social accounts = two independent identity anchors. Makes multi-wallet farming expensive and detectable.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D52 — No Face Verification
+**Status:** INTENTIONAL — EXCLUDED
+**What this means:** Face verification (liveness / KYC camera check) is not implemented anywhere in the whitelist system. D50 + D51 (Telegram phone + X account) are sufficient anti-exploit gates.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D53 — No Hardcoded Limits — All Caps Are Admin-Configurable With No Default Maximum
+**Status:** INTENTIONAL — CONFIRMED DESIGN
+**What this means:** Nothing in the whitelist system has a hardcoded maximum. Slot count, code limits, question limits, daily score limits — all are configurable via `whitelist_config` through the admin dashboard. Where a limit key exists in config, its default value means "no limit" (0 = unlimited) unless Ahmad sets a specific number. The `max_whitelist_slots` config key defaults to 0 (unlimited). Ahmad sets the cap himself whenever he wants.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D54 — /whitelist Added to Navbar From Day One
+**Status:** INTENTIONAL — CONFIRMED
+**What this means:** The /whitelist page is visible in the site navbar from the moment it launches. It is not URL-only like /admin. Any visitor can navigate to it; the locked gate controls access.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D55 — Invite Code Generation Is Ahmad's Responsibility — Not Scoped Into Builder Tasks
+**Status:** INTENTIONAL — SCOPE BOUNDARY
+**What this means:** Ahmad generates invite codes himself via the admin dashboard. The admin panel code management table and the `POST /api/admin/whitelist/generate-codes` endpoint still exist and must be built — Ahmad uses them. But the Builder does not pre-seed any codes, does not specify batch sizes for Ahmad, and does not ask Ahmad how many codes to generate. That is purely Ahmad's operational decision.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D56 — Referral Link Format and Referred User Still Needs Their Own Invite Code
+**Status:** INTENTIONAL — CONFIRMED DESIGN
+**What this means:** A user's referral link is: `otiscore.vercel.app/whitelist?ref=OTI-XXXX-XXXX` where the query param is the referrer's own invite code. A referred user who clicks this link still needs their own separate invite code to access the portal — the referral link does not grant access, it only tracks attribution. The `referred_by_code` field on `whitelist_invites` is populated from the `?ref=` param when the referred user submits their own valid code.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D57 — No OTI BEP-20 Token Exists on Mainnet Yet — Builder Uses Placeholder
+**Status:** INTENTIONAL — PLACEHOLDER
+**What this means:** At the time Task 28 Part D is built, there is no real OTI BEP-20 token deployed on BNB mainnet. The `OTIWhitelistVesting.sol` mainnet deploy uses a placeholder token address. The contract must be designed so the token address can be updated by the owner after handover, before the whitelist goes live. Builder documents the placeholder clearly in the handover package.
+**Confirmed by:** Ahmad, July 30, 2026.

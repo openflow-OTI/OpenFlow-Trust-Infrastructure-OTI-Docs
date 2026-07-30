@@ -374,69 +374,186 @@ Builder confirms both pages are live at `/privacy` and `/terms`. Footer links ve
 **Depends on: Task 26 confirmed complete AND Task 28 backend endpoints live**
 **⚠️ Hard dependency: Do not start the invite-code verification flow until Ahmad confirms Task 28's `/api/verify-invite` endpoint is live on Railway. The entry gate and static structure can be built first.**
 
-Build the `/whitelist` page — the Ecosystem Whitelist Node Program portal.
+Build the `/whitelist` page — the Ecosystem Whitelist Node Program portal. This is the most professionally designed page on the entire site. Every section must look polished, premium, and trustworthy. No placeholder styling, no rough layouts. When in doubt, go more refined.
 
-**Page structure (two states):**
+**Add `/whitelist` to the site navbar from day one. (D54) It is visible to all visitors; the locked gate controls access.**
 
-**State 1 — Unauthenticated Gate (default for all visitors):**
-- A professional, locked security panel. No wallet connect buttons. No token charts. No contract addresses. No pricing visible.
-- Header text: "OTI Infrastructure Hub — Private Whitelist Node Platform"
-- Subtext: "Access is restricted to whitelisted node operators and infrastructure partners. If you have received an invite code from the OTI team, enter it below."
+---
+
+**UX FLOW — Three Sequential States (D45):**
+
+**State 1 — Locked Gate (all visitors before wallet connect):**
+- Clean, minimal, dark-background panel
+- Gate copy (exact): "Access is restricted to whitelisted users."
+- Subtext: "If you received an invite code from the OTI team, connect your wallet to continue."
+- "Connect Wallet" button — MetaMask / WalletConnect
+- Nothing else visible. No prices, no token amounts, no charts.
+
+**State 2 — Wallet Connected, Awaiting Code (after wallet connects, before code accepted):**
+- Show truncated wallet address (confirmed connected)
 - Invite code input field (format hint: OTI-XXXX-XXXX)
 - Mandatory checkbox: "I have read and agree to the [Terms & Conditions](/terms) and [Privacy Policy](/privacy) of this program." — links open in new tab
-- "Request Access" button — calls `POST /api/verify-invite` (Task 28 endpoint). Disabled until checkbox is checked.
-- If code is invalid or expired: show inline error "This code is invalid or has already been used."
-- If code is valid: transition to State 2
+- "Request Access" button — disabled until checkbox is ticked
+- If code is invalid or already used: inline error "This code is invalid or has already been used."
+- If referral `?ref=OTI-XXXX-XXXX` param is in the URL: silently pass it as `referred_by_code` in the request body — do not show this field to the user
 
-**State 2 — Authenticated Portal (after valid code + terms accepted):**
+**State 3 — Authenticated Portal (after valid code + T&C accepted):**
+Full portal. Six sections in order:
 
-- **Live DCS counter (top of page, prominent):**
-  - "Current Contribution Rate: $X.XXXXXX per OTI" — live, pulling from `protocol_state`
-  - Progress bar toward $25,000 total DCS target
-  - Sub-label: "Rate increases as allocation fills — early contributors receive more OTI per dollar"
+---
 
-- **Live ERP counter (directly below DCS, prominent):**
-  - "Current Referral Bonus: X,XXX OTI" — live, pulling from `protocol_state`
-  - Sub-label: "Referral bonus decreases as DCS fills — claim your allocation early for maximum referral value"
-  - Both counters update simultaneously: DCS rate goes UP, ERP bonus goes DOWN — this is intentional and must be visually clear
+**SECTION A — Live Protocol Counters (top of page, most prominent element on the page)**
 
-- **Allocation claim section:**
-  - "Connect your wallet to claim your Node Access Allocation"
-  - Wallet connect button (MetaMask / WalletConnect)
-  - Once connected: show wallet address (truncated), show allocation amount based on invite code
-  - "Claim Allocation" button
+- **"Current Committed Rate: $X.XXXXXX per OTI"** — live, polling `GET /api/whitelist/state` every 30 seconds (D48: "committed rate", not "contribution rate")
+  - Progress bar: DCS fill toward $25,000 target
+  - Sub-label: "Committed rate rises as allocation fills — earlier access means more OTI per dollar"
+- **"Current Referral Bonus: X,XXX OTI"** — live, same polling interval
+  - Sub-label: "Referral bonus decreases as DCS fills"
+- DCS rate goes UP, referral bonus goes DOWN. Both moving simultaneously. Design must make this urgency visually obvious.
 
-- **Ecosystem Rewards section (below claim):**
-  - "Earn additional OTI through Ecosystem Participation"
-  - Three reward cards:
-    - Referral: "Share your invite link — earn X,XXX OTI per referred operator" (X = current ERP referral rate, live)
-    - Social Post: "Post about OTI and tag @OTI — earn 1,000 OTI (pending admin verification)"
-    - Share + Follow: "Share a post and follow OTI — earn 500 OTI each (pending admin verification)"
-  - All social rewards: "Reward is credited after manual admin review — typically within 48 hours"
+---
 
-- **Vesting summary (below rewards):**
-  - "75% Node Collateral Lockup — releases linearly on a daily schedule"
+**SECTION B — Social Identity Verification (must complete before any reward can be claimed)**
+
+Two required connections. Gate copy: "Connect both accounts to unlock all rewards."
+
+1. **Telegram Phone Verification** — "Verify your Telegram account"
+   - Button triggers Telegram bot auth flow → calls `POST /api/whitelist/connect-telegram`
+   - On success: green badge "Telegram Verified ✓"
+2. **X (Twitter) Account** — "Connect your X account"
+   - OAuth connect → calls `POST /api/whitelist/connect-x`
+   - On success: green badge "X Connected: @handle ✓"
+
+Both must show green ✓ before reward cards in Section D are interactive. Once both are done this section collapses to a "Identity Verified ✓" row.
+
+---
+
+**SECTION C — Allocation Claim**
+
+- Connected wallet address shown
+- Allocation amount (from invite code API response)
+- "Claim Allocation" button → calls claim endpoint
+- Vesting summary below button:
   - "25% immediately accessible as Access Fuel"
-  - Exact lockup/vesting parameters shown here — pulled from admin-configurable values, never hardcoded
+  - "75% Node Collateral Lockup — releases linearly on a daily schedule"
+  - Exact parameters from admin-configurable values, never hardcoded
+
+---
+
+**SECTION D — Ecosystem Rewards (all require Section B complete)**
+
+Each reward card: task name, description, OTI amount (live from config), status badge (Locked / Available / Claimed ✓ / Claimed Today).
+
+**One-time tasks (once per wallet, ever):**
+
+1. **WOR Wallet Registration**
+   - "Register your wallet in the Wallet Ownership Registry"
+   - Reward: amount from config key `erp_base_wor_register_oti`
+   - "Register Now" → opens /register in new tab → after confirmed, calls `POST /api/whitelist/task/one-time` with `task_type: 'wor_register'`
+   - Status: Available → Claimed ✓
+
+2. **WOR Compromise Report**
+   - "Report a compromised wallet to the registry"
+   - Reward: amount from config key `erp_base_wor_report_oti`
+   - "Report Now" → opens /report in new tab → after submission, calls `POST /api/whitelist/task/one-time` with `task_type: 'wor_report'`
+   - Status: Available → Claimed ✓
+
+3. **Developer API Key**
+   - "Create a Developer API key"
+   - Reward: amount from config key `erp_base_dev_api_oti`
+   - "Get API Key" → opens developer portal → after key created, calls `POST /api/whitelist/task/one-time` with `task_type: 'dev_api'`
+   - Status: Available → Claimed ✓
+
+4. **Follow on X (Twitter)**
+   - "Follow OTI on X"
+   - Reward: amount from config key `erp_base_follow_x_oti` (adjusted by ERP multiplier)
+   - Auto-verified via connected X account
+   - Status: Available → Claimed ✓
+
+5. **Follow on Telegram**
+   - "Join the OTI Telegram channel"
+   - Reward: amount from config key `erp_base_follow_telegram_oti` (adjusted by ERP multiplier)
+   - Auto-verified via Telegram connection
+   - Status: Available → Claimed ✓
+
+6. **Share a Post**
+   - "Share about OTI and submit the link"
+   - Reward: amount from config key `erp_base_share_oti` (adjusted by ERP multiplier)
+   - User pastes URL → backend auto-verifies → calls `POST /api/whitelist/task/social` with `task_type: 'share'`
+   - Status: Available → Claimed ✓
+
+7. **Post + Tag OTI**
+   - "Post about OTI, tag @OTI, and submit the link"
+   - Reward: amount from config key `erp_base_post_tag_oti` (adjusted by ERP multiplier)
+   - User pastes URL → backend auto-verifies → calls `POST /api/whitelist/task/social` with `task_type: 'post_tag'`
+   - Status: Available → Claimed ✓
+
+**Referral (unlimited — one reward per referred user who activates):**
+
+8. **Refer a Node Operator**
+   - "Share your invite link — earn X OTI per operator you refer"
+   - Reward per referral: amount from config key `erp_base_referral_oti` (adjusted by ERP multiplier, shown live)
+   - Referral link displayed: `otiscore.vercel.app/whitelist?ref=[their_invite_code]` — one-click copy button
+   - Note shown: "Referred users still need their own invite code to enter the portal"
+   - Reward auto-credited when a referred user successfully activates their own code
+
+**Daily repeatable (once per calendar day UTC, no lifetime limit):**
+
+9. **Daily Wallet Score**
+   - "Score your wallet once per day to earn OTI — like daily mining"
+   - Reward: amount from config key `erp_base_daily_score_oti`
+   - "Score My Wallet" button → calls backend to run a score on the connected wallet → then calls `POST /api/whitelist/task/daily-score`
+   - Show streak count: "X-day streak 🔥"
+   - Show countdown: "Next reward available in: HH:MM:SS" (countdown to midnight UTC reset)
+   - Status: Available → Claimed Today (resets next calendar day UTC)
+
+---
+
+**SECTION E — Whitepaper Engagement**
+
+- Header: "Read the OTI Whitepaper — answer questions to earn OTI"
+- Progress display: "X / 30 questions answered · X / 10 rewards earned"
+- Link to /whitepaper — opens in new tab
+- "Start Questions" button → calls `GET /api/whitelist/whitepaper/questions` → shows 3 random multiple-choice questions
+- Each question: non-technical, about OTI's mission, use case, and vision (not about code or architecture)
+- Answer all 3 correctly → calls `POST /api/whitelist/whitepaper/submit` → reward credited, progress updated
+- One reward of `erp_base_whitepaper_round_oti` OTI per 3-question round answered correctly
+- Maximum 10 reward rounds (30 questions total) per wallet — after that: "You've completed all whitepaper rounds ✓"
+- If any answer is wrong: show which were incorrect, allow the user to retry the same round
+
+---
+
+**SECTION F — Milestones**
+
+Three milestones as a horizontal progress tracker:
+- Milestone 1: "Whitelist live — First node operators onboarded" (active when whitelist is live)
+- Milestone 2: "$5,000 committed → Liquidity layer deployed" (DCS counter triggers)
+- Milestone 3: "$15,000 committed → Secondary AMM pool live" (DCS counter triggers)
+
+---
 
 **Design requirements:**
-- Use the locked OTI color system (dark backgrounds, mint accents)
-- Both live counters must be visually prominent — they are the key urgency mechanism
-- Fully responsive (375px mobile) — Ahmad's users are primarily on mobile
+- Dark backgrounds, mint/teal accents — consistent OTI color system
+- Section A counters are the most visually dominant element on the page — design them that way
+- Everything premium: spacing, typography, card edges, badge states — no rough finishes
+- Fully responsive (375px mobile minimum) — Ahmad's users are primarily on mobile
 - No AI-sounding copy anywhere — plain, direct English only (D32)
-- Add `/whitelist` to the navbar only after Ahmad explicitly says to — for now it is URL-only, like `/admin`
+- Section B verification badges: satisfying visual completion states
+- Reward cards: consistent layout, always show reward amount, always show status
 
 **Evidence required to close:**
-Builder confirms both states render correctly. Ahmad tests a real invite code end-to-end: enters code → sees authenticated portal → both live counters loading → wallet connect works → allocation visible. Manager verifies via screenshot before closing.
+Builder confirms all three states render correctly. All nine reward cards in Section D display. Live counters in Section A load from API. Section B shows Telegram + X connection states with correct badge behavior. Daily score task shows streak count and countdown timer. Section E shows whitepaper question flow. Ahmad tests end-to-end: connect wallet → enter code → portal → Section B connects → reward cards available → daily score claimed → whitepaper questions answered. Manager verifies via screenshots before closing.
 
 ---
 
 ### TASK 28 — Backend: Whitelist System
 **Builder: Backend Builder | Priority: Runs in parallel with Frontend Tasks 23–26**
 **Can start as soon as Ahmad assigns — no dependency on frontend tasks**
-**⚠️ All vesting/lockup/reward parameters must be admin-configurable. Nothing token-related is hardcoded.**
+**⚠️ All vesting/lockup/reward parameters must be admin-configurable. Nothing token-related is hardcoded. (D43, D53)**
 
 Build the complete backend infrastructure for the Ecosystem Whitelist program: database tables, API endpoints, admin dashboard additions, and BNB Chain smart contracts.
+
+---
 
 **Part A — Database Schema (run via drizzle-kit push after Ahmad confirms on Railway):**
 
@@ -447,7 +564,7 @@ CREATE TABLE whitelist_invites (
     invite_code VARCHAR(50) UNIQUE NOT NULL,
     is_used BOOLEAN DEFAULT false,
     used_by_wallet VARCHAR(42) DEFAULT NULL,
-    referred_by_code VARCHAR(50) DEFAULT NULL,  -- the invite code that referred this user
+    referred_by_code VARCHAR(50) DEFAULT NULL,
     amount_contributed_usd NUMERIC(10, 2) DEFAULT 0.00,
     status VARCHAR(20) DEFAULT 'active',  -- 'active', 'banned', 'expired'
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -460,163 +577,397 @@ CREATE TABLE whitelist_participants (
     invite_code_used VARCHAR(50) NOT NULL,
     oti_allocated NUMERIC(20, 6) DEFAULT 0,
     oti_claimed NUMERIC(20, 6) DEFAULT 0,
+    telegram_verified BOOLEAN DEFAULT false,
+    telegram_user_id BIGINT DEFAULT NULL,
+    x_handle VARCHAR(100) DEFAULT NULL,
     joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     status VARCHAR(20) DEFAULT 'active'  -- 'active', 'banned'
 );
 
--- Social task submissions (pending admin approval)
+-- Social task submissions (auto-verified via submitted URL)
+-- task_type: 'referral', 'post_tag', 'share', 'follow_x', 'follow_telegram'
+-- status: 'auto_verified', 'rejected'  (no manual review — D49)
 CREATE TABLE whitelist_social_tasks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     wallet_address VARCHAR(42) NOT NULL,
-    task_type VARCHAR(30) NOT NULL,  -- 'referral', 'post_tag', 'share', 'follow'
-    proof_url TEXT DEFAULT NULL,  -- URL submitted by user as evidence
-    oti_reward NUMERIC(20, 6) NOT NULL,  -- amount at time of submission
-    status VARCHAR(20) DEFAULT 'pending',  -- 'pending', 'approved', 'rejected'
-    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    task_type VARCHAR(30) NOT NULL,
+    proof_url TEXT DEFAULT NULL,
+    oti_reward NUMERIC(20, 6) NOT NULL,
+    status VARCHAR(20) DEFAULT 'auto_verified',
+    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- One-time product engagement tasks (wor_register, wor_report, dev_api)
+CREATE TABLE whitelist_task_completions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    wallet_address VARCHAR(42) NOT NULL,
+    task_type VARCHAR(30) NOT NULL,  -- 'wor_register', 'wor_report', 'dev_api'
+    oti_reward NUMERIC(20, 6) NOT NULL,
+    completed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE (wallet_address, task_type)  -- one-time per wallet per task
+);
+
+-- Daily wallet scoring rewards (once per calendar day UTC per wallet)
+CREATE TABLE whitelist_daily_scores (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    wallet_address VARCHAR(42) NOT NULL,
+    score_date DATE NOT NULL,
+    oti_reward NUMERIC(20, 6) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE (wallet_address, score_date)
+);
+
+-- Whitepaper questions pool (100 non-technical questions, admin-managed)
+CREATE TABLE whitelist_whitepaper_questions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    question_text TEXT NOT NULL,
+    option_a TEXT NOT NULL,
+    option_b TEXT NOT NULL,
+    option_c TEXT NOT NULL,
+    option_d TEXT NOT NULL,
+    correct_option CHAR(1) NOT NULL,  -- 'a', 'b', 'c', or 'd'
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Whitepaper progress per wallet (max 10 reward rounds = 30 questions)
+CREATE TABLE whitelist_whitepaper_progress (
+    wallet_address VARCHAR(42) PRIMARY KEY,
+    questions_answered INT DEFAULT 0,
+    rewards_claimed INT DEFAULT 0,  -- each reward = one 3-question round
+    last_round_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
+);
+
+-- Session fingerprinting for multi-account detection (D58)
+CREATE TABLE whitelist_fingerprints (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    wallet_address VARCHAR(42) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,           -- IPv4 or IPv6
+    fingerprint_hash VARCHAR(64) NOT NULL,     -- SHA-256 of UA + Accept-Language + screen data
+    user_agent TEXT DEFAULT NULL,              -- raw UA stored for admin review
+    event_type VARCHAR(30) NOT NULL,           -- 'register', 'connect_telegram', 'connect_x', 'claim_reward'
+    flagged BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Flagged account log (populated automatically by fingerprint checks)
+CREATE TABLE whitelist_flags (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    wallet_address VARCHAR(42) NOT NULL,
+    flag_reason VARCHAR(100) NOT NULL,         -- e.g. 'ip_collision:3_wallets', 'fingerprint_collision'
+    related_wallets TEXT[] DEFAULT '{}',       -- other wallets sharing the same IP/fingerprint
+    status VARCHAR(20) DEFAULT 'open',         -- 'open', 'reviewed', 'cleared', 'banned'
+    flagged_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     reviewed_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
--- Protocol global state (single-row table — serves frontend live counters)
+-- Protocol global state (single-row — serves frontend live counters)
 CREATE TABLE protocol_state (
     id INT PRIMARY KEY DEFAULT 1,
-    dcs_total_usd_committed NUMERIC(10, 2) DEFAULT 0.00,  -- DCS: total USD contributed so far
-    dcs_oti_remaining NUMERIC(20, 6) DEFAULT 7000000.00,  -- DCS: OTI remaining in sub-pool
-    total_slots_claimed INT DEFAULT 0,  -- total whitelist slots used
+    dcs_total_usd_committed NUMERIC(10, 2) DEFAULT 0.00,
+    dcs_oti_remaining NUMERIC(20, 6) DEFAULT 7000000.00,
+    total_slots_claimed INT DEFAULT 0,
     CONSTRAINT single_row CHECK (id = 1)
 );
 
--- Admin-configurable whitelist parameters (key-value store — nothing token-related is hardcoded)
+-- Admin-configurable parameters (key-value — nothing hardcoded)
 CREATE TABLE whitelist_config (
     key VARCHAR(100) PRIMARY KEY,
     value TEXT NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
--- Seed with default values:
--- INSERT INTO whitelist_config VALUES ('dcs_total_oti', '7000000', NOW());
--- INSERT INTO whitelist_config VALUES ('dcs_target_usd', '25000', NOW());
--- INSERT INTO whitelist_config VALUES ('dcs_start_rate', '0.001190', NOW());
--- INSERT INTO whitelist_config VALUES ('dcs_end_rate', '0.005952', NOW());
--- INSERT INTO whitelist_config VALUES ('erp_total_oti', '1750000', NOW());
--- INSERT INTO whitelist_config VALUES ('erp_base_referral_oti', '3000', NOW());
--- INSERT INTO whitelist_config VALUES ('erp_base_post_tag_oti', '1000', NOW());
--- INSERT INTO whitelist_config VALUES ('erp_base_share_oti', '500', NOW());
--- INSERT INTO whitelist_config VALUES ('erp_base_follow_oti', '500', NOW());
--- INSERT INTO whitelist_config VALUES ('vesting_lockup_pct', '75', NOW());
--- INSERT INTO whitelist_config VALUES ('max_whitelist_slots', '10000', NOW());
 ```
+
+Seed `whitelist_config` with these defaults:
+```sql
+INSERT INTO whitelist_config VALUES
+  ('dcs_total_oti',               '7000000',  NOW()),
+  ('dcs_target_usd',              '25000',    NOW()),
+  ('dcs_start_rate',              '0.001190', NOW()),
+  ('dcs_end_rate',                '0.005952', NOW()),
+  ('erp_total_oti',               '1750000',  NOW()),
+  ('erp_base_referral_oti',       '3000',     NOW()),
+  ('erp_base_post_tag_oti',       '1000',     NOW()),
+  ('erp_base_share_oti',          '500',      NOW()),
+  ('erp_base_follow_x_oti',       '500',      NOW()),
+  ('erp_base_follow_telegram_oti','500',       NOW()),
+  ('erp_base_daily_score_oti',    '100',      NOW()),
+  ('erp_base_wor_register_oti',   '500',      NOW()),
+  ('erp_base_wor_report_oti',     '300',      NOW()),
+  ('erp_base_dev_api_oti',        '500',      NOW()),
+  ('erp_base_whitepaper_round_oti','200',     NOW()),
+  ('vesting_lockup_pct',          '75',       NOW()),
+  ('max_whitelist_slots',         '0',        NOW()),
+  ('flag_ip_threshold',           '3',        NOW()),
+  ('flag_fingerprint_threshold',  '2',        NOW());
+  -- max_whitelist_slots: 0 = unlimited. Ahmad sets a cap via admin dashboard when ready. (D53)
+  -- flag_ip_threshold: flag all wallets sharing the same IP if count >= this value
+  -- flag_fingerprint_threshold: flag all wallets sharing the same fingerprint hash if count >= this value
+```
+
+Seed `protocol_state`:
+```sql
+INSERT INTO protocol_state (id) VALUES (1);
+```
+
+---
 
 **Part B — API Endpoints (new file: `src/routes/whitelist.ts`):**
 
-`POST /api/verify-invite`
-- Body: `{ invite_code, wallet_address, terms_accepted: true }`
-- Validation: `terms_accepted` must be `true` — reject with 400 if not
-- Look up `invite_code` in `whitelist_invites` — reject with 404 if not found, 400 if already used or status ≠ 'active'
-- Check `whitelist_participants` for `wallet_address` — reject with 409 if already registered
-- Check `total_slots_claimed` in `protocol_state` against `max_whitelist_slots` in `whitelist_config` — reject with 410 if full
+**`POST /api/verify-invite`**
+- Body: `{ invite_code, wallet_address, terms_accepted: true, referred_by_code?, fingerprint_data? }`
+  - `fingerprint_data`: optional object from frontend — `{ screen_resolution, timezone_offset, canvas_hash }` — used to build the fingerprint hash server-side
+- `terms_accepted` must be `true` — 400 if not
+- Look up `invite_code` in `whitelist_invites` — 404 if not found, 400 if used or status ≠ 'active'
+- Check `whitelist_participants` for `wallet_address` — 409 if already registered
+- Check `max_whitelist_slots` from `whitelist_config`: if value > 0 and `total_slots_claimed` >= that value → 410 (full). If value = 0: no cap, proceed always.
+- **Fingerprint capture and collision check (D58):**
+  - Build `fingerprint_hash` = SHA-256 of `(ip_address + user_agent + accept_language + fingerprint_data)`
+  - Insert into `whitelist_fingerprints` (wallet_address, ip_address, fingerprint_hash, user_agent, event_type='register')
+  - Count distinct wallets in `whitelist_fingerprints` with same `ip_address` → if >= `flag_ip_threshold` config value: insert flag row into `whitelist_flags` for all involved wallets, reason = `'ip_collision'`
+  - Count distinct wallets with same `fingerprint_hash` → if >= `flag_fingerprint_threshold`: insert flag rows for all involved wallets, reason = `'fingerprint_collision'`
+  - Flagging does NOT block registration — it only surfaces to admin. Never tell the user they were flagged.
 - On success:
   - Mark `whitelist_invites.is_used = true`, set `used_by_wallet`
-  - Insert row into `whitelist_participants`
+  - If `referred_by_code` in body (from `?ref=` URL param): set `whitelist_invites.referred_by_code`
+  - Insert into `whitelist_participants`
   - Increment `protocol_state.total_slots_claimed`
-  - If `referred_by_code` is set on the invite, queue a referral reward for the referring wallet (insert into `whitelist_social_tasks` with `task_type = 'referral'`, status = 'approved' — referrals are auto-approved)
-  - Return `{ success: true, wallet_address, oti_allocated, current_dcs_rate, current_erp_referral_bonus }`
+  - If invite has `referred_by_code` set: auto-credit referral reward to referring wallet — insert into `whitelist_social_tasks` (task_type='referral', status='auto_verified'), add reward to referring wallet's `oti_allocated`
+  - Return `{ success: true, wallet_address, oti_allocated, current_dcs_committed_rate, current_erp_referral_bonus }`
 
-`GET /api/whitelist/state`
+**`GET /api/whitelist/state`**
 - Public endpoint — no auth
-- Returns live values from `protocol_state` + current DCS rate + current ERP bonus values computed from `whitelist_config`
-- DCS current rate formula: `start_rate + (end_rate - start_rate) × ((dcs_total_oti - dcs_oti_remaining) / dcs_total_oti)`
-- ERP current referral bonus formula: `base_referral_oti × (dcs_oti_remaining / dcs_total_oti)`
-- Frontend polls this every 30 seconds for live counter updates
+- Returns live `protocol_state` + computed values from `whitelist_config`:
+  - DCS committed rate: `dcs_start_rate + (dcs_end_rate - dcs_start_rate) × ((dcs_total_oti - dcs_oti_remaining) / dcs_total_oti)`
+  - ERP referral bonus: `erp_base_referral_oti × (dcs_oti_remaining / dcs_total_oti)`
+  - All current `erp_base_*` values (for reward card display)
+- Frontend polls every 30 seconds
 
-`GET /api/whitelist/participant/:wallet_address`
-- Protected by existing `apiKeyAuth` middleware (or open — Ahmad decides)
-- Returns participant record if exists, 404 if not
+**`GET /api/whitelist/participant/:wallet_address`**
+- Returns full participant record including telegram_verified, x_handle, oti_allocated, oti_claimed
 
-**Part C — Admin Dashboard Additions (new tab: "Whitelist" inside the existing admin panel):**
+**`GET /api/whitelist/tasks/:wallet_address`**
+- Returns completion status for every task type for this wallet:
+  - One-time tasks: completed or not (from `whitelist_task_completions`)
+  - Social tasks: completed or not (from `whitelist_social_tasks`)
+  - Daily score: whether scored today + current streak count (from `whitelist_daily_scores`)
+  - Whitepaper progress: questions_answered, rewards_claimed (from `whitelist_whitepaper_progress`)
 
-The admin panel already exists (Task 9). Add a new "Whitelist" tab with four sub-views:
+**`POST /api/whitelist/connect-telegram`**
+- Body: Telegram login widget auth data (hash, id, first_name, username, auth_date)
+- Verify hash using Telegram bot token (HMAC-SHA256 per Telegram docs)
+- Check `auth_date` not older than 15 minutes — 401 if expired
+- Update `whitelist_participants`: set `telegram_verified = true`, `telegram_user_id = id`
+- Reject if telegram_user_id already used by a different wallet — 409
+- Return `{ success: true }`
 
-1. **Batch Code Generator:**
-   - Input: number of codes to generate (default 10, max 500)
-   - Button: "Generate Codes"
-   - Backend endpoint: `POST /api/admin/whitelist/generate-codes` — generates N unique `OTI-XXXX-XXXX` format codes (uppercase alphanumeric, 4+4 chars), inserts into `whitelist_invites` with status 'active'
-   - After generation: display the generated codes in a copyable list
+**`POST /api/whitelist/connect-x`**
+- Body: X OAuth callback data
+- Complete OAuth 2.0 flow, retrieve X handle
+- Update `whitelist_participants`: set `x_handle`
+- Reject if x_handle already used by a different wallet — 409
+- Return `{ success: true, x_handle }`
 
-2. **Code Management Panel:**
+**Reward gate helper (internal — used by all reward endpoints below):**
+Before crediting any reward, check in this order:
+1. `whitelist_participants.status = 'active'` — 403 `{ error: 'banned' }` if not
+2. `whitelist_participants.telegram_verified = true` — 403 `{ error: 'telegram_required' }` if not
+3. `whitelist_participants.x_handle IS NOT NULL` — 403 `{ error: 'x_required' }` if not
+4. Check `whitelist_flags` for any open flag on this wallet — if found, still allow the claim but log the fingerprint event again (do NOT block silently — flagging is for Ahmad's review, not for auto-blocking)
+- Also on every reward claim: insert a row into `whitelist_fingerprints` (event_type='claim_reward') and re-run the IP/fingerprint collision check. If new collisions are found, insert new flag rows. Ahmad reviews these in the admin panel.
+
+**`POST /api/whitelist/task/daily-score`**
+- Runs reward gate check
+- Check `whitelist_daily_scores` for `(wallet_address, CURRENT_DATE UTC)` — 409 if already claimed today
+- Trigger scoring API call for `wallet_address` (call internal score endpoint)
+- Insert row into `whitelist_daily_scores` with `oti_reward` from config key `erp_base_daily_score_oti`
+- Add reward to `whitelist_participants.oti_allocated`
+- Return `{ success: true, oti_reward, streak_days }` where `streak_days` = consecutive daily entries ending today
+
+**`POST /api/whitelist/task/one-time`**
+- Body: `{ task_type }` — one of: `'wor_register'`, `'wor_report'`, `'dev_api'`
+- Runs reward gate check
+- Check `whitelist_task_completions` for `(wallet_address, task_type)` — 409 if already completed
+- Verify the underlying action occurred:
+  - `wor_register`: check `wallet_ownership` table for this wallet (existing WOR table from Phase 2)
+  - `wor_report`: check `compromised_wallets` table for a report by this wallet (existing table from Phase 2)
+  - `dev_api`: check `subscriptions` table for an active API key owned by this wallet
+- If action not verified: 422 with clear message explaining what the user needs to do first
+- Insert into `whitelist_task_completions`, add reward to `oti_allocated`
+- Return `{ success: true, oti_reward }`
+
+**`POST /api/whitelist/task/social`**
+- Body: `{ task_type, proof_url }` — task_type one of: `'post_tag'`, `'share'`
+- Runs reward gate check
+- Check `whitelist_social_tasks` for existing completed entry for this wallet + task_type — 409 if already done
+- Auto-verify `proof_url`: check URL is reachable (HTTP HEAD request, expect 200) — 422 if unreachable
+- Apply ERP multiplier: `reward = base_reward × (dcs_oti_remaining / dcs_total_oti)`
+- Insert into `whitelist_social_tasks` (status='auto_verified'), add reward to `oti_allocated`
+- Return `{ success: true, oti_reward }`
+
+**`GET /api/whitelist/whitepaper/questions`**
+- Requires wallet_address param or auth header (wallet must be a registered participant)
+- Runs reward gate check
+- Check `whitelist_whitepaper_progress`: if `questions_answered >= 30` → 410 (all rounds complete)
+- Select 3 random active questions from `whitelist_whitepaper_questions` that this wallet has not yet answered
+- Track which question IDs were served (store temporarily — session or signed token)
+- Return `{ questions: [{ id, question_text, option_a, option_b, option_c, option_d }] }` — do NOT include correct_option
+
+**`POST /api/whitelist/whitepaper/submit`**
+- Body: `{ answers: [{ question_id, selected_option }] }` (3 items)
+- Runs reward gate check
+- Verify answers match the served questions for this wallet (anti-cheat)
+- Check all 3 answers against `correct_option` in DB
+- If any wrong: return `{ success: false, incorrect: [question_ids] }` — allow retry of same round
+- If all 3 correct:
+  - Update `whitelist_whitepaper_progress`: increment `questions_answered` by 3, `rewards_claimed` by 1
+  - Add `erp_base_whitepaper_round_oti` to `whitelist_participants.oti_allocated`
+  - Return `{ success: true, oti_reward, questions_answered, rewards_claimed }`
+
+---
+
+**Part C — Admin Dashboard Additions (new "Whitelist" tab in existing admin panel):**
+
+Three sub-views (Social Task Review Queue is removed — tasks are auto-verified, D49):
+
+1. **Code Management Panel**
+   - `POST /api/admin/whitelist/generate-codes` — generates N unique `OTI-XXXX-XXXX` codes (uppercase alphanumeric, 4+4), inserts into `whitelist_invites` with status 'active'. No maximum N limit (D53).
    - Table: all codes, status, used_by_wallet (truncated), amount_contributed_usd, created_at
    - Filter by status (active / used / banned / expired)
-   - Per-row "Ban" button: `PATCH /api/admin/whitelist/codes/:id` — sets status to 'banned'
+   - Per-row "Ban" button: `PATCH /api/admin/whitelist/codes/:id` → status = 'banned'
+   - Per-row "Expire" button: → status = 'expired'
 
-3. **Social Task Review Queue:**
-   - Table: all pending `whitelist_social_tasks` rows — wallet, task_type, proof_url (clickable), oti_reward, submitted_at
-   - Per-row "Approve" and "Reject" buttons — `PATCH /api/admin/whitelist/social-tasks/:id`
-   - On approve: mark status = 'approved', update `whitelist_participants.oti_allocated` for that wallet
-   - On reject: mark status = 'rejected', no allocation change
+2. **Whitepaper Questions Manager**
+   - Table: all questions with is_active toggle
+   - "Add Question" form: question_text, option_a–d, correct_option (a/b/c/d), is_active
+   - `POST /api/admin/whitelist/questions` — add question
+   - `PATCH /api/admin/whitelist/questions/:id` — edit or toggle active
+   - `DELETE /api/admin/whitelist/questions/:id` — remove question
+   - Pre-seed 100 non-technical questions at deploy time (see question list below)
 
-4. **Protocol State Override:**
-   - Input fields for each `whitelist_config` key (prefilled with current values)
-   - "Save" button: `PUT /api/admin/whitelist/config` — updates one or more config keys
-   - This is how Ahmad adjusts all parameters — vesting %, reward amounts, DCS rates, slot count — without a code change
+3. **Flagged Accounts Panel**
+   - Table: all rows from `whitelist_flags` — wallet_address, flag_reason, related_wallets, flagged_at, status
+   - Filter by status (open / reviewed / cleared / banned)
+   - Per-row actions:
+     - "Ban Wallet" → sets `whitelist_participants.status = 'banned'` for that wallet + all related_wallets listed on the flag, sets flag status = 'banned'
+     - "Clear Flag" → sets flag status = 'cleared' (false positive — no action taken)
+     - "Mark Reviewed" → sets flag status = 'reviewed' (Ahmad looked at it, no action yet)
+   - Show IP and fingerprint hash on flag detail expand (for Ahmad to assess manually)
+   - `GET /api/admin/whitelist/flags` — returns all flags, filterable by status
+   - `PATCH /api/admin/whitelist/flags/:id` — updates flag status and optionally bans related wallets
+
+4. **Protocol Config Override**
+   - Input field for every `whitelist_config` key, prefilled with current DB value
+   - "Save" button: `PUT /api/admin/whitelist/config` — updates any set of config keys
+   - This is how Ahmad adjusts all parameters (reward amounts, DCS rates, vesting %, slot cap, flagging thresholds) without a code deploy
+   - Include `max_whitelist_slots` — label: "Max whitelist slots (0 = unlimited)"
+   - Include `flag_ip_threshold` and `flag_fingerprint_threshold` — label clearly what each controls
+
+**100 Whitepaper Questions (seed data — non-technical, about OTI's mission and use case):**
+
+Builder writes 100 questions in this format and seeds them via a migration script or seed file. Questions must be readable by anyone — no blockchain jargon, no code references. Topics: what OTI does, why trust scoring matters for crypto, what the WOR registry is for, what node operators do, why OTI's scoring is on-chain, what wallets are, how OTI helps exchanges, why ecosystem participation matters, what the whitepaper covers. Example questions:
+
+```
+Q: What is the main purpose of OTI?
+a) To create a new cryptocurrency exchange
+b) To provide a trust score for cryptocurrency wallets  ✓
+c) To replace existing blockchain networks
+d) To offer crypto lending services
+
+Q: What does WOR stand for in the OTI ecosystem?
+a) Wallet Ownership Registry  ✓
+b) Web3 Operations Relay
+c) Wallet Operation Record
+d) Web Ownership Rights
+
+Q: Why do exchanges use wallet trust scores?
+a) To slow down transaction speeds
+b) To identify and reduce risk from suspicious wallets  ✓
+c) To charge higher fees
+d) To limit the number of wallets on their platform
+```
+
+Builder writes all 100 in this format and inserts them. They do not need to be exhaustive — they just need to verify the user read the whitepaper and understands the product at a high level.
+
+---
 
 **Part D — Smart Contracts (BNB Testnet → Mainnet — Builder handles everything, Ahmad not involved until workspace deletion):**
 
-Ahmad is not involved at any point during this part. Builder generates all keys, deploys to testnet, tests fully, then deploys to mainnet — all without Ahmad. At close, deliver the complete handover package to the Manager. The Manager relays it to Ahmad. Ahmad's only action is to receive the package and delete the Builder workspace. See D42 in DECISIONS.md.
+Ahmad is not involved at any point during this part. Builder generates all keys, deploys to testnet, tests fully, deploys to mainnet — all without Ahmad. At close, deliver the complete handover package to the Manager. The Manager relays it to Ahmad. Ahmad's only action is to receive the package and delete the Builder workspace. See D42 in DECISIONS.md.
 
 **Step 1 — Generate deployer wallet:**
-- Use ethers.js inside the workspace: `ethers.Wallet.createRandom()` — log the address and private key once, save them securely as env vars (`DEPLOYER_ADDRESS`, `DEPLOYER_PRIVATE_KEY`) in the Replit workspace
-- Do NOT hardcode keys in any file — env vars only
-- This wallet is the permanent mainnet deployer/owner — Ahmad takes ownership at handover
+```js
+const { ethers } = require("ethers");
+const wallet = ethers.Wallet.createRandom();
+console.log("Address:", wallet.address);
+console.log("Private key:", wallet.privateKey);
+```
+Save as Replit env vars: `DEPLOYER_ADDRESS`, `DEPLOYER_PRIVATE_KEY`. Never put keys in any file.
+This wallet is the permanent mainnet deployer/owner — Ahmad takes ownership at handover.
 
 **Step 2 — Fund the deployer wallet:**
-- Testnet: BNB testnet faucet https://testnet.bnbchain.org/faucet-smart — free
-- Mainnet: Builder funds from their own wallet with enough BNB to cover contract deployment gas (~0.01–0.05 BNB). Ahmad reimburses at handover.
-- Confirm balance on both networks before proceeding.
+- Testnet: https://testnet.bnbchain.org/faucet-smart → paste DEPLOYER_ADDRESS (free)
+- Mainnet: Builder funds from their own wallet (~0.01–0.05 BNB). Ahmad reimburses at handover.
+- Confirm balances on both networks before proceeding.
 
-**Step 3 — Deploy mock OTI BEP-20 token (testnet only):**
-- A simple standard ERC-20/BEP-20 contract: `MockOTI.sol`
-- `constructor(uint256 initialSupply)` — mint `initialSupply` to deployer address (use 35,000,000 × 10^18)
-- Deploy to BNB testnet (chainId 97) only — this mock is never deployed to mainnet
-- Save the deployed contract address as `MOCK_OTI_ADDRESS`
+**Step 3 — Deploy mock OTI BEP-20 token (`MockOTI.sol`) — testnet only:**
+- Standard ERC-20, `constructor(uint256 initialSupply)` mints to deployer
+- Use `35000000 * 10**18` as initial supply
+- Deploy to BNB testnet (chainId 97) only
+- Save deployed address as `MOCK_OTI_ADDRESS`
 
-**Step 4 — Deploy OTIWhitelistVesting.sol to testnet first, then mainnet:**
-- Language: Solidity 0.8.x
-- Testnet deploy (chainId 97): owner = DEPLOYER_ADDRESS, token = MOCK_OTI_ADDRESS
-- Mainnet deploy (chainId 56): owner = DEPLOYER_ADDRESS, token = real OTI BEP-20 address (if not yet available, use a placeholder and document clearly — must be updated before mainnet goes live)
+**Step 4 — Deploy `OTIWhitelistVesting.sol` to testnet first, then mainnet:**
+- Testnet (chainId 97): owner = DEPLOYER_ADDRESS, token = MOCK_OTI_ADDRESS
+- Mainnet (chainId 56): owner = DEPLOYER_ADDRESS, token = placeholder address (D57 — no real OTI BEP-20 exists yet; use address(0) or a clearly documented placeholder; contract must include `setTokenAddress(address)` owner-only function so Ahmad can update it after handover before the whitelist goes live)
 - Contract functions:
-  - `vest(address participant, uint256 total_oti_amount)` — owner-only. Records schedule: 25% immediate, 75% linear daily over `vesting_duration_days` (admin-settable)
+  - `vest(address participant, uint256 total_oti_amount)` — owner-only. 25% immediate, 75% linear daily over `vesting_duration_days`
   - `claimVested(address participant)` — callable by participant. Transfers unlocked OTI.
-  - `setVestingDuration(uint256 days_)` — owner-only. Changes duration for future vests (not retroactive).
-  - `getVestingStatus(address participant)` — view. Returns `{ total_allocated, total_claimed, currently_claimable, vesting_start, vesting_end }`
+  - `setVestingDuration(uint256 days_)` — owner-only. Future vests only, not retroactive.
+  - `setTokenAddress(address token_)` — owner-only. Allows updating the OTI token address after deployment (required for mainnet — see D57).
+  - `getVestingStatus(address participant)` — view. Returns total_allocated, total_claimed, currently_claimable, vesting_start, vesting_end
   - `banParticipant(address participant)` — owner-only. Freezes remaining locked tokens.
-- After testnet deploy: call `MockOTI.approve(vestingContractAddress, largeAmount)` so the vesting contract can transfer tokens on behalf of the deployer
-- Verify both contracts on BscScan (testnet + mainnet) after each deploy
+- After testnet deploy: call `MockOTI.approve(vestingContractAddress, large_amount)` so vesting contract can move tokens
+- Verify all contracts on BscScan (testnet + mainnet) after each deploy
 
 **Step 5 — End-to-end test on testnet:**
-- Call `vest(testWalletAddress, 1000 * 10^18)` — confirm 250 OTI immediately claimable (25%)
-- Advance testnet time (Hardhat `evm_increaseTime`) or wait — confirm linear daily unlock works
-- Call `claimVested(testWalletAddress)` — confirm OTI transferred to test wallet
-- Call `banParticipant(testWalletAddress)` — confirm remaining locked tokens frozen
+- `vest(testWallet, 1000 * 10^18)` → confirm 250 OTI immediately claimable (25%)
+- Advance testnet time or wait → confirm linear daily unlock works
+- `claimVested(testWallet)` → confirm OTI transferred
+- `banParticipant(testWallet)` → confirm remaining tokens frozen
 - Paste raw output as evidence before proceeding to mainnet
 
-**Step 6 — Handover package to Manager (deliver in one message at close):**
+**Step 6 — Handover package (deliver to Manager in one message at close):**
 Manager relays to Ahmad. Do not send directly to Ahmad.
-- `DEPLOYER_ADDRESS` — the deployer/owner wallet address (controls both deployed contracts)
-- `DEPLOYER_PRIVATE_KEY` — the private key. Ahmad saves this immediately and securely.
-- `MOCK_OTI_ADDRESS` — mock BEP-20 OTI token contract address (BNB testnet only)
-- `VESTING_CONTRACT_ADDRESS_TESTNET` — OTIWhitelistVesting on BNB testnet
-- `VESTING_CONTRACT_ADDRESS_MAINNET` — OTIWhitelistVesting on BNB mainnet
+- `DEPLOYER_ADDRESS`
+- `DEPLOYER_PRIVATE_KEY` — Ahmad saves this immediately and securely
+- `MOCK_OTI_ADDRESS` (BNB testnet only)
+- `VESTING_CONTRACT_ADDRESS_TESTNET`
+- `VESTING_CONTRACT_ADDRESS_MAINNET`
 - BscScan testnet + mainnet links for all contracts
-- Gas cost incurred (BNB amount) — for Ahmad to reimburse the Builder
+- Note: "Mainnet vesting contract deployed with placeholder token address. Call setTokenAddress(real_OTI_address) after OTI BEP-20 is deployed before going live."
+- Gas cost incurred (BNB amount) — for Ahmad to reimburse
 
-Ahmad saves the keys and addresses, then deletes the Builder workspace. All conversation history and temp credentials are gone.
+Ahmad saves the keys and addresses, then deletes this workspace.
+
+---
 
 **Evidence required to close:**
 - All DB tables created on Railway (Ahmad runs drizzle-kit push after Builder deploys)
-- `/api/verify-invite` tested: valid code → success response with JSON; used code → 400; missing → 404
-- `/api/whitelist/state` returns correct computed DCS rate and ERP bonus values
-- Admin Whitelist tab: code generator works, code table shows rows, social task queue renders, config save works
-- BNB testnet contracts deployed and verified — Builder pastes both BscScan testnet links
-- BNB mainnet vesting contract deployed and verified — Builder pastes BscScan mainnet link
-- vest() and claimVested() end-to-end test on testnet confirmed with raw output
+- `/api/verify-invite`: valid code → success JSON; used code → 400; missing → 404 (paste raw responses)
+- `/api/whitelist/state`: returns computed DCS committed rate and all ERP bonus values
+- `/api/whitelist/connect-telegram`: Telegram auth verified, participant updated
+- `/api/whitelist/connect-x`: X OAuth completes, x_handle stored
+- `/api/whitelist/task/daily-score`: first call succeeds, second call same day returns 409
+- `/api/whitelist/task/one-time`: returns 422 if underlying action not done, succeeds after action, returns 409 on duplicate
+- `/api/whitelist/task/social`: auto-verifies URL, credits reward, 409 on duplicate
+- `/api/whitelist/whitepaper/questions`: returns 3 questions without correct_option
+- `/api/whitelist/whitepaper/submit`: correct answers → reward credited; wrong answers → returns which failed
+- Admin Whitelist tab: code management table shows rows, ban/expire works, questions CRUD works, config save updates DB
+- 100 whitepaper questions seeded and visible in admin
+- BNB testnet contracts deployed and verified — paste BscScan testnet links
+- BNB mainnet vesting contract deployed and verified — paste BscScan mainnet link
+- vest() and claimVested() test on testnet confirmed with raw output
+- setTokenAddress() function present and callable by owner on mainnet contract
 - Full handover package delivered to Manager
 - Manager verifies all evidence and relays package to Ahmad before closing
 
