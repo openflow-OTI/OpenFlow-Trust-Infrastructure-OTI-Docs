@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 30, 2026 (session 22 — OTI Economics confirmed and fully documented: 35M fixed supply, full allocation breakdown, dual bonding curve DCS + ERP parameters confirmed. TOKENOMICS.md fully rewritten as "OTI Economics." All docs updated. Phase 0 task prompts written: Tasks 23–28.)
+> Last updated: July 30, 2026 (session 23 — Whitelist system fully redesigned: expanded ERP task system (9 reward types including daily scoring, WOR actions, dev API, whitepaper rounds), wallet-first UX flow, Telegram + X identity gates, session fingerprinting + multi-account detection, all manual admin review replaced by auto-verification. D43–D58 logged. Tasks 27 and 28 fully rewritten in TASKS.md and BACKEND_TASKS.md.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, DECISIONS.md, TASKS.md, and TOKENOMICS.md in that order.**
 > **D16 (evidence rule): no signal value or test result may be estimated or guessed — only real on-chain data. A Builder's "verified" claim is NOT evidence. Ask: which wallet, which raw API response, which psql output.**
 
@@ -118,6 +118,22 @@ The backend repo stays private (scoring algorithm IP + sensitive infrastructure)
 | Frontend GitHub repo needs cleanup of internal workspace files | Session 21 |
 | Developer API limits set by Ahmad via admin panel only | Session 21 |
 | Private sale domain: /whitelist on existing Vercel project | Session 21 |
+| All ERP reward amounts admin-configurable — no hardcoded amounts anywhere | D43, Session 23 |
+| ERP expanded: 9 task types including daily scoring, WOR, dev API, whitepaper rounds | D44, Session 23 |
+| /whitelist UX: wallet connect → invite code → portal (wallet first) | D45, Session 23 |
+| Developer API signup is wallet-only — no email | D46, Session 23 |
+| Whitelist gate copy: "Access is restricted to whitelisted users." only | D47, Session 23 |
+| "Committed rate" not "contribution rate" everywhere | D48, Session 23 |
+| Social tasks auto-verified via URL — no manual admin review queue | D49, Session 23 |
+| Telegram phone verification required before any reward claim | D50, Session 23 |
+| X (Twitter) account connection required before any reward claim | D51, Session 23 |
+| No face verification | D52, Session 23 |
+| No hardcoded limits — all caps admin-configurable, 0 = unlimited | D53, Session 23 |
+| /whitelist in navbar from day one | D54, Session 23 |
+| Invite code generation is Ahmad's responsibility | D55, Session 23 |
+| Referral link format: otiscore.vercel.app/whitelist?ref=OTI-XXXX-XXXX | D56, Session 23 |
+| No OTI BEP-20 on mainnet yet — placeholder in vesting contract, setTokenAddress() required | D57, Session 23 |
+| Session fingerprinting + multi-account detection — IP + fingerprint hash collision flagging | D58, Session 23 |
 
 ---
 
@@ -316,8 +332,8 @@ New pages at `/privacy` and `/terms`. Verbatim text from Ahmad — do not rewrit
 **Task 27 — Frontend Builder: /whitelist Page**
 Entry gate (locked default) + authenticated portal with live DCS/ERP dual counters, invite code input, terms checkbox, wallet connect, allocation display, ecosystem rewards section. Depends on Task 28 backend endpoints being live.
 
-**Task 28 — Backend Builder: Whitelist System**
-DB tables (whitelist_invites, whitelist_participants, whitelist_social_tasks, protocol_state, whitelist_config), `/api/verify-invite` endpoint, `/api/whitelist/state` live counters endpoint, admin Whitelist tab (batch code generator, code management, social task review, config override), BNB testnet smart contract. All parameters admin-configurable. Can run in parallel with Frontend Tasks 23–26.
+**Task 28 — Backend Builder: Whitelist System (fully redesigned — session 23)**
+10 DB tables: whitelist_invites, whitelist_participants, whitelist_social_tasks, whitelist_task_completions, whitelist_daily_scores, whitelist_whitepaper_questions, whitelist_whitepaper_progress, whitelist_fingerprints, whitelist_flags, protocol_state + whitelist_config key-value store. Full endpoint set: verify-invite, connect-telegram, connect-x, daily-score, one-time tasks, social auto-verify, whitepaper questions + submit. Admin tab: code management, whitepaper questions CRUD, flagged accounts panel, protocol config. BNB testnet + mainnet vesting contract with setTokenAddress(). Session fingerprinting + multi-account detection. All parameters admin-configurable. Can run in parallel with Frontend Tasks 23–26. Task 27 depends on Task 28 endpoints being live.
 
 ---
 
@@ -329,7 +345,7 @@ DB tables (whitelist_invites, whitelist_participants, whitelist_social_tasks, pr
 4. **Builder file copies never auto-sync.** Manager must explicitly tell each Builder to update their own TASKS.md/FIXES.md copy every time status changes.
 5. **Before ending any session:** Update this file and TASKS.md. If a fix was closed, update FIXES.md. Never close a session with stale docs.
 6. **Fixes never get task numbers.** FIXES.md only. BF## for backend, FF## for frontend.
-7. **Next BF number: BF42. Next FF number: FF28. Next Task number: Task 29** (Tasks 23–28 are written and queued in TASKS.md)
+7. **Next BF number: BF42. Next FF number: FF28. Next Task number: Task 29** (Tasks 23–28 fully written and queued in TASKS.md — Tasks 27 and 28 fully redesigned session 23)
 8. **No AI exposure (D32).** All public-facing content must be reviewed before going live.
 9. **Builders do not push to GitHub.** Ahmad pushes only.
 10. **Ahmad sets all API limits and rate limits himself via admin panel.** Manager and Builders never set or hardcode amounts.
