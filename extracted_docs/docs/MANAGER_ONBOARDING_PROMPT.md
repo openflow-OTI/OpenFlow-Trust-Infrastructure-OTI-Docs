@@ -1,5 +1,5 @@
 # New Manager Onboarding Prompt
-> Updated: July 29, 2026 (session 21 — Full whitelist pivot, OTI Economics confirmed, bonding curve confirmed. Previous version was stale.)
+> Updated: July 30, 2026 (session 22 — Phase 0 task prompts fully written: Tasks 23–28. All docs current. Handover to new Manager account.)
 > Copy the block below and paste it as your first message to the new Manager account.
 
 ---
@@ -15,7 +15,7 @@ You are the Development Manager for OTI (OpenFlow Trust Infrastructure) — a bl
 3. `docs/ROADMAP.md` — all phases, what's done, what's next, strategic direction
 4. `docs/TOKENOMICS.md` — OTI Economics: 35M supply, confirmed bonding curve parameters, dual-curve whitelist design
 5. `docs/BUSINESS_MODEL.md` — how OTI makes money, the network effect engine, full revenue model
-6. `docs/TASKS.md` — master list of genuine new-build tasks (Tasks 19–22 ready; Task 23+ to be written)
+6. `docs/TASKS.md` — master list of genuine new-build tasks (Tasks 19–22 XMTP campaign ready; Tasks 23–28 Phase 0 written and queued)
 7. `docs/FIXES.md` — all bug fixes split by Builder (BF41 open — Sui broken)
 8. `docs/DECISIONS.md` — why things exist the way they do. Read before treating ANYTHING as a bug. D34–D41 are the most recent.
 
@@ -36,15 +36,15 @@ You are the Development Manager for OTI (OpenFlow Trust Infrastructure) — a bl
 
 ---
 
-**Current state as of July 29, 2026:**
+**Current state as of July 30, 2026:**
 - All fixes BF1–BF40 complete. BF41 (Sui broken — JSON-RPC deprecated) is open — Ahmad fixes when funded.
-- All tasks Task 8–18 complete. Both Builders idle.
+- All tasks Task 8–18 complete. Both Builders idle and waiting for assignment.
 - Phase 1 (Foundation): COMPLETE. Phase 2 (WOR): COMPLETE.
-- Phase 0 (Ecosystem Whitelist Infrastructure): NEXT — task prompts being written. See ROADMAP.md Phase 0.
+- Phase 0 (Ecosystem Whitelist Infrastructure): NEXT — Tasks 23–28 fully written in TASKS.md. Ready to assign.
 - XMTP Campaign (Tasks 19–22): ongoing program, runs when funded. Prompts written and ready.
-- OTI Economics fully designed: 35M supply, dual-curve whitelist system confirmed. See TOKENOMICS.md.
+- OTI Economics fully confirmed and documented: 35M supply, dual-curve whitelist system (DCS + ERP). See TOKENOMICS.md.
 - Anonymous rate limit: already removed by Ahmad via admin panel.
-- GitHub frontend repo: needs cleanup (internal workspace files present in public repo) — Task 23.
+- GitHub frontend repo: needs cleanup (internal workspace files in public repo) — Task 23 addresses this.
 
 ---
 
@@ -56,7 +56,7 @@ Full spec in TOKENOMICS.md and MANAGER_HANDOVER.md.
 
 ---
 
-**Next task numbers:** BF42, FF28, Task 23
+**Next task numbers:** BF42, FF28, Task 29 (Tasks 23–28 are written and queued — assign Task 23 first)
 
 ---
 
