@@ -404,39 +404,59 @@ When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account
 
 ---
 
-## SESSION 27 HANDOVER — July 30, 2026
+## SESSION 28 HANDOVER — July 30, 2026
 
 ### What happened this session
-- All 3 Railway secrets confirmed SET by Ahmad: `TELEGRAM_BOT_TOKEN` ✅, `TWITTER_CLIENT_ID` ✅, `TWITTER_CLIENT_SECRET` ✅
-- Twitter OAuth 2.0 app configured: type = Web App (Confidential client), callback = `https://workspaceapi-server-production-5c0c.up.railway.app/api/whitelist/connect-x/callback`, website = `https://otiscore.vercel.app`
-- Task 28 Part B prompt: **SENT to Backend Builder** — full endpoint set assigned (11 endpoints in `src/routes/whitelist.ts`)
-- Railway platform incident: builds/deploys temporarily paused at time of handover. Ahmad has 3 pending variable changes queued. **Ahmad must hit Deploy in Railway when the incident clears.**
-- Frontend Builder: **IDLE — confirmed by Ahmad that ALL backend whitelist tasks (Task 28 all parts) must be complete before any frontend work begins.** Do NOT assign Task 25 or any other frontend task until Task 28 is fully confirmed done.
+- Railway platform incident resolved. Railway is fully back up and operational.
+- All 3 Railway secrets CONFIRMED DEPLOYED and working: `TELEGRAM_BOT_TOKEN` ✅, `TWITTER_CLIENT_ID` ✅, `TWITTER_CLIENT_SECRET` ✅
+- Twitter OAuth 2.0 app configured on console.x.com: type = Web App (Confidential client), callback = `https://workspaceapi-server-production-5c0c.up.railway.app/api/whitelist/connect-x/callback`
+- New Backend Builder onboarded on a fresh account. Answered all 6 orientation questions correctly — confirmed understanding of DCS/ERP mechanics, reward gate, fingerprinting, D16, Railway migrations, and whitelist_config.
+- DECISIONS.md clarification given to Builder: that file is Manager-only and intentionally not in the Builder workspace. Builder accepted this and is not blocked by it.
+- Task 28 Part B continuation brief SENT to Backend Builder. Builder is currently: (1) fixing TS7006 implicit-any errors in src/routes/whitelist.ts, (2) confirming clean build, (3) pushing to GitHub, (4) testing all 11 endpoints with D16 evidence.
+- Both onboarding prompts rewritten to be fully self-contained — no references to files Builders don't have. DECISIONS.md removed from both. All necessary knowledge is now inline.
+- Frontend Builder: IDLE. Ahmad confirmed hard rule — ALL Task 28 parts must be complete before any frontend task is assigned.
 
-### NEXT MANAGER: Do these steps in order
+### Builder status right now
+- **Backend Builder:** ACTIVE — fixing TS7006, will push and test Part B endpoints. Awaiting D16 evidence report.
+- **Frontend Builder:** IDLE — do not assign anything until Task 28 all parts are done.
+- **BF41:** Open — Sui broken. Leave it.
 
-**STEP 1 — Chase Railway deploy.**
-Railway had a platform incident (builds paused). When Ahmad is back, ask if Railway has recovered and if he hit Deploy on the 3 pending variable changes. Backend Builder cannot test against Railway until the deploy goes through.
+### NEXT MANAGER: Do these steps in exact order
 
-**STEP 2 — Wait for Backend Builder Part B evidence.**
-Builder was sent the full Part B prompt. Apply D16 to every endpoint — no "verified" without raw curl output + psql confirmation. Required evidence list is in BACKEND_TASKS.md under Task 28 Part B.
+**STEP 1 — Receive Part B evidence from Backend Builder.**
+Builder is working on Part B right now. When they report back, apply D16 to every single endpoint — no "verified" without raw HTTP responses and psql output. Required evidence checklist is in BACKEND_TASKS.md Task 28 Part B. Do not accept code inspection as evidence. Do not accept "it should work." Paste = pass, no paste = not done.
 
-**STEP 3 — Once Part B is confirmed live, send Part C prompt.**
-Part C = Admin Dashboard Whitelist tab (4 sub-views: Code Management, Whitepaper Questions Manager, Flagged Accounts Panel, Protocol Config Override). Prompt is in BACKEND_TASKS.md.
+**STEP 2 — Once Part B evidence passes D16, tell Ahmad to push to GitHub and deploy to Railway.**
+Part B is only confirmed live after Ahmad deploys and you verify endpoints against the live Railway URL.
+
+**STEP 3 — Send Part C prompt to Backend Builder.**
+Part C = Admin Dashboard Whitelist tab. Four sub-views:
+1. Code Management Panel (generate/ban/expire OTI-XXXX-XXXX codes)
+2. Whitepaper Questions Manager (CRUD for 100-question pool, pre-seed 100 questions at deploy)
+3. Flagged Accounts Panel (ban/clear/review flags from whitelist_flags)
+4. Protocol Config Override (live edit all whitelist_config keys via admin UI)
+Full prompt is in BACKEND_TASKS.md.
 
 **STEP 4 — Once Part C is confirmed live, send Part D prompt.**
-Part D = Smart contracts (OTIDCSContribution.sol + OTIWhitelistVesting.sol on BNB testnet → mainnet). Read D59 in DECISIONS.md before sending. Builder must send DEPLOYER_ADDRESS to Manager before mainnet deploy — Ahmad funds it with BNB.
+Part D = Two BNB Chain smart contracts:
+- OTIDCSContribution.sol — accepts BNB + USDT-BEP20 + USDC-BEP20 + BUSD-BEP20, Chainlink oracle for BNB/USD pricing
+- OTIWhitelistVesting.sol — 25% immediate + 75% linear daily vesting, setTokenAddress() required before go-live
+Builder generates deployer wallet offline → sends DEPLOYER_ADDRESS to Manager → Manager relays to Ahmad → Ahmad sends BNB for mainnet gas. Do NOT let Builder proceed to mainnet until Ahmad confirms BNB sent and Manager confirms balance on BscScan.
+Full prompt is in BACKEND_TASKS.md.
 
-**STEP 5 — Only after Task 28 ALL parts are confirmed done: assign frontend tasks in order.**
-Frontend queue: Task 25 → Task 26 → Task 27 → Task 23 → Task 24. One at a time.
+**STEP 5 — Only after Task 28 ALL parts done and confirmed: assign Frontend Builder tasks.**
+Order: Task 25 → Task 26 → Task 27 → Task 23 → Task 24. One at a time, per D16 evidence before moving to next.
 
-**STEP 4 — GitHub check.**
-Ahmad must confirm he pushed the old Builder's 14 Drizzle schema files to GitHub so the new Backend Builder can clone them. Ask Ahmad if this was done before sending Part B.
+### Key things the next Manager must know
 
-### Builder status at handover
-- **Backend Builder:** Onboarded, waiting for Part B prompt. Secrets not yet set.
-- **Frontend Builder:** Available. Assign Task 25 immediately.
-- **BF41:** Still open — Sui scoring broken. Leave it, lower priority.
+- DECISIONS.md is Manager-only. Never tell Builders to read it. Never send it to them. All relevant decisions are communicated inline via task prompts.
+- Every new Builder (Backend or Frontend) must receive the full onboarding prompt first. Files: BACKEND_BUILDER_ONBOARDING_PROMPT.md and FRONTEND_BUILDER_ONBOARDING_PROMPT.md. Both are self-contained — no external file references. Builder must answer all 6 orientation questions correctly before receiving any task prompt.
+- One task per Builder at a time. Hard rule from Ahmad. Never queue a second task until the first is confirmed live.
+- Railway does NOT auto-run migrations. After every schema change Ahmad manually runs drizzle-kit push from the Railway console.
+- All whitelist parameters (reward amounts, vesting %, caps, thresholds) live in whitelist_config. Nothing token-related is ever hardcoded.
+- ERP multiplier formula: reward = base_reward × (dcs_oti_remaining / dcs_total_oti). As DCS fills, ERP rewards shrink.
+- Whitelist vocabulary is mandatory everywhere — no "presale", "invest", "ROI", "yield", "token sale" in any Builder output ever.
+- Next BF: BF42. Next FF: FF28. Next Task: Task 29.
 
 ---
 
