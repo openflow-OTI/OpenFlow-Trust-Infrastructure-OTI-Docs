@@ -184,14 +184,14 @@ Build a simple admin-only conversion dashboard inside the OTI Assessment Replit 
 
 ## 🔴 Phase 0 — Ecosystem Whitelist Infrastructure
 
-Build order is strict. Each task must be confirmed live by Ahmad before the next begins.
+**UPDATED ORDER (Session 24):** Task 28 first (Backend Builder, urgent today). Frontend runs Tasks 25 → 26 → 27 in sequence after 25 is ready. Tasks 23 and 24 (GitHub cleanup + Docusaurus audit) are deferred to LAST — full sanitation after all building is complete.
 One task per Builder at a time — hard rule.
 
 ---
 
 ### TASK 23 — Frontend: GitHub Repo Cleanup
-**Builder: Frontend Builder | Priority: FIRST in Phase 0**
-**No dependencies — start immediately when Ahmad assigns**
+**Builder: Frontend Builder | Priority: LAST in Phase 0 — deferred until all building is complete (Session 24)**
+**No dependencies — but do not start until Task 27 is confirmed live and Ahmad gives the go-ahead**
 
 Strip all internal workspace files from the public frontend GitHub repo. The public repo must contain only actual source code — nothing internal.
 
@@ -229,7 +229,7 @@ Builder lists the files deleted and confirms the push. Ahmad reviews the GitHub 
 ---
 
 ### TASK 24 — Frontend: Docusaurus Docs Site Audit
-**Builder: Frontend Builder | Priority: SECOND in Phase 0**
+**Builder: Frontend Builder | Priority: LAST in Phase 0 (after Task 23) — full sanitation pass after all building is done (Session 24)**
 **Depends on: Task 23 confirmed merged by Ahmad**
 
 Audit the live public developer docs at `https://otiscore.vercel.app/docs/` and clean out anything that reveals sensitive internal information about OTI's infrastructure.
@@ -263,8 +263,8 @@ Builder lists every doc page they edited and what was removed. Manager spot-chec
 ---
 
 ### TASK 25 — Frontend: Whitepaper Rewrite
-**Builder: Frontend Builder | Priority: THIRD in Phase 0**
-**Depends on: Task 24 confirmed complete**
+**Builder: Frontend Builder | Priority: FIRST frontend task in Phase 0 (Session 24 reorder)**
+**No dependency on Tasks 23 or 24 — start when Manager assigns**
 
 Rewrite the whitepaper at `/whitepaper` from scratch — merging the existing page content with the additions draft in `docs/whitepaper-additions-draft.md`. The result is a single, authoritative, public-facing technical document that reflects OTI as it exists today.
 
@@ -307,11 +307,24 @@ Builder confirms the page is live. Ahmad reads it and confirms no presale vocabu
 
 ---
 
-### TASK 26 — Frontend: Privacy Policy + Terms & Conditions Pages
-**Builder: Frontend Builder | Priority: FOURTH in Phase 0**
+### TASK 26 — Frontend: Privacy Policy + Terms & Conditions Pages (EXPANDED — D60)
+**Builder: Frontend Builder | Priority: SECOND frontend task in Phase 0 (Session 24 reorder)**
 **Depends on: Task 25 confirmed complete**
 
-Build two new pages at `/privacy` and `/terms`. The content is verbatim — provided by Ahmad. Do not rewrite, paraphrase, or "improve" any of it.
+Build `/privacy` and `/terms` — each page has TWO sections (D60):
+
+**Section structure for `/terms`:**
+1. **General OTI Product Terms** — audit all existing legal language scattered across the current whitepaper and site. Synthesize into a proper general T&C for the OTI platform (scoring tool, WOR, API, widget). Write it as clean professional prose. Do not invent legal language Ahmad hasn't approved — use only what exists in the whitepaper and site, cleaned up and organized.
+2. **Whitelist Program Terms** (anchor: `#whitelist`) — verbatim text provided by Ahmad below. Do not rewrite a single word.
+
+**Section structure for `/privacy`:**
+1. **General OTI Product Privacy Policy** — same approach: audit what exists, synthesize.
+2. **Whitelist Program Privacy Policy** (anchor: `#whitelist`) — verbatim text provided by Ahmad below. Do not rewrite.
+
+The whitelist checkbox on /whitelist links to `/terms#whitelist` and `/privacy#whitelist` specifically.
+Footer links to `/terms` and `/privacy` (the page tops, not the anchors).
+
+**Whitelist Terms — verbatim content (second section of `/terms`):**
 
 **Why now:** Both pages are required before the /whitelist page launches. The whitelist flow has a mandatory checkbox that links to both. They must be live before Task 27 starts.
 

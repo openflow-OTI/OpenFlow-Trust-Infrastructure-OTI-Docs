@@ -508,6 +508,40 @@ This file records the reasoning behind how OTI was built — not what the code d
 
 ---
 
+### D59 — Multi-Coin DCS Contribution: Accept BNB + Top BEP-20 Tokens on BSC
+**Status:** INTENTIONAL — CONFIRMED DESIGN (July 30, 2026)
+**What this means:** The Ecosystem Whitelist DCS (Dynamic Contribution Scale) contribution system must accept multiple payment tokens — not BNB only. Practically on BNB Chain (BSC), "top 10 coins" means the top BEP-20 tokens. True native BTC, SOL, XRP, ADA etc. cannot be accepted directly by a BSC smart contract — only their BSC-bridged/wrapped versions can.
+**Accepted tokens (Task 28 Part D DCS Contribution Contract):**
+1. BNB (native) — Chainlink BNB/USD: `0x0567F2323251f0Aab15c8dFb1967E4eaA47d42aEE`
+2. USDT-BSC: `0x55d398326f99059fF775485246999027B3197955` — stablecoin, $1 peg, no oracle needed
+3. USDC-BSC: `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d` — stablecoin, $1 peg, no oracle needed
+4. WETH-BSC: `0x2170Ed0880ac9A755fd29B2688956BD959F933F8` — Chainlink ETH/USD: `0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e`
+5. BTCB-BSC: `0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c` — Chainlink BTC/USD: `0x264990fbd0A4796A3E3d8E37C4d5F087a8Db51ef`
+6. BUSD-BSC: `0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56` — stablecoin, $1 peg
+7. XRP-BSC: `0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE` — Chainlink XRP/USD: `0x93A67931606648bf050ef521D37984A7aE486E3c`
+8. ADA-BSC: `0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47` — Chainlink ADA/USD: `0xa767f745331D267c7751297D982b050c93985627`
+9. DOGE-BSC: `0xbA2aE424d960c26247Dd6c32edC70B295c744C43` — Chainlink DOGE/USD: `0x3AB0A0d137D4F946fBB19eecc6e92E64660231C8`
+10. MATIC-BSC: `0xCC42724C6683B7E57334c4E856f4c9965ED682bD` — Chainlink MATIC/USD: `0x7CA57b0cA6367191c94C8914d7Df09A57655905f`
+**Architecture note:** Task 28 Part D now requires TWO smart contracts instead of one:
+1. `OTIWhitelistVesting.sol` — handles OTI token distribution (unchanged design)
+2. `OTIDCSContribution.sol` — new contract that accepts the above tokens, uses Chainlink oracles to compute USD equivalent, records contributions, and emits events for backend to process
+**All DCS token/oracle addresses are stored as admin-configurable arrays in the contract** — Ahmad can add or remove accepted tokens via `setAcceptedToken(address token, address priceFeed, bool enabled)` owner-only function.
+**Important:** Builder must verify Chainlink feed addresses are live on BSC mainnet before using. Test each oracle in the testnet equivalent first.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
+### D60 — T&C and Privacy Policy: Two Separate Sets (Product-Level + Whitelist-Specific)
+**Status:** INTENTIONAL — CONFIRMED DESIGN (July 30, 2026)
+**What this means:** OTI needs two distinct sets of legal documents:
+1. **General product T&C and Privacy Policy** — for the entire OTI platform (scoring, WOR, API, widget). Audit existing legal language scattered across the whitepaper and site. Build consolidated `/terms` and `/privacy` pages.
+2. **Whitelist-specific T&C and Privacy Policy** — for the Ecosystem Whitelist Node Program only. Verbatim text provided by Ahmad (documented in MANAGER_HANDOVER.md). These appear as dedicated sections within `/terms` and `/privacy` (not separate URLs), with anchor links used by the whitelist checkbox flow (e.g. `/terms#whitelist` and `/privacy#whitelist`).
+**Implementation:** Single `/terms` page with two sections — General and Whitelist. Single `/privacy` page with two sections — General and Whitelist. Whitelist mandatory checkbox links to the whitelist sections specifically via anchors.
+**Task 26 scope updated:** Frontend Builder must (1) audit existing legal language in whitepaper and throughout the site, (2) write general product T&C + Privacy, (3) add whitelist-specific sections using verbatim Ahmad text, (4) update footer links, (5) update whitelist checkbox anchors in Task 27.
+**Confirmed by:** Ahmad, July 30, 2026.
+
+---
+
 ### D57 — No OTI BEP-20 Token Exists on Mainnet Yet — Builder Uses Placeholder
 **Status:** INTENTIONAL — PLACEHOLDER
 **What this means:** At the time Task 28 Part D is built, there is no real OTI BEP-20 token deployed on BNB mainnet. The `OTIWhitelistVesting.sol` mainnet deploy uses a placeholder token address. The contract must be designed so the token address can be updated by the owner after handover, before the whitelist goes live. Builder documents the placeholder clearly in the handover package.

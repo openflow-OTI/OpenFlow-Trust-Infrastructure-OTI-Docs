@@ -1,5 +1,5 @@
 # OTI — Backend Builder Task List
-> Last updated: July 30, 2026 (session 22 — Phase 0 Ecosystem Whitelist Infrastructure task added: Task 28. OTI Economics confirmed: 35M supply, dual bonding curve DCS + ERP parameters confirmed.) | Maintained by: Development Manager
+> Last updated: July 30, 2026 (session 24 — Task 28 Part D updated: two contracts now required — OTIDCSContribution.sol (multi-coin, D59) + OTIWhitelistVesting.sol. Urgency note added: Railway subscription due today.)\n> (session 22 — Phase 0 Ecosystem Whitelist Infrastructure task added: Task 28. OTI Economics confirmed: 35M supply, dual bonding curve DCS + ERP parameters confirmed.) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md, ARCHITECTURE.md, DECISIONS.md, and TOKENOMICS.md before starting anything here.**
 > **`DECISIONS.md` is especially important before touching any scoring, data-fetching, or chain-handling code — it explains why certain behaviors exist and which ones must not be changed without Ahmad's approval. You never update DECISIONS.md yourself.**
 > Build in the exact order listed. Do not skip ahead.
@@ -10,7 +10,7 @@
 
 ## Your Active Item Right Now
 
-**As of July 30, 2026 — you have NO active task.** Phase 0 Task 28 (Whitelist System) is written and queued below. **Wait for the Manager to send you Task 28 explicitly before starting anything.** Do not begin on your own initiative.
+**⚠️ URGENT — As of July 30, 2026:** Task 28 (Whitelist System) is your active task. Railway subscription is due today at midnight UTC — Parts A, B, and C must be built and tested today. Part D (smart contracts) follows once A–B–C are deployed and confirmed. Read DECISIONS.md D59 for the updated multi-coin DCS contribution contract requirement before starting Part D.
 
 ---
 
@@ -388,6 +388,21 @@ No Social Task Review Queue — social tasks are auto-verified (D49).
 **Part D — Smart Contracts (BNB Testnet → Mainnet — you handle everything, Ahmad not involved until workspace deletion)**
 
 See D42 in DECISIONS.md. Ahmad is not involved at any point during this part.
+
+**⚠️ UPDATED Session 24 — Two contracts required (D59):**
+
+**Contract 1 (NEW): `OTIDCSContribution.sol`**
+Accepts DCS contributions in multiple tokens. Build this first.
+- Accepted tokens: BNB (native), USDT-BSC, USDC-BSC, WETH-BSC, BTCB, BUSD, XRP-BSC, ADA-BSC, DOGE-BSC, MATIC-BSC
+- Full token + oracle addresses: see DECISIONS.md D59
+- `setAcceptedToken(address token, address chainlinkFeed, bool isStable, bool enabled)` — owner only. Stablecoins pass `address(0)` as feed and `isStable=true`.
+- `contribute(address token, uint256 amount) external payable` — BNB via `msg.value`; BEP-20 via `transferFrom` (user approves first)
+- Non-stables: use Chainlink `latestRoundData()` for USD conversion. Stables: 1:1.
+- Emit `Contribution(address indexed wallet, address token, uint256 amount, uint256 usdEquivalent)`
+- `withdraw(address token)` — owner only, sweeps to Ahmad's wallet
+- All oracle feeds must be verified live on BSC testnet before mainnet
+
+**Contract 2 (original): `OTIWhitelistVesting.sol`** — unchanged design (see steps below)
 
 **Step 1 — Generate deployer wallet:**
 ```js

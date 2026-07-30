@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 30, 2026 (session 23 — Whitelist system fully redesigned: expanded ERP task system (9 reward types including daily scoring, WOR actions, dev API, whitepaper rounds), wallet-first UX flow, Telegram + X identity gates, session fingerprinting + multi-account detection, all manual admin review replaced by auto-verification. D43–D58 logged. Tasks 27 and 28 fully rewritten in TASKS.md and BACKEND_TASKS.md.)
+> Last updated: July 30, 2026 (session 24 — Task order updated: Task 28 backend first/urgent today, Tasks 23+24 deferred to last after all building done, D59 multi-coin DCS contribution contract added, D60 T&C/Privacy dual-set confirmed. Backend Builder new account onboarding prompt written.)\n> (session 23 — Whitelist system fully redesigned: expanded ERP task system (9 reward types including daily scoring, WOR actions, dev API, whitepaper rounds), wallet-first UX flow, Telegram + X identity gates, session fingerprinting + multi-account detection, all manual admin review replaced by auto-verification. D43–D58 logged. Tasks 27 and 28 fully rewritten in TASKS.md and BACKEND_TASKS.md.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, DECISIONS.md, TASKS.md, and TOKENOMICS.md in that order.**
 > **D16 (evidence rule): no signal value or test result may be estimated or guessed — only real on-chain data. A Builder's "verified" claim is NOT evidence. Ask: which wallet, which raw API response, which psql output.**
 
@@ -43,8 +43,8 @@ The backend repo stays private (scoring algorithm IP + sensitive infrastructure)
 | Role | Status |
 |---|---|
 | Ahmad (CEO) | Always active — sole merge authority |
-| Backend Builder | Idle — waiting for Ahmad's return from advisor session |
-| Frontend Builder | Idle — waiting for Ahmad's return from advisor session |
+| Backend Builder | New account being created today — Task 28 assigned immediately (Railway subscription urgency) |
+| Frontend Builder | Idle — Tasks 25, 26, 27 queued. Tasks 23 and 24 deferred to after all building is complete. |
 | Development Manager | Active — you are reading this |
 
 ---
@@ -114,6 +114,9 @@ The backend repo stays private (scoring algorithm IP + sensitive infrastructure)
 | Off-chain referral/invite tracking | Session 21 — referral relationships tracked in DB, not on-chain |
 | All vesting/lockup percentages configurable via admin dashboard | Session 21 — nothing hardcoded |
 | Referral commissions paid in OTI token, not BNB/USDT | Session 21 |
+| DCS contribution accepts BNB + 9 BEP-20 tokens (USDT, USDC, WETH, BTCB, BUSD, XRP, ADA, DOGE, MATIC on BSC) | D59, Session 24 |
+| T&C and Privacy Policy: two sets — general product + whitelist-specific, on same /terms and /privacy pages as separate sections with anchors | D60, Session 24 |
+| GitHub cleanup (Task 23) and Docusaurus audit (Task 24) deferred to AFTER all building is complete — full sanitation at end | Session 24 |
 | OTI Economics confirmed — 35M fixed supply, full allocation, dual bonding curve (DCS + ERP) documented in TOKENOMICS.md | Sessions 21–22 |
 | Frontend GitHub repo needs cleanup of internal workspace files | Session 21 |
 | Developer API limits set by Ahmad via admin panel only | Session 21 |
@@ -313,27 +316,32 @@ Domain plan: acquire `otiscore.com` once committed whitelist funds are in the ec
 
 ---
 
-## What to Build Next (Phase 0 — in order, one task per Builder at a time)
+## What to Build Next (Phase 0 — UPDATED ORDER, Session 24)
 
-All task prompts are fully written in TASKS.md. Assign them in this order:
+⚠️ **Railway subscription due today at midnight UTC. Task 28 backend must be built and tested today.**
 
-**Task 23 — Frontend Builder: GitHub Repo Cleanup**
-Strip all internal workspace files from the public frontend GitHub repo. Only source code remains. Ahmad reviews and merges the deletion commit.
+All task prompts are fully written in TASKS.md and BACKEND_TASKS.md. Assign in this order:
 
-**Task 24 — Frontend Builder: Docusaurus Docs Site Audit**
-Remove sensitive internal info from public developer docs. Keep: API reference, chains (12), rate limits, code examples. Remove: key rotation strategy, admin route details, architecture internals, bug history. D32 standard.
+**Task 28 — Backend Builder: Whitelist System — ASSIGN FIRST (URGENT TODAY)**
+New Backend Builder account being created. Onboard via BACKEND_BUILDER_ONBOARDING_PROMPT.md, confirm understanding, then send task. 10 DB tables, full API endpoint set, admin Whitelist tab, two smart contracts (OTIDCSContribution.sol accepting BNB + 9 BEP-20 tokens with Chainlink oracles; OTIWhitelistVesting.sol for OTI distribution). Session fingerprinting + multi-account detection. All parameters admin-configurable. Parts A–C buildable immediately. Part D (contracts) after A–C deployed.
 
-**Task 25 — Frontend Builder: Whitepaper Rewrite**
+**Task 25 — Frontend Builder: Whitepaper Rewrite** ← assign when Backend is building
 Merge existing whitepaper + `docs/whitepaper-additions-draft.md`. Correct chain count (12), fix stale chain table (remove Fantom/Scroll/Sepolia/Holesky), use whitelist vocabulary throughout, include confirmed OTI Economics from TOKENOMICS.md. D32 standard.
 
-**Task 26 — Frontend Builder: Privacy Policy + Terms & Conditions Pages**
-New pages at `/privacy` and `/terms`. Verbatim text from Ahmad — do not rewrite. Add footer links. Required before /whitelist launches.
+**Task 26 — Frontend Builder: Privacy Policy + Terms & Conditions Pages (EXPANDED — D60)**
+Two sections per page, not two separate sets of pages:
+- `/privacy`: Section 1 = General OTI Product Privacy (audit existing content from whitepaper + site, write properly). Section 2 = Whitelist-Specific Privacy (verbatim Ahmad text). Footer links to /privacy.
+- `/terms`: Section 1 = General OTI Product T&C (same audit process). Section 2 = Whitelist-Specific T&C (verbatim Ahmad text). Footer links to /terms.
+Whitelist mandatory checkbox links to anchor sections (#whitelist) on each page, not separate URLs.
 
 **Task 27 — Frontend Builder: /whitelist Page**
-Entry gate (locked default) + authenticated portal with live DCS/ERP dual counters, invite code input, terms checkbox, wallet connect, allocation display, ecosystem rewards section. Depends on Task 28 backend endpoints being live.
+Entry gate + authenticated portal with live DCS/ERP dual counters, invite code input, terms/privacy anchor links, wallet connect, allocation display, 9 reward task cards, whitepaper questions, milestones. Depends on Task 28 backend endpoints being live.
 
-**Task 28 — Backend Builder: Whitelist System (fully redesigned — session 23)**
-10 DB tables: whitelist_invites, whitelist_participants, whitelist_social_tasks, whitelist_task_completions, whitelist_daily_scores, whitelist_whitepaper_questions, whitelist_whitepaper_progress, whitelist_fingerprints, whitelist_flags, protocol_state + whitelist_config key-value store. Full endpoint set: verify-invite, connect-telegram, connect-x, daily-score, one-time tasks, social auto-verify, whitepaper questions + submit. Admin tab: code management, whitepaper questions CRUD, flagged accounts panel, protocol config. BNB testnet + mainnet vesting contract with setTokenAddress(). Session fingerprinting + multi-account detection. All parameters admin-configurable. Can run in parallel with Frontend Tasks 23–26. Task 27 depends on Task 28 endpoints being live.
+**Task 23 — Frontend Builder: GitHub Repo Cleanup — LAST (after all building complete)**
+Full sanitation of the public frontend GitHub repo. Strip all internal .md files, leave only source code. Ahmad reviews and merges.
+
+**Task 24 — Frontend Builder: Docusaurus Docs Site Audit — LAST (after all building complete)**
+Remove sensitive internal info from public developer docs. Full sanitation pass. D32 standard.
 
 ---
 
@@ -345,7 +353,7 @@ Entry gate (locked default) + authenticated portal with live DCS/ERP dual counte
 4. **Builder file copies never auto-sync.** Manager must explicitly tell each Builder to update their own TASKS.md/FIXES.md copy every time status changes.
 5. **Before ending any session:** Update this file and TASKS.md. If a fix was closed, update FIXES.md. Never close a session with stale docs.
 6. **Fixes never get task numbers.** FIXES.md only. BF## for backend, FF## for frontend.
-7. **Next BF number: BF42. Next FF number: FF28. Next Task number: Task 29** (Tasks 23–28 fully written and queued in TASKS.md — Tasks 27 and 28 fully redesigned session 23)
+7. **Next BF number: BF42. Next FF number: FF28. Next Task number: Task 29** (Tasks 23–28 fully written and queued in TASKS.md — Tasks 27 and 28 fully redesigned session 23. Task order updated session 24: Task 28 first/urgent, Tasks 25→26→27 next, Tasks 23 and 24 LAST after all building done.)
 8. **No AI exposure (D32).** All public-facing content must be reviewed before going live.
 9. **Builders do not push to GitHub.** Ahmad pushes only.
 10. **Ahmad sets all API limits and rate limits himself via admin panel.** Manager and Builders never set or hardcode amounts.
@@ -400,4 +408,6 @@ When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account
 7. **All vesting/lockup parameters must be admin-configurable** — this is a hard requirement, not a preference.
 8. **Docusaurus audit required** before whitelist launches — sensitive internal info may be exposed in public developer docs.
 9. **Task numbering:** Tasks 8–18 complete. Tasks 19–22 = XMTP Campaign (ready, waiting for funding). New whitelist tasks start at Task 23.
-10. **Next session starts with:** Assign Task 23 (Frontend GitHub repo cleanup) to Frontend Builder. After Task 23 confirmed live by Ahmad → assign Task 24. One task per Builder at a time — hard rule.
+10. **Next session starts with:** Task 28 (Backend Whitelist System) is the active Backend Builder task — check progress, confirm evidence per D16 before marking complete. Frontend Builder queue: Task 25 → 26 → 27 → then 23 and 24 last. One task per Builder at a time — hard rule.
+11. **D59 — DCS accepts multi-coin:** OTIDCSContribution.sol accepts BNB + 9 BEP-20 tokens. Chainlink oracle addresses for each non-stable are in DECISIONS.md D59.
+12. **D60 — T&C/Privacy split:** Two sections per page (/terms and /privacy). General product section + whitelist-specific section. Whitelist checkbox links via anchors.
