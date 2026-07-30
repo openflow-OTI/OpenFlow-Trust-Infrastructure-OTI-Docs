@@ -1,5 +1,5 @@
 # OTI — Manager Handover Document
-> Last updated: July 30, 2026 (session 22 — OTI Economics confirmed and fully documented: 35M fixed supply, full allocation breakdown, dual bonding curve DCS + ERP parameters confirmed. TOKENOMICS.md fully rewritten as "OTI Economics." All docs updated. Phase 0 task prompts written: Tasks 23–28.)
+> Last updated: July 30, 2026 (session 25 — Backend Builder new account onboarded, Task 28 Part A prompt sent. Builder not yet confirmed schema ready — follow up on Part A first. D59 correction: BSC contract handles BNB + BSC stablecoins only; ETH/BTC/SOL/TON/XRP/MATIC use Layer 2 receiving addresses + CoinGecko + admin manual verification. 14 new whitelist tables confirmed. See docs/MANAGER_HANDOVER.md for full current state — this file is the older snapshot distributed to Builders via docs.zip.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, DECISIONS.md, TASKS.md, and TOKENOMICS.md in that order.**
 > **D16 (evidence rule): no signal value or test result may be estimated or guessed — only real on-chain data. A Builder's "verified" claim is NOT evidence. Ask: which wallet, which raw API response, which psql output.**
 
