@@ -557,29 +557,61 @@ The admin panel already exists (Task 9). Add a new "Whitelist" tab with four sub
    - "Save" button: `PUT /api/admin/whitelist/config` — updates one or more config keys
    - This is how Ahmad adjusts all parameters — vesting %, reward amounts, DCS rates, slot count — without a code change
 
-**Part D — Smart Contracts (BNB Chain — testnet first, mainnet only after Ahmad confirms):**
+**Part D — Smart Contracts (BNB Testnet — fully self-contained, no Ahmad involvement needed until handover):**
 
-The whitelist smart contract manages OTI token vesting and lockup for whitelisted participants. This is a separate concern from the XMTP attestation contract (Tasks 20/21).
+The Builder handles everything end-to-end: wallet generation, testnet funding, mock token deploy, vesting contract deploy, and end-to-end testing. Ahmad does not need to be involved until the final handover step.
 
-Scope for Phase 0: **Testnet only for now.** Do not deploy to mainnet until Ahmad explicitly says go.
+**Step 1 — Generate deployer wallet:**
+- Use ethers.js inside the workspace: `ethers.Wallet.createRandom()` — log the address and private key once, save them securely as env vars (`DEPLOYER_ADDRESS`, `DEPLOYER_PRIVATE_KEY`) in the Replit workspace
+- Do NOT hardcode keys in any file — env vars only
+- This wallet is a temporary testnet deployer — it will be handed to Ahmad at close and the workspace deleted
 
-- Language: Solidity 0.8.x
-- Chain: BNB Chain testnet (chainId 97) first
-- Contract: `OTIWhitelistVesting.sol`
-  - Constructor args: `owner_address`, `oti_token_address` (BEP-20 OTI token — Ahmad provides this address when OTI token is deployed; use a mock address on testnet)
-  - `vest(address participant, uint256 total_oti_amount)` — owner-only. Records vesting schedule: 25% immediate, 75% linear daily release over `vesting_duration_days` (admin-configurable, read from contract storage)
-  - `claimVested(address participant)` — callable by participant. Transfers any unlocked OTI to their wallet.
-  - `setVestingDuration(uint256 days_)` — owner-only. Changes the vesting duration for future vests (not retroactive).
-  - `getVestingStatus(address participant)` — view function. Returns `{ total_allocated, total_claimed, currently_claimable, vesting_start, vesting_end }`
+**Step 2 — Fund the deployer wallet from BNB testnet faucet:**
+- BNB testnet faucet: https://testnet.bnbchain.org/faucet-smart
+- Request testnet BNB to `DEPLOYER_ADDRESS` — free, no cost
+- Confirm balance before proceeding
+
+**Step 3 — Deploy mock OTI BEP-20 token (testnet only):**
+- A simple standard ERC-20/BEP-20 contract: `MockOTI.sol`
+- `constructor(uint256 initialSupply)` — mint `initialSupply` to deployer address (use 35,000,000 × 10^18)
+- Deploy to BNB testnet (chainId 97) using Hardhat or ethers.js deploy script
+- Save the deployed contract address as `MOCK_OTI_ADDRESS`
+
+**Step 4 — Deploy OTIWhitelistVesting.sol:**
+- Language: Solidity 0.8.x, BNB testnet (chainId 97)
+- Constructor args: `owner_address` (= DEPLOYER_ADDRESS), `oti_token_address` (= MOCK_OTI_ADDRESS)
+- Contract functions:
+  - `vest(address participant, uint256 total_oti_amount)` — owner-only. Records schedule: 25% immediate, 75% linear daily over `vesting_duration_days` (admin-settable)
+  - `claimVested(address participant)` — callable by participant. Transfers unlocked OTI.
+  - `setVestingDuration(uint256 days_)` — owner-only. Changes duration for future vests (not retroactive).
+  - `getVestingStatus(address participant)` — view. Returns `{ total_allocated, total_claimed, currently_claimable, vesting_start, vesting_end }`
   - `banParticipant(address participant)` — owner-only. Freezes remaining locked tokens.
+- After deploy: call `MockOTI.approve(vestingContractAddress, largeAmount)` so the vesting contract can transfer tokens on behalf of the deployer
+
+**Step 5 — End-to-end test:**
+- Call `vest(testWalletAddress, 1000 * 10^18)` — confirm 250 OTI immediately claimable (25%)
+- Advance testnet time (Hardhat `evm_increaseTime`) or wait — confirm linear daily unlock works
+- Call `claimVested(testWalletAddress)` — confirm OTI transferred to test wallet
+- Call `banParticipant(testWalletAddress)` — confirm remaining locked tokens frozen
+
+**Step 6 — Handover package to Ahmad:**
+At close, Builder provides Ahmad with all of the following in one message:
+- `DEPLOYER_ADDRESS` — the deployer/owner wallet address
+- `DEPLOYER_PRIVATE_KEY` — the private key (Ahmad saves this immediately, then the workspace is deleted)
+- `MOCK_OTI_ADDRESS` — mock BEP-20 OTI token contract address on BNB testnet
+- `VESTING_CONTRACT_ADDRESS` — OTIWhitelistVesting contract address on BNB testnet
+- BscScan testnet links for both contracts
+
+Ahmad saves the private key and contract addresses, then deletes the Builder workspace. All conversation history and temp credentials are gone.
 
 **Evidence required to close:**
 - All DB tables created on Railway (Ahmad runs drizzle-kit push after Builder deploys)
-- `/api/verify-invite` tested with a real invite code: valid code → success; used code → 400; no code → 404
-- `/api/whitelist/state` returns correct live computed DCS rate and ERP bonus
-- Admin Whitelist tab renders: code generator works, code table shows rows, config save works
-- Smart contract deployed on BNB testnet — Builder pastes testnet contract address
-- Ahmad confirms testnet `vest()` and `claimVested()` work end-to-end
+- `/api/verify-invite` tested: valid code → success response with JSON; used code → 400; missing → 404
+- `/api/whitelist/state` returns correct computed DCS rate and ERP bonus values
+- Admin Whitelist tab: code generator works, code table shows rows, social task queue renders, config save works
+- BNB testnet contracts deployed — Builder pastes both BscScan testnet links
+- vest() and claimVested() end-to-end test confirmed by Builder with raw output
+- Full handover package delivered to Ahmad (deployer key + both contract addresses)
 - Manager verifies all evidence before closing
 
 ---

@@ -171,24 +171,62 @@ Add a "Whitelist" tab to the existing admin panel. Four sub-views:
    - "Save" button: `PUT /api/admin/whitelist/config` — updates config keys
    - This is how Ahmad adjusts all parameters without a code deploy
 
-**Part D — Smart Contract (BNB Testnet — testnet only until Ahmad says go to mainnet)**
+**Part D — Smart Contracts (BNB Testnet — fully self-contained, you handle everything)**
 
-Contract: `OTIWhitelistVesting.sol` — Solidity 0.8.x, deploy to BNB testnet (chainId 97).
+No Ahmad involvement needed until the final handover. You generate the wallet, fund it, deploy everything, test it, and hand over the keys at close.
 
-- Constructor args: `owner_address`, `oti_token_address` (use a mock BEP-20 on testnet)
-- `vest(address participant, uint256 total_oti_amount)` — owner-only. Stores vesting: 25% immediate, 75% linear daily over `vesting_duration_days` (from contract storage, admin-settable)
-- `claimVested(address participant)` — callable by participant. Transfers unlocked OTI to their wallet.
-- `setVestingDuration(uint256 days_)` — owner-only. Changes duration for future vests (not retroactive).
-- `getVestingStatus(address participant)` — view. Returns `{ total_allocated, total_claimed, currently_claimable, vesting_start, vesting_end }`
-- `banParticipant(address participant)` — owner-only. Freezes remaining locked tokens.
+**Step 1 — Generate deployer wallet:**
+```js
+const { ethers } = require("ethers");
+const wallet = ethers.Wallet.createRandom();
+console.log("Address:", wallet.address);
+console.log("Private key:", wallet.privateKey);
+```
+Save as Replit env vars: `DEPLOYER_ADDRESS`, `DEPLOYER_PRIVATE_KEY`. Never put keys in any file.
+
+**Step 2 — Fund from BNB testnet faucet:**
+- https://testnet.bnbchain.org/faucet-smart → paste DEPLOYER_ADDRESS → request testnet BNB (free)
+- Confirm balance before proceeding
+
+**Step 3 — Deploy mock OTI BEP-20 token (`MockOTI.sol`):**
+- Standard ERC-20, `constructor(uint256 initialSupply)` mints to deployer
+- Use `35000000 * 10**18` as initial supply
+- Deploy to BNB testnet (chainId 97)
+- Save deployed address as `MOCK_OTI_ADDRESS`
+
+**Step 4 — Deploy `OTIWhitelistVesting.sol`:**
+- Constructor args: `owner_address` (DEPLOYER_ADDRESS), `oti_token_address` (MOCK_OTI_ADDRESS)
+- Functions:
+  - `vest(address participant, uint256 total_oti_amount)` — owner-only. 25% immediate, 75% linear daily over `vesting_duration_days`
+  - `claimVested(address participant)` — callable by participant. Transfers unlocked OTI.
+  - `setVestingDuration(uint256 days_)` — owner-only. Future vests only, not retroactive.
+  - `getVestingStatus(address participant)` — view. Returns total_allocated, total_claimed, currently_claimable, vesting_start, vesting_end
+  - `banParticipant(address participant)` — owner-only. Freezes remaining locked tokens.
+- After deploy: call `MockOTI.approve(vestingContractAddress, large_amount)` so vesting contract can move tokens
+
+**Step 5 — End-to-end test:**
+- `vest(testWallet, 1000 * 10^18)` → confirm 250 OTI immediately claimable (25%)
+- `claimVested(testWallet)` → confirm OTI transferred
+- `banParticipant(testWallet)` → confirm remaining tokens frozen
+- Paste raw output as evidence
+
+**Step 6 — Handover package (deliver this to Ahmad in one message at close):**
+- DEPLOYER_ADDRESS
+- DEPLOYER_PRIVATE_KEY
+- MOCK_OTI_ADDRESS (BNB testnet)
+- VESTING_CONTRACT_ADDRESS (BNB testnet)
+- BscScan testnet links for both contracts
+
+Ahmad saves the key and addresses, then deletes this workspace. All conversation history and temp credentials are gone.
 
 **Evidence required to close:**
-- All tables created on Railway after Ahmad runs drizzle-kit push
-- `/api/verify-invite`: valid code → success; used code → 400; missing code → 404 (paste raw responses)
+- All DB tables created on Railway (Ahmad runs drizzle-kit push after you deploy)
+- `/api/verify-invite`: valid code → success JSON; used code → 400; missing → 404 (paste raw responses)
 - `/api/whitelist/state`: returns correct computed DCS rate and ERP bonus
-- Admin Whitelist tab: code generator works, code table shows rows, config save works
-- BNB testnet contract deployed — paste testnet contract address
-- Ahmad confirms testnet `vest()` and `claimVested()` work end-to-end
+- Admin Whitelist tab: code generator works, code table shows rows, social task queue renders, config save works
+- Both BNB testnet contracts deployed — paste BscScan testnet links
+- vest() and claimVested() test confirmed with raw output
+- Full handover package delivered to Ahmad
 
 ---
 
