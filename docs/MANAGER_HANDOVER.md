@@ -327,8 +327,9 @@ All task prompts are fully written in TASKS.md and BACKEND_TASKS.md. Assign in t
 **Task 28 — Backend Builder: Whitelist System — ASSIGN FIRST (URGENT TODAY)**
 New Backend Builder account being created. Onboard via BACKEND_BUILDER_ONBOARDING_PROMPT.md, confirm understanding, then send task. 10 DB tables, full API endpoint set, admin Whitelist tab, two smart contracts (OTIDCSContribution.sol accepting BNB + 9 BEP-20 tokens with Chainlink oracles; OTIWhitelistVesting.sol for OTI distribution). Session fingerprinting + multi-account detection. All parameters admin-configurable. Parts A–C buildable immediately. Part D (contracts) after A–C deployed.
 
-**Task 25 — Frontend Builder: Whitepaper Rewrite** ← assign when Backend is building
+**Task 25 — Frontend Builder: Whitepaper Rewrite** ← assign ONLY after Task 28 all parts confirmed done
 Merge existing whitepaper + `docs/whitepaper-additions-draft.md`. Correct chain count (12), fix stale chain table (remove Fantom/Scroll/Sepolia/Holesky), use whitelist vocabulary throughout, include confirmed OTI Economics from TOKENOMICS.md. D32 standard.
+⚠️ Every new Frontend Builder must be onboarded first using FRONTEND_BUILDER_ONBOARDING_PROMPT.md before receiving any task prompt.
 
 **Task 26 — Frontend Builder: Privacy Policy + Terms & Conditions Pages (EXPANDED — D60)**
 Two sections per page, not two separate sets of pages:
@@ -386,16 +387,20 @@ Ahmad uses multiple Replit free-tier accounts:
 
 When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account, and the new Manager reads this file to continue.
 
-**Doc files (all in extracted_docs/docs/ in this workspace):**
+**Doc files (all in docs/ in this workspace):**
 - `MANAGER_HANDOVER.md` — this file, start here
 - `ARCHITECTURE.md` — what every piece of the codebase is
 - `ROADMAP.md` — all planned features with full specs (needs update — whitelist framing)
-- `TASKS.md` — master task list (Tasks 19–22 written and ready; new whitelist tasks to be added when Ahmad returns)
+- `TASKS.md` — master task list (Tasks 19–22 written and ready; Tasks 23–28 written and queued)
 - `FIXES.md` — all bug fixes by Builder (BF41 open — Sui broken)
 - `DECISIONS.md` — why things exist the way they do
 - `BUSINESS_MODEL.md` — revenue layers (needs update — whitelist framing)
 - `TOKENOMICS.md` — **Rewritten July 29, 2026 as "OTI Economics." 35M supply, full allocation and revenue distribution documented. Use this version.**
-- `docs/whitepaper-additions-draft.md` — previous Manager's whitepaper additions (chain table is stale, merge with whitepaper task)
+- `whitepaper-additions-draft.md` — previous Manager's whitepaper additions (chain table is stale, merge with whitepaper task)
+- `BACKEND_BUILDER_ONBOARDING_PROMPT.md` — **paste verbatim to every new Backend Builder before any task.** Covers: OTI overview, whitelist system (DCS/ERP/reward gate/fingerprinting), sacred files, all secrets set, 6 orientation questions. Only send the task after all 6 answers are correct.
+- `FRONTEND_BUILDER_ONBOARDING_PROMPT.md` — **paste verbatim to every new Frontend Builder before any task.** Covers: OTI overview, color system, sacred files, whitelist vocabulary enforcement, DCS/ERP mechanics, 6 orientation questions. Only send the task after all 6 answers are correct.
+- `BACKEND_TASKS.md` — Backend Builder task queue (Task 28 active)
+- `FRONTEND_TASKS.md` — Frontend Builder task queue (Tasks 25→26→27→23→24 queued in that order)
 
 ---
 
