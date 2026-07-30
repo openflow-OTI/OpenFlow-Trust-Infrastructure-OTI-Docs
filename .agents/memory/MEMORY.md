@@ -13,3 +13,4 @@
 - [WalletConnect challenge TTL trap](walletconnect-challenge-ttl.md) — self-report challenge expires in 15 min; any test taking longer silently hits the 400 branch. Ahmad's early self-reports failed this way and looked like backend bugs.
 - [/services hub decision](services-hub-decision.md) — Ahmad decided July 15 2026: homepage at / stays unchanged; new service portal lives at /services with navbar link. Cards: Score, WOR, API Docs, Whitepaper, Coming Soon placeholders.
 - [Whitelist pivot vocabulary](whitelist-pivot.md) — all "presale/sale/invest/ROI" language replaced by whitelist vocabulary everywhere; regulatory compliance decision July 29 2026; vocabulary map in topic file.
+- [Whitelist dual bonding curve](whitelist-bonding-curve.md) — DCS: 7M OTI, $0.001190→$0.005952 (5×), $25k raise; ERP: 1.75M OTI, inverse curve tied to DCS remaining. Both confirmed July 29 2026.

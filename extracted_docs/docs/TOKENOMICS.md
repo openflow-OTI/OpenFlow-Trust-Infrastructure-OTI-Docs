@@ -251,23 +251,97 @@ OTI has no utility outside the OTI network and its integrations. It is not a gen
 
 ## Whitelist Program Economics
 
-The Ecosystem Whitelist Allocation (8,750,000 OTI, 25%) is distributed through the Ecosystem Whitelist Node Program.
+The Ecosystem Whitelist Allocation (8,750,000 OTI, 25%) is split into two sub-pools that operate simultaneously:
 
-Key mechanics:
-- Access is invite-only (single-use OTI-XXXX-XXXX codes, admin-generated)
-- 10,000 maximum whitelisted slots during Genesis (12-month program)
-- 25% of claimed allocation immediately accessible as Access Fuel
-- 75% enters Node Collateral Lockup — linear daily vesting schedule
-- All vesting parameters configurable by OpenFlow Labs via admin dashboard
-- Referral rewards tracked off-chain (PostgreSQL DB) — not on smart contract
-- Referral commissions denominated in OTI
+| Sub-Pool | OTI | Mechanism |
+|---|---|---|
+| Dynamic Contribution Scale (DCS) | 7,000,000 | Bonding curve — paid claims. Raises $25,000 total. |
+| Ecosystem Rewards Pool (ERP) | 1,750,000 | Variable rewards — referrals, social tasks. Rate tied to DCS progress. |
+| **Total** | **8,750,000** | |
+
+---
+
+### Sub-Pool 1 — Dynamic Contribution Scale (7,000,000 OTI)
+
+A linear bonding curve. The Contribution Rate starts low and increases continuously as tokens are claimed. Early operators contribute less per unit of Access Fuel — rewarding early network participation.
+
+**Confirmed parameters (July 29, 2026):**
+- Total target raise: **$25,000**
+- Total tokens through DCS: **7,000,000 OTI**
+- Starting Contribution Rate: **$0.001190 per OTI** (founding operator tier)
+- Ending Contribution Rate: **$0.005952 per OTI** (final tier)
+- Multiplier: **5× from start to end**
+- Formula: `Rate(x) = P₀ + (P₁ - P₀) × (x ÷ 7,000,000)` where x = tokens claimed so far
+
+The /whitelist page displays the current rate live, updating in real time as claims are processed. No static price is shown — only the current position on the scale.
+
+**Vesting:** 25% of claimed OTI is immediately accessible as Access Fuel. 75% enters Node Collateral Lockup — linear daily vesting schedule. All vesting parameters are admin-configurable via the OpenFlow Labs dashboard. Nothing is hardcoded.
+
+---
+
+### Sub-Pool 2 — Ecosystem Rewards Pool (1,750,000 OTI)
+
+Reward amounts for referrals and social tasks are **not fixed** — they scale inversely with DCS progress. As the DCS fills, reward amounts decrease. This creates the same early-action urgency on the engagement side as the rising contribution rate creates on the claims side.
+
+**Formula:**
+```
+Reward Multiplier = DCS Remaining ÷ 7,000,000
+Current Reward = Base Reward × Reward Multiplier
+```
+
+**Base reward amounts (admin-configurable):**
+| Action | Base OTI (at 0% DCS claimed) |
+|---|---|
+| Successful referral (per confirmed whitelist claim) | 3,000 OTI |
+| Public post + tag OTI | 1,000 OTI |
+| Share whitelist link publicly | 500 OTI |
+| Follow OTI on Twitter/X | 500 OTI |
+| Follow OTI on Telegram | 500 OTI |
+
+**Example decay:**
+
+| DCS Progress | Referral Bonus | Post/Tag | Follow |
+|---|---|---|---|
+| 0% claimed | 3,000 OTI | 1,000 OTI | 500 OTI |
+| 25% claimed | 2,250 OTI | 750 OTI | 375 OTI |
+| 50% claimed | 1,500 OTI | 500 OTI | 250 OTI |
+| 75% claimed | 750 OTI | 250 OTI | 125 OTI |
+| 90% claimed | 300 OTI | 100 OTI | 50 OTI |
+
+**Reward vesting:** All reward OTI is subject to the same 75% Node Collateral Lockup as direct claims. 25% immediately accessible, 75% vests daily on the same schedule.
+
+**Social task verification:** Users submit their post URL or username on /whitelist. OpenFlow Labs reviews and approves via admin dashboard. Approval triggers the OTI issuance. No third-party social API integration required.
+
+**Referral tracking:** Off-chain in the `whitelist_invites` DB table. The referrer's wallet is linked to each invite code used. Reward issued automatically on claim confirmation.
+
+---
+
+### The Dual-Curve Display (on /whitelist page)
+
+The /whitelist page shows two live counters moving simultaneously:
+- **Contribution Rate** (DCS): current rate in $/OTI → going UP as claims fill
+- **Referral Bonus** (ERP): current OTI per referral → going DOWN as claims fill
+
+Both driven by a single variable: DCS tokens remaining. No static numbers. Every visitor sees live urgency without any speculative language.
+
+---
+
+### Milestone Triggers
+
+These are operational commitments. They describe infrastructure OpenFlow Labs deploys as the ecosystem commits allocation — not investment return promises.
+
+- **Milestone 2 — Phase 1 Liquidity Seeding:** At $5,000 committed allocation → Public Utility Liquidity Layer deployed on decentralized protocols. OTI becomes redeemable via utility swap.
+- **Milestone 3 — Deep Liquidity Scaling:** At $15,000 committed allocation → Secondary AMM pool funded. Utility swap rates stabilised for B2B clients.
+
+---
+
+### Access Controls
+
+- Access gated by single-use invite codes (format: OTI-XXXX-XXXX, admin-generated in batches)
+- 10,000 maximum whitelisted operator slots over 12 months
 - Geographic restrictions enforced (US, China, sanctioned jurisdictions blocked)
-
-**Public milestone commitments (from the /whitelist page):**
-- At $5,000 committed ecosystem allocation → Public Utility Liquidity Layer deployed on decentralized protocols. OTI becomes redeemable through utility swap.
-- At $15,000 committed ecosystem allocation → Secondary AMM pool funded. Utility swap rates stabilised for B2B clients.
-
-These milestones are operational commitments, not investment return promises. They describe what OpenFlow Labs will build as the ecosystem grows.
+- Ban system: admin can freeze any code or wallet address immediately
+- All parameters (base rewards, vesting %, milestones) configurable via OpenFlow Labs admin dashboard
 
 ---
 

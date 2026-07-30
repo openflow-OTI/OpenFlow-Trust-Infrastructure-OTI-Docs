@@ -117,8 +117,9 @@ A professional locked portal — "OTI Infrastructure Hub — Private Whitelist N
 
 **Smart contracts (BNB Chain):**
 - Vesting/lockup contract: 25% immediate access fuel + 75% Node Collateral Lockup with linear daily vesting
-- Dynamic Contribution Scale: bonding curve pricing (starting price and multiplier — Ahmad confirms exact figures; see DECISIONS.md when added)
-- All vesting/lockup parameters admin-configurable — nothing hardcoded
+- Dynamic Contribution Scale (DCS) bonding curve — confirmed parameters (D40): 7,000,000 OTI, $0.001190 start → $0.005952 end, 5× multiplier, $25,000 total raise
+- Ecosystem Rewards Pool (ERP) — confirmed parameters (D41): 1,750,000 OTI, inverse curve tied to DCS remaining. Base rewards: referral = 3,000 OTI, post/tag = 1,000 OTI, share/follow = 500 OTI each. All admin-configurable.
+- All vesting/lockup and reward parameters admin-configurable — nothing hardcoded
 - Deploy to BNB testnet first, Ahmad confirms end-to-end, then mainnet
 
 **Admin dashboard additions:**
@@ -296,7 +297,7 @@ Four hard constraints per D24: zero external dependencies, scoped styles, gracef
 
 | Milestone | Target |
 |---|---|
-| Whitelist total raise target | Ahmad to confirm — Dynamic Contribution Scale runs until all 8,750,000 whitelist OTI is claimed or target is reached |
+| Whitelist total raise target | **$25,000** — from 7,000,000 OTI via Dynamic Contribution Scale ($0.001190 start → $0.005952 end, 5×) |
 | Milestone 2 trigger | $5,000 committed allocation → Public Utility Liquidity Layer deployed |
 | Milestone 3 trigger | $15,000 committed allocation → Secondary AMM pool funded |
 | 1,000 active API users | 90 days after distribution launches |

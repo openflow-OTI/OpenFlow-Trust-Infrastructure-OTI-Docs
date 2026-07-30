@@ -305,6 +305,26 @@ This file records the reasoning behind how OTI was built — not what the code d
 
 ---
 
+### D40 — Dynamic Contribution Scale: Linear Bonding Curve on 7,000,000 OTI
+**Status:** INTENTIONAL — CONFIRMED PARAMETERS
+**What this means:** The paid-claims portion of the Ecosystem Whitelist Allocation uses a linear bonding curve. Contribution Rate starts at $0.001190/OTI and ends at $0.005952/OTI. 5× multiplier from start to end. Total raise target: $25,000 from 7,000,000 OTI.
+**Formula:** `Rate(x) = 0.001190 + (0.005952 - 0.001190) × (x ÷ 7,000,000)` where x = total DCS tokens claimed so far.
+**Why:** Ahmad's direction, July 29, 2026. Rewards early operators (lower contribution rate) while creating genuine economic urgency without speculation language. Rate increases are network scarcity mechanics, not investment price movements. The 5× multiplier creates a meaningful benefit for early action without making late-stage rates look punishing.
+**Framing:** The curve is the "Dynamic Contribution Scale." Rate increase = "Contribution Tier advances as network capacity fills." Never called "token price" in any public-facing content.
+**Confirmed by:** Ahmad, July 29, 2026.
+
+---
+
+### D41 — Ecosystem Rewards Pool: Inverse Bonding Curve Tied to DCS Progress
+**Status:** INTENTIONAL — CONFIRMED DESIGN
+**What this means:** Reward amounts for referrals and social tasks are not fixed — they decrease as the Dynamic Contribution Scale fills. The reward multiplier = DCS Remaining ÷ 7,000,000. As more DCS tokens are claimed, all reward amounts shrink proportionally.
+**Base reward amounts (admin-configurable):** Referral = 3,000 OTI, Post/Tag = 1,000 OTI, Share = 500 OTI, Follow (Twitter/X) = 500 OTI, Follow (Telegram) = 500 OTI. All base amounts are set via admin dashboard — never hardcoded.
+**Why:** Ahmad's direction, July 29, 2026. Creates the same early-action urgency on the engagement side as the rising contribution rate creates on the claims side. Both curves are driven by one variable (DCS tokens remaining), so the entire system has a single source of truth. The /whitelist page shows both live counters simultaneously — contribution rate going up, reward amounts going down — creating visible urgency without any speculative language.
+**Implementation note:** Reward multiplier must be read from `protocol_state.total_slots_claimed` (or DCS tokens claimed counter) at the moment of reward issuance. Rewards are paid from the ERP sub-pool (1,750,000 OTI), not from the DCS sub-pool. The two sub-pools are independent — rewards do not advance the DCS curve.
+**Confirmed by:** Ahmad, July 29, 2026.
+
+---
+
 ## Pending Answers — Awaiting Builder Response
 
 ---

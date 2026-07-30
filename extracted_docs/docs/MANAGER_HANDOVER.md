@@ -1,6 +1,6 @@
 # OTI — Manager Handover Document
-> Last updated: July 29, 2026 (session 21 — Full corrections session with Ahmad. Whitelist pivot confirmed (not presale). GitHub situation clarified (frontend repo only). Anonymous rate limit already removed by Ahmad. Tokenomics full redesign pending advisor session. Whitelist system spec received. All corrections recorded below.)
-> **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, DECISIONS.md, and TASKS.md in that order. TOKENOMICS.md is being redesigned — do not use it as reference until Ahmad returns from advisor session.**
+> Last updated: July 30, 2026 (session 22 — OTI Economics confirmed and fully documented: 35M fixed supply, full allocation breakdown, dual bonding curve DCS + ERP parameters confirmed. TOKENOMICS.md fully rewritten as "OTI Economics." All docs updated. Phase 0 task prompts written: Tasks 23–28.)
+> **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, DECISIONS.md, TASKS.md, and TOKENOMICS.md in that order.**
 > **D16 (evidence rule): no signal value or test result may be estimated or guessed — only real on-chain data. A Builder's "verified" claim is NOT evidence. Ask: which wallet, which raw API response, which psql output.**
 
 ---
@@ -114,7 +114,7 @@ The backend repo stays private (scoring algorithm IP + sensitive infrastructure)
 | Off-chain referral/invite tracking | Session 21 — referral relationships tracked in DB, not on-chain |
 | All vesting/lockup percentages configurable via admin dashboard | Session 21 — nothing hardcoded |
 | Referral commissions paid in OTI token, not BNB/USDT | Session 21 |
-| TOKENOMICS.md is being redesigned — do not reference until Ahmad returns | Session 21 |
+| OTI Economics confirmed — 35M fixed supply, full allocation, dual bonding curve (DCS + ERP) documented in TOKENOMICS.md | Sessions 21–22 |
 | Frontend GitHub repo needs cleanup of internal workspace files | Session 21 |
 | Developer API limits set by Ahmad via admin panel only | Session 21 |
 | Private sale domain: /whitelist on existing Vercel project | Session 21 |
@@ -228,20 +228,27 @@ Task prompts 19–22 are fully written in TASKS.md. No rework needed. Campaign t
 
 ---
 
-## OTI Economics — PENDING ADVISOR SESSION
+## OTI Economics — Confirmed July 29, 2026
 
-**TOKENOMICS.md is being completely redesigned.** Ahmad has consulted an advisor. When Ahmad returns:
+**TOKENOMICS.md has been fully rewritten as "OTI Economics."** 35,000,000 OTI fixed supply. No inflation. No post-launch mint. Full allocation breakdown, dual bonding curve system (DCS + ERP), and revenue distribution are documented there — use TOKENOMICS.md as the canonical reference for all token-related decisions.
 
-1. Full docs vs. reality review — every document checked against what is actually live
-2. OTI Economics redesign — total token supply (30M was incorrect), full allocation, vesting architecture, revenue distribution, regulatory framing, token utility list
+**Confirmed allocation (35M total):**
+- Ecosystem Whitelist: 25% (8.75M) — covers all whitelist events: direct claims, referral rewards, social rewards, community contributor rewards
+- Network Reserve: 20% (7M) — DCS sub-pool: 7M OTI, linear bonding curve, raises $25,000
+- Founders: 15% (5.25M) — 5-year linear vesting, no cliff
+- Strategic Partnerships: 10% (3.5M)
+- Liquidity: 10% (3.5M)
+- Rewards Pool: 10% (3.5M) — funded by revenue buybacks only, never by minting
+- Future Strategic Investment: 5% (1.75M) — ERP sub-pool: 1.75M OTI, inverse reward curve tied to DCS
+- Operations Reserve: 5% (1.75M)
 
-**What is confirmed so far:**
-- Fixed supply (no inflation, no post-launch mint) — exact number TBD
-- Whitelist allocation: 25% of total supply (covers all whitelist program events)
-- All vesting/lockup percentages: configurable via admin dashboard, not hardcoded
-- Off-chain referral tracking
-- Commissions paid in OTI token
-- Token has genuine utility (not speculative) — see OTI utilities list below
+**Dual bonding curve system (Genesis Mode):**
+- DCS (Dynamic Contribution Scale): 7M OTI, $0.001190/OTI → $0.005952/OTI (5× linear curve), raises $25,000 total
+- ERP (Ecosystem Rewards Pool): 1.75M OTI, inverse curve — rewards decrease as DCS fills. Formula: `Current Reward = Base Reward × (DCS Remaining ÷ 7,000,000)`. Base rewards (admin-configurable): referral = 3,000 OTI, post/tag = 1,000 OTI, share/follow = 500 OTI each.
+- The two sub-pools are fully independent — ERP rewards do NOT advance the DCS curve. ERP is free OTI on top.
+- /whitelist page shows two live counters simultaneously: DCS rate going UP, ERP referral bonus going DOWN.
+
+**Revenue distribution confirmed:** Operations 35%, Network Reserve 25%, Team Operations 20%, Rewards Pool 15% (open-market OTI buybacks — not new issuance), R&D 5%.
 
 **Token utilities confirmed (growing list — not exhaustive):**
 - Whitelist ecosystem access (Access Fuel)
@@ -257,8 +264,6 @@ Task prompts 19–22 are fully written in TASKS.md. No rework needed. Campaign t
 - Score history & analytics access
 - Webhook alert subscriptions
 - Governance (future phase)
-
-**TOKENOMICS.md has been rewritten as "OTI Economics" — July 29, 2026. Total supply confirmed: 35,000,000 OTI. Full allocation breakdown and revenue distribution documented. Correct file to reference going forward.**
 
 ---
 
@@ -283,7 +288,7 @@ Domain plan: acquire `otiscore.com` once committed whitelist funds are in the ec
 |---|---|
 | Phase 1 — Foundation | COMPLETE |
 | Phase 2 — WOR | COMPLETE |
-| Phase 0 (NEW) — Ecosystem Whitelist Infrastructure | NEXT — pending Ahmad return from advisor session |
+| Phase 0 (NEW) — Ecosystem Whitelist Infrastructure | NEXT — Tasks 23–28 written and ready to assign |
 | XMTP Campaign (Tasks 19–22) | ONGOING PROGRAM — runs when funded, tasks written and ready |
 | Phase 2B — Post-Campaign Remaining | Planned |
 | Phase 3 — Monetization + OTI Token full ecosystem | Planned |
@@ -292,22 +297,27 @@ Domain plan: acquire `otiscore.com` once committed whitelist funds are in the ec
 
 ---
 
-## What to Build Next (Full List — in order, when Ahmad returns)
+## What to Build Next (Phase 0 — in order, one task per Builder at a time)
 
-**1. Frontend GitHub Repo Cleanup (Frontend Builder)**
-Strip all internal workspace files from the public frontend repo. No TASKS.md, FIXES.md, ARCHITECTURE.md, BUILDER_ONBOARDING.md, or any internal documentation. The repo must show only actual source code and look professional.
+All task prompts are fully written in TASKS.md. Assign them in this order:
 
-**2. Docusaurus Docs Site Audit (Frontend Builder)**
-Check for any sensitive internal workspace information exposed in the public developer docs. Differentiate between: (a) public information for transparency — API reference, supported chains, rate limits, code examples; (b) private information that must not be online — key rotation strategy, admin route structure, internal architecture details, bug history. Strip everything in category (b). Update chain counts. D32 standard throughout.
+**Task 23 — Frontend Builder: GitHub Repo Cleanup**
+Strip all internal workspace files from the public frontend GitHub repo. Only source code remains. Ahmad reviews and merges the deletion commit.
 
-**3. Whitepaper Rewrite (Frontend Builder)**
-Single merged task combining: (a) the original whitepaper update task + (b) the previous Manager's additions draft (in `docs/whitepaper-additions-draft.md`). Must reflect: new whitelist framing (not presale), accurate chain count (12 working), five-signal methodology, WOR, BAS attestation layer, OTI Economics (once designed), roadmap. D32 standard. Chain table in the additions draft is stale — Fantom/Scroll/Sepolia/Holesky entries must be corrected before use.
+**Task 24 — Frontend Builder: Docusaurus Docs Site Audit**
+Remove sensitive internal info from public developer docs. Keep: API reference, chains (12), rate limits, code examples. Remove: key rotation strategy, admin route details, architecture internals, bug history. D32 standard.
 
-**4. Privacy Policy + Terms & Conditions (Frontend Builder)**
-New pages at `/privacy` and `/terms`. Use the verbatim text provided by Ahmad in the Whitelist section above. Delete the old presale versions entirely.
+**Task 25 — Frontend Builder: Whitepaper Rewrite**
+Merge existing whitepaper + `docs/whitepaper-additions-draft.md`. Correct chain count (12), fix stale chain table (remove Fantom/Scroll/Sepolia/Holesky), use whitelist vocabulary throughout, include confirmed OTI Economics from TOKENOMICS.md. D32 standard.
 
-**5. Whitelist Page + System (Frontend Builder + Backend Builder)**
-Full spec is in the "New Direction" section above. Frontend: /whitelist page with entry gate, live progress counter, invite code input, terms checkbox. Backend: new DB tables, `/api/verify-invite` endpoint, batch code generator, code management API. Admin dashboard: batch generator UI, code management panel, ban toggle, metric override input. Smart contracts on BNB Chain: vesting parameters all admin-configurable, testnet first.
+**Task 26 — Frontend Builder: Privacy Policy + Terms & Conditions Pages**
+New pages at `/privacy` and `/terms`. Verbatim text from Ahmad — do not rewrite. Add footer links. Required before /whitelist launches.
+
+**Task 27 — Frontend Builder: /whitelist Page**
+Entry gate (locked default) + authenticated portal with live DCS/ERP dual counters, invite code input, terms checkbox, wallet connect, allocation display, ecosystem rewards section. Depends on Task 28 backend endpoints being live.
+
+**Task 28 — Backend Builder: Whitelist System**
+DB tables (whitelist_invites, whitelist_participants, whitelist_social_tasks, protocol_state, whitelist_config), `/api/verify-invite` endpoint, `/api/whitelist/state` live counters endpoint, admin Whitelist tab (batch code generator, code management, social task review, config override), BNB testnet smart contract. All parameters admin-configurable. Can run in parallel with Frontend Tasks 23–26.
 
 ---
 
@@ -319,7 +329,7 @@ Full spec is in the "New Direction" section above. Frontend: /whitelist page wit
 4. **Builder file copies never auto-sync.** Manager must explicitly tell each Builder to update their own TASKS.md/FIXES.md copy every time status changes.
 5. **Before ending any session:** Update this file and TASKS.md. If a fix was closed, update FIXES.md. Never close a session with stale docs.
 6. **Fixes never get task numbers.** FIXES.md only. BF## for backend, FF## for frontend.
-7. **Next BF number: BF42. Next FF number: FF28. Next Task number: Task 23**
+7. **Next BF number: BF42. Next FF number: FF28. Next Task number: Task 29** (Tasks 23–28 are written and queued in TASKS.md)
 8. **No AI exposure (D32).** All public-facing content must be reviewed before going live.
 9. **Builders do not push to GitHub.** Ahmad pushes only.
 10. **Ahmad sets all API limits and rate limits himself via admin panel.** Manager and Builders never set or hardcode amounts.
@@ -336,7 +346,7 @@ Full spec is in the "New Direction" section above. Frontend: /whitelist page wit
 - **Main app uses npm. oti-docs/ uses pnpm.** Never mix.
 - **Whitelist smart contracts hold real committed allocation.** All contracts must be thoroughly tested on BNB testnet before mainnet deployment. Never skip testnet.
 - **BAS schema UID must be registered before smart contract is written** (Task 20 Part A). Ahmad pays the gas (~$0.01 BNB).
-- **TOKENOMICS.md is being redesigned.** Do not reference the old file for any token-related decisions until Ahmad returns with advisor output.
+- **TOKENOMICS.md is now "OTI Economics."** 35M fixed supply confirmed July 29, 2026. Full allocation, dual bonding curve (DCS + ERP parameters), and revenue distribution are all documented there. This is the canonical token reference — use it.
 - **All vocabulary in public-facing content must use whitelist framing** — no "sale", "invest", "ROI", "yield", "investor" language anywhere.
 
 ---
@@ -365,13 +375,13 @@ When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account
 
 ## Critical Context That Must Never Be Lost
 
-1. **Ahmad is in an advisor session.** When he returns: full docs vs. reality review, then OTI Economics redesign, then write all task prompts.
+1. **OTI Economics is confirmed and documented.** 35M supply, full allocation, dual bonding curve (DCS + ERP) — all in TOKENOMICS.md. Phase 0 task prompts (Tasks 23–28) are written in TASKS.md and ready to assign.
 2. **Whitelist not presale — everywhere.** Every piece of public content, every task prompt, every piece of code the Builders write must use the correct vocabulary.
 3. **Frontend GitHub repo has internal files in it** from Builder pushes. Must be cleaned before whitelist launches.
-4. **TOKENOMICS.md is being redesigned.** Total supply is not 30M. Do not reference old tokenomics.
+4. **TOKENOMICS.md is confirmed "OTI Economics."** Total supply: 35M fixed. The old 30M figure is scrapped. Do not reference it anywhere.
 5. **Anonymous rate limit already removed** by Ahmad via admin panel.
 6. **XMTP campaign is an ongoing program**, not a one-off, not ranked second. Runs when funded. Task prompts 19–22 are written and ready.
 7. **All vesting/lockup parameters must be admin-configurable** — this is a hard requirement, not a preference.
 8. **Docusaurus audit required** before whitelist launches — sensitive internal info may be exposed in public developer docs.
 9. **Task numbering:** Tasks 8–18 complete. Tasks 19–22 = XMTP Campaign (ready, waiting for funding). New whitelist tasks start at Task 23.
-10. **Next session starts with:** Ahmad shares advisor output on OTI Economics → full docs vs. reality review → update all files → write task prompts → assign first Builder.
+10. **Next session starts with:** Assign Task 23 (Frontend GitHub repo cleanup) to Frontend Builder. After Task 23 confirmed live by Ahmad → assign Task 24. One task per Builder at a time — hard rule.
