@@ -171,9 +171,9 @@ Add a "Whitelist" tab to the existing admin panel. Four sub-views:
    - "Save" button: `PUT /api/admin/whitelist/config` — updates config keys
    - This is how Ahmad adjusts all parameters without a code deploy
 
-**Part D — Smart Contracts (BNB Testnet — fully self-contained, you handle everything)**
+**Part D — Smart Contracts (BNB Testnet → Mainnet — you handle everything end-to-end)**
 
-No Ahmad involvement needed until the final handover. You generate the wallet, fund it, deploy everything, test it, and hand over the keys at close.
+Ahmad is not involved at any point during this part. You generate all keys, deploy to testnet, test fully, then deploy to mainnet — all without Ahmad. At close, deliver the complete handover package to the Manager. The Manager relays it to Ahmad. Ahmad's only action is to receive the package and delete this workspace. See D42 in DECISIONS.md.
 
 **Step 1 — Generate deployer wallet:**
 ```js
@@ -183,50 +183,59 @@ console.log("Address:", wallet.address);
 console.log("Private key:", wallet.privateKey);
 ```
 Save as Replit env vars: `DEPLOYER_ADDRESS`, `DEPLOYER_PRIVATE_KEY`. Never put keys in any file.
+This wallet is the permanent mainnet deployer/owner — Ahmad takes ownership at handover.
 
-**Step 2 — Fund from BNB testnet faucet:**
-- https://testnet.bnbchain.org/faucet-smart → paste DEPLOYER_ADDRESS → request testnet BNB (free)
-- Confirm balance before proceeding
+**Step 2 — Fund the deployer wallet:**
+- Testnet: https://testnet.bnbchain.org/faucet-smart → paste DEPLOYER_ADDRESS → request testnet BNB (free)
+- Mainnet: fund from your own wallet with enough BNB to cover contract deployment gas (~0.01–0.05 BNB). Ahmad reimburses at handover.
+- Confirm balance on both networks before proceeding.
 
-**Step 3 — Deploy mock OTI BEP-20 token (`MockOTI.sol`):**
+**Step 3 — Deploy mock OTI BEP-20 token (`MockOTI.sol`) — testnet only:**
 - Standard ERC-20, `constructor(uint256 initialSupply)` mints to deployer
 - Use `35000000 * 10**18` as initial supply
-- Deploy to BNB testnet (chainId 97)
+- Deploy to BNB testnet (chainId 97) only — this mock is never deployed to mainnet
 - Save deployed address as `MOCK_OTI_ADDRESS`
 
-**Step 4 — Deploy `OTIWhitelistVesting.sol`:**
-- Constructor args: `owner_address` (DEPLOYER_ADDRESS), `oti_token_address` (MOCK_OTI_ADDRESS)
+**Step 4 — Deploy `OTIWhitelistVesting.sol` to testnet first, then mainnet:**
+- Testnet deploy (chainId 97): owner = DEPLOYER_ADDRESS, token = MOCK_OTI_ADDRESS
+- Mainnet deploy (chainId 56): owner = DEPLOYER_ADDRESS, token = real OTI BEP-20 address (if not yet available, use a placeholder and document clearly — must be updated before mainnet goes live)
 - Functions:
   - `vest(address participant, uint256 total_oti_amount)` — owner-only. 25% immediate, 75% linear daily over `vesting_duration_days`
   - `claimVested(address participant)` — callable by participant. Transfers unlocked OTI.
   - `setVestingDuration(uint256 days_)` — owner-only. Future vests only, not retroactive.
   - `getVestingStatus(address participant)` — view. Returns total_allocated, total_claimed, currently_claimable, vesting_start, vesting_end
   - `banParticipant(address participant)` — owner-only. Freezes remaining locked tokens.
-- After deploy: call `MockOTI.approve(vestingContractAddress, large_amount)` so vesting contract can move tokens
+- After testnet deploy: call `MockOTI.approve(vestingContractAddress, large_amount)` so vesting contract can move tokens
+- Verify both contracts on BscScan (testnet + mainnet) after each deploy
 
-**Step 5 — End-to-end test:**
+**Step 5 — End-to-end test on testnet:**
 - `vest(testWallet, 1000 * 10^18)` → confirm 250 OTI immediately claimable (25%)
+- Advance testnet time or wait → confirm linear daily unlock works
 - `claimVested(testWallet)` → confirm OTI transferred
 - `banParticipant(testWallet)` → confirm remaining tokens frozen
-- Paste raw output as evidence
+- Paste raw output as evidence before proceeding to mainnet
 
-**Step 6 — Handover package (deliver this to Ahmad in one message at close):**
-- DEPLOYER_ADDRESS
-- DEPLOYER_PRIVATE_KEY
-- MOCK_OTI_ADDRESS (BNB testnet)
-- VESTING_CONTRACT_ADDRESS (BNB testnet)
-- BscScan testnet links for both contracts
+**Step 6 — Handover package (deliver to the Manager in one message at close):**
+The Manager relays this to Ahmad. Do not send directly to Ahmad.
+- `DEPLOYER_ADDRESS`
+- `DEPLOYER_PRIVATE_KEY` — Ahmad saves this immediately and securely
+- `MOCK_OTI_ADDRESS` (BNB testnet only)
+- `VESTING_CONTRACT_ADDRESS_TESTNET`
+- `VESTING_CONTRACT_ADDRESS_MAINNET`
+- BscScan testnet + mainnet links for all contracts
+- Gas cost incurred (BNB amount) — for Ahmad to reimburse you
 
-Ahmad saves the key and addresses, then deletes this workspace. All conversation history and temp credentials are gone.
+Ahmad saves the keys and addresses, then deletes this workspace. All conversation history and temp credentials are gone.
 
 **Evidence required to close:**
 - All DB tables created on Railway (Ahmad runs drizzle-kit push after you deploy)
 - `/api/verify-invite`: valid code → success JSON; used code → 400; missing → 404 (paste raw responses)
 - `/api/whitelist/state`: returns correct computed DCS rate and ERP bonus
 - Admin Whitelist tab: code generator works, code table shows rows, social task queue renders, config save works
-- Both BNB testnet contracts deployed — paste BscScan testnet links
-- vest() and claimVested() test confirmed with raw output
-- Full handover package delivered to Ahmad
+- BNB testnet contracts deployed and verified — paste BscScan testnet links
+- BNB mainnet vesting contract deployed and verified — paste BscScan mainnet link
+- vest() and claimVested() test on testnet confirmed with raw output
+- Full handover package delivered to Manager
 
 ---
 

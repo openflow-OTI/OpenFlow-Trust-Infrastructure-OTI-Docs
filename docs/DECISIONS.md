@@ -359,3 +359,16 @@ This file records the reasoning behind how OTI was built — not what the code d
 
 ### D15 — zkSync Era Contract Interactions May Undercount System Transactions
 **Status:** Under review. Do not treat as a bug until Manager updates this entry.
+
+---
+
+### D42 — Whitelist Smart Contracts: Builder Deploys Everything Including Mainnet — Ahmad Not Involved Until Workspace Deletion
+**Status:** INTENTIONAL
+**What this means:** For Task 28 Part D, the Backend Builder handles the entire smart contract lifecycle without Ahmad's involvement: generates the deployer wallet, funds it, deploys to testnet, runs end-to-end tests, deploys to mainnet, and delivers the complete handover package to the Manager. The Manager relays the package to Ahmad. Ahmad's only action is to receive and save the handover package (deployer private key + contract addresses), then delete the Builder workspace.
+**Why:** Ahmad's direction, July 30, 2026. Ahmad does not want to be involved in any intermediate step. The Builder is trusted to handle key generation, funding, deployment, and testing fully independently.
+**Implications for Builder:**
+- Deployer wallet private key must never appear in any committed file — Replit env vars only
+- Builder funds mainnet gas from their own wallet; Ahmad reimburses at handover
+- Handover package is delivered to the Manager, not directly to Ahmad
+- If the real OTI BEP-20 mainnet token address is not yet available at deploy time, use a placeholder and document clearly — Ahmad updates the contract owner address after handover
+**Confirmed by:** Ahmad, July 30, 2026.
