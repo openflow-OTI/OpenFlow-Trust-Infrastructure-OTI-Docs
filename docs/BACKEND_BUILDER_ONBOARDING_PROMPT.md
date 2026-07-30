@@ -23,17 +23,16 @@ Live URLs:
 ## Current Production State (July 30, 2026)
 
 What is live:
-- Scoring API on Railway: 12 chains (7 EVM + 5 non-EVM). Sui broken (BF41 — JSON-RPC deprecated, Ahmad fixes when funded). BSC/Base/Optimism 503 (need Etherscan Lite $49/mo — leave as-is).
+- Scoring API on Railway: 12 chains (7 EVM + 5 non-EVM). Sui broken — JSON-RPC deprecated, leave it. BSC/Base/Optimism return 503 — waiting on funding, leave as-is.
 - Two-tier cache: L1 LRU (in-memory) + L2 chain_scores DB (30-day window). Keep-highest write logic.
-- Admin panel secured (x-admin-secret header). Ahmad operates via admin panel.
+- Admin panel secured (x-admin-secret header). Ahmad operates via admin panel only.
 - WOR (Wallet Ownership Registry) fully live — wallet registration, self-report compromise, admin WOR tab.
 - API key + quota system live.
-- All fixes BF1–BF41 (BF41 open). All tasks Task 8–18 complete.
 
-What is NOT yet built:
-- Ecosystem Whitelist system (your Task 28 — described below).
+What is NOT yet fully built:
+- Ecosystem Whitelist system (your Task 28 — Part B nearly complete, Parts C and D not started).
 - Self-serve developer API key signup.
-- XMTP campaign infrastructure (Tasks 19–22 — separate program, not your task now).
+- XMTP campaign infrastructure — separate program, not your task now.
 
 ---
 
@@ -66,91 +65,110 @@ What is NOT yet built:
 
 ## Critical Rules You Must Follow
 
-1. D16 Evidence Standard: never report a test as "verified" by reading code alone. Every claim must come from a real API call or psql query — paste the raw JSON or SQL output.
+1. D16 Evidence Standard: never report a test as "verified" by reading code alone. Every claim must come from a real API call or psql query — paste the raw JSON or SQL output. "It should work" is not evidence.
 2. Railway does NOT auto-run migrations. Ahmad manually runs drizzle-kit push against the Railway production DATABASE_URL after every schema change you deploy.
-3. subscriptions table — use raw SQL only (not Drizzle ORM selects) — the real columns are: id, api_key, plan, owner_address, created_at, expires_at, updated_at. No status column, no email column.
+3. subscriptions table — use raw SQL only, not Drizzle ORM selects. Real columns: id, api_key, plan, owner_address, created_at, expires_at, updated_at. No status column, no email column.
 4. compromised_wallets is the single source of truth for all flagged-wallet logic. Never split this across wallet_ownership.status.
-5. WalletConnect challenge TTL = 15 minutes. Any test that takes longer silently hits the 400 branch.
-6. All whitelist/ERP parameters (reward amounts, vesting %, caps) must be admin-configurable from whitelist_config — never hardcode anything token-related.
-
----
-
-## What to Read First (in this exact order)
-
-Extract the OTI docs zip from the project root if it is present, or access them from docs/ if already extracted.
-
-1. ARCHITECTURE.md — what every piece of infrastructure is, including every DB table and its purpose
-2. DECISIONS.md — why things exist the way they do. Read D1 through D60. Do NOT treat anything in there as a bug or change it without Manager instruction.
-3. TOKENOMICS.md — OTI Economics: 35M fixed supply, DCS bonding curve (7M OTI, $0.001190→$0.005952), ERP inverse rewards pool (1.75M OTI). Understand both sub-pools before touching whitelist code.
-4. FIXES.md — especially BF38/BF39/BF40 (compromised_wallets lesson) and BF41 (Sui broken — open, leave it).
-5. BACKEND_TASKS.md — your task queue. Task 28 is your active task.
-
----
-
-## Current Task 28 Status — What Is Already Done
-
-A previous Builder worked on Task 28 before hitting their quota. Here is exactly where things stand:
-
-**Part A — COMPLETE.** All 14 whitelist DB tables are live on Railway production. Ahmad ran drizzle-kit push and confirmed every table exists with the correct schema. whitelist_config and protocol_state are seeded. Do not recreate or modify any of these tables.
-
-**Part B — NEARLY COMPLETE.** The previous Builder built all 11 endpoints in src/routes/whitelist.ts and registered the router in the main Express app. The build succeeds (esbuild compiles and server runs). One issue remains: TS7006 implicit-any TypeScript errors on db.transaction async (tx) callbacks and a .map() callback inside whitelist.ts. The fix is to look at how wallet.ts types its db.transaction(async (tx) => { callbacks and apply the same pattern. Do not use @ts-ignore.
-
-**Part C — NOT STARTED.**
-**Part D — NOT STARTED.**
-
-Your job: fix the one TypeScript issue in Part B, confirm a clean build, then complete D16 evidence testing for every Part B endpoint. Then move to Part C.
+5. All whitelist parameters (reward amounts, vesting %, caps, flag thresholds) must be read from whitelist_config at runtime — never hardcode anything token-related.
+6. Never push to GitHub. Never open a PR. Ahmad does all Git operations himself.
 
 ---
 
 ## The Whitelist System — What You Are Building
 
-OTI is launching an Ecosystem Whitelist Node Program — a gated, invite-code-only access system for early network operators. This is NOT a token sale — it is a utility access program. All public-facing language uses whitelist vocabulary only (no "presale", "invest", "ROI", "yield" — ever).
+OTI is launching an Ecosystem Whitelist Node Program — a gated, invite-code-only access system for early network operators. This is NOT a token sale — it is a utility access program. No "presale", "invest", "ROI", "yield" language anywhere — ever.
 
-**How it works:**
+How it works:
 - Ahmad generates invite codes (format OTI-XXXX-XXXX) via the admin panel
 - Users enter a code + accept Terms & Conditions to unlock the portal
-- Once verified, they can: claim their OTI allocation, connect Telegram + X, complete reward tasks, answer whitepaper questions
-- All rewards are tracked in DB and paid in OTI token
+- Once verified, they connect Telegram + X, then complete reward tasks to earn OTI
 
-**Two token pools (read TOKENOMICS.md for full detail):**
-- DCS (Dynamic Contribution Scale): 7M OTI, linear bonding curve. Rate starts at $0.001190/OTI and rises to $0.005952/OTI as allocation fills. Raises $25,000 total.
-- ERP (Ecosystem Rewards Pool): 1.75M OTI, inverse curve. Reward = Base Reward × (DCS Remaining ÷ 7,000,000). As DCS fills, ERP rewards shrink. Covers referrals, social tasks, daily scoring, WOR actions, whitepaper rounds.
+The two token pools:
 
-**The reward gate:** Before any reward endpoint pays out, three conditions must all be true: participant status = 'active', telegram_verified = true, x_handle IS NOT NULL. All three are checked via a shared internal helper — not copy-pasted per endpoint.
+DCS (Dynamic Contribution Scale):
+- Pool: 7,000,000 OTI
+- Linear bonding curve: starts at $0.001190/OTI, rises to $0.005952/OTI as the pool fills (5× increase)
+- Target: raises $25,000 total
+- Current rate formula: dcs_start_rate + (dcs_end_rate - dcs_start_rate) × ((dcs_total_oti - dcs_oti_remaining) / dcs_total_oti)
 
-**Session fingerprinting:** On every registration and reward claim, the backend silently records IP + user agent + accept-language + client fingerprint data, builds a SHA-256 hash, and checks for collisions. If the same IP or fingerprint hash is shared by too many wallets (thresholds from whitelist_config), flag rows are written to whitelist_flags for Ahmad's review. Flagging NEVER blocks the user — it is silent admin-review only.
+ERP (Ecosystem Rewards Pool):
+- Pool: 1,750,000 OTI
+- Inverse curve: as DCS fills, ERP rewards shrink
+- Multiplier formula: reward = base_reward × (dcs_oti_remaining / dcs_total_oti)
+- Covers: referrals (3,000 OTI base), social tasks (1,000 / 500 OTI base), daily wallet scoring (100 OTI base), WOR actions (500 / 300 OTI base), whitepaper quiz rounds (200 OTI base)
+- All base amounts are admin-configurable from whitelist_config — these are just the seeds
 
-**All parameters come from whitelist_config at runtime.** Reward amounts, vesting percentages, slot caps, flag thresholds — nothing token-related is hardcoded anywhere.
+The reward gate (shared internal helper — not copy-pasted per endpoint):
+Before any reward endpoint pays out, all three must be true:
+1. whitelist_participants.status = 'active' → else 403 { error: 'banned' }
+2. whitelist_participants.telegram_verified = true → else 403 { error: 'telegram_required' }
+3. whitelist_participants.x_handle IS NOT NULL → else 403 { error: 'x_required' }
+
+Session fingerprinting (silent — never told to user):
+On every registration and reward claim, record IP + user agent + accept-language + client fingerprint data, build SHA-256 hash, check for collisions. If same IP or fingerprint_hash shared by >= threshold wallets (from whitelist_config), insert flag rows into whitelist_flags. Flagging NEVER blocks the user. It is for Ahmad's admin review only.
+
+Vesting:
+- 75% Node Collateral Lockup — releases linearly daily
+- 25% immediately accessible as Access Fuel
+- Both percentages come from whitelist_config (vesting_lockup_pct) — never hardcoded
+
+---
+
+## DB Tables Already Live on Railway (Part A — Complete)
+
+All 14 whitelist tables are already created and seeded on Railway production. Do not recreate or modify them:
+- whitelist_invites — invite code management
+- whitelist_participants — whitelisted operator profiles
+- whitelist_social_tasks — social/referral task log (auto-verified)
+- whitelist_task_completions — one-time product engagement tasks
+- whitelist_daily_scores — daily wallet scoring rewards
+- whitelist_whitepaper_questions — 100-question pool (admin-managed)
+- whitelist_whitepaper_progress — per-wallet whitepaper progress
+- whitelist_fingerprints — session fingerprinting for multi-account detection
+- whitelist_flags — flagged account log
+- protocol_state — single-row global state (DCS committed, OTI remaining, slots claimed)
+- whitelist_config — admin-configurable key-value parameters (seeded)
+
+---
+
+## Current Task 28 Status
+
+Part A — COMPLETE. All tables live, seeds confirmed via psql.
+
+Part B — NEARLY COMPLETE. The previous Builder built all 11 endpoints in src/routes/whitelist.ts and registered the router in the main Express app. The build succeeds (esbuild compiles, server runs). One issue remains: TS7006 implicit-any TypeScript errors on db.transaction async (tx) callbacks and a .map() callback. Fix by checking how wallet.ts types its db.transaction(async (tx) => { callbacks and applying the same pattern. Do not use @ts-ignore.
+
+Part C — NOT STARTED. Admin Whitelist tab (4 sub-views).
+Part D — NOT STARTED. Two BNB Chain smart contracts.
+
+Your immediate job: fix the TS7006 issue in Part B, confirm a clean build, push, then provide D16 evidence for all 11 endpoints once Railway is deployed.
 
 ---
 
 ## Secrets Already Set on Railway
 
-All of these are already in the Railway environment — you do not need to ask Ahmad to set them:
+Do not ask Ahmad to set these — they are already in the Railway environment:
 - DATABASE_URL — Railway PostgreSQL
 - ADMIN_SECRET — for adminAuth.ts middleware
-- SESSION_SECRET — for JWT signing (whitepaper question sessions)
+- SESSION_SECRET — for JWT signing (whitepaper question sessions, 15 min expiry)
 - TELEGRAM_BOT_TOKEN — for Telegram HMAC-SHA256 hash verification
 - TWITTER_CLIENT_ID — for X OAuth 2.0
 - TWITTER_CLIENT_SECRET — for X OAuth 2.0
 
-New env vars needed for Part D only (tell the Manager when you reach Part D):
+For Part D only (tell the Manager when you reach it):
 - DEPLOYER_PRIVATE_KEY — your generated deployer wallet key (Replit env var only, never in any file)
 
 ---
 
 ## Confirm Your Understanding
 
-Before I give you the continuation details for Part B, answer these questions so I know you are properly oriented:
+Read everything above carefully. Then answer all six questions before I give you the Task 28 continuation brief:
 
-1. What is the DCS and how does its bonding curve work? What are the two rate values?
+1. What is the DCS bonding curve? What are the start and end rate values, and what direction does the rate move as the pool fills?
 2. What is the ERP multiplier formula? What happens to ERP rewards as DCS fills up?
-3. A participant calls POST /api/whitelist/task/daily-score but their telegram_verified is false. What does the endpoint return?
-4. A user registers with invite code OTI-ABCD-1234. Two other wallets have already registered from the same IP address, and flag_ip_threshold in whitelist_config is set to 3. Does their registration succeed? What happens in the DB?
+3. A participant calls POST /api/whitelist/task/daily-score but their telegram_verified is false. What exact response does the endpoint return?
+4. Two wallets have already registered from the same IP. A third wallet now registers from that same IP. flag_ip_threshold in whitelist_config is set to 3. Does the third registration succeed? What happens in the DB?
 5. What does D16 mean in practice? Give one example of valid evidence and one example of invalid evidence.
-6. Where is the vesting_lockup_pct stored and why is it stored there instead of hardcoded in the contract?
+6. Where is vesting_lockup_pct stored and why is it there instead of hardcoded in the smart contract?
 
-Answer all six correctly and I will give you the full continuation brief for Part B.
-
-Answer these correctly and I will send you the full Task 28 prompt.
+Answer all six correctly and I will send you the full Task 28 continuation brief.
 ```
