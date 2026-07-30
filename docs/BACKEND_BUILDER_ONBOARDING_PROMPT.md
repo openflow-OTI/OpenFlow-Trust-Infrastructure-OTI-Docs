@@ -99,7 +99,7 @@ Build the complete backend infrastructure for the Ecosystem Whitelist Node Progr
   (1) OTIDCSContribution.sol — accepts BNB + 9 BEP-20 tokens (USDT, USDC, WETH, BTCB, BUSD, XRP-BSC, ADA-BSC, DOGE-BSC, MATIC-BSC), Chainlink oracle price feeds, records USD-equivalent contributions
   (2) OTIWhitelistVesting.sol — OTI token distribution (25% immediate + 75% linear daily vesting)
 
-Deployer wallet: you generate it yourself (Step 1 of Part D). Testnet gas is free (BNB faucet). For mainnet, you fund the deployer from your own wallet (~0.01–0.05 BNB); Ahmad reimburses at handover.
+Deployer wallet: you generate it yourself offline (Step 1 of Part D) and immediately send the address to the Manager. Testnet gas is free (BNB testnet faucet). For mainnet you cannot fund the deployer yourself — Ahmad sends BNB to the address after the Manager relays it to him. Do not proceed to mainnet until the Manager confirms Ahmad has sent the funds.
 
 Parts A, B, and C can be built and tested today without any BNB. Part D (contracts) comes after A, B, C are complete and deployed.
 

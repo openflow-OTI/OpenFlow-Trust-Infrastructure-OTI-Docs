@@ -114,7 +114,7 @@ The backend repo stays private (scoring algorithm IP + sensitive infrastructure)
 | Off-chain referral/invite tracking | Session 21 — referral relationships tracked in DB, not on-chain |
 | All vesting/lockup percentages configurable via admin dashboard | Session 21 — nothing hardcoded |
 | Referral commissions paid in OTI token, not BNB/USDT | Session 21 |
-| DCS contribution accepts BNB + 9 BEP-20 tokens (USDT, USDC, WETH, BTCB, BUSD, XRP, ADA, DOGE, MATIC on BSC) | D59, Session 24 |
+| DCS accepts 10 coins each on their own native chain — BSC contract handles BNB+stables; ETH/SOL/TON/XRP/BTC/MATIC each have Layer 2 receiving addresses + CoinGecko pricing; no BSC wrappers | D59, Session 24 |
 | T&C and Privacy Policy: two sets — general product + whitelist-specific, on same /terms and /privacy pages as separate sections with anchors | D60, Session 24 |
 | GitHub cleanup (Task 23) and Docusaurus audit (Task 24) deferred to AFTER all building is complete — full sanitation at end | Session 24 |
 | OTI Economics confirmed — 35M fixed supply, full allocation, dual bonding curve (DCS + ERP) documented in TOKENOMICS.md | Sessions 21–22 |

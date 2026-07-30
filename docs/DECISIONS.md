@@ -508,25 +508,55 @@ This file records the reasoning behind how OTI was built — not what the code d
 
 ---
 
-### D59 — Multi-Coin DCS Contribution: Accept BNB + Top BEP-20 Tokens on BSC
-**Status:** INTENTIONAL — CONFIRMED DESIGN (July 30, 2026)
-**What this means:** The Ecosystem Whitelist DCS (Dynamic Contribution Scale) contribution system must accept multiple payment tokens — not BNB only. Practically on BNB Chain (BSC), "top 10 coins" means the top BEP-20 tokens. True native BTC, SOL, XRP, ADA etc. cannot be accepted directly by a BSC smart contract — only their BSC-bridged/wrapped versions can.
-**Accepted tokens (Task 28 Part D DCS Contribution Contract):**
-1. BNB (native) — Chainlink BNB/USD: `0x0567F2323251f0Aab15c8dFb1967E4eaA47d42aEE`
-2. USDT-BSC: `0x55d398326f99059fF775485246999027B3197955` — stablecoin, $1 peg, no oracle needed
-3. USDC-BSC: `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d` — stablecoin, $1 peg, no oracle needed
-4. WETH-BSC: `0x2170Ed0880ac9A755fd29B2688956BD959F933F8` — Chainlink ETH/USD: `0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e`
-5. BTCB-BSC: `0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c` — Chainlink BTC/USD: `0x264990fbd0A4796A3E3d8E37C4d5F087a8Db51ef`
-6. BUSD-BSC: `0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56` — stablecoin, $1 peg
-7. XRP-BSC: `0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE` — Chainlink XRP/USD: `0x93A67931606648bf050ef521D37984A7aE486E3c`
-8. ADA-BSC: `0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47` — Chainlink ADA/USD: `0xa767f745331D267c7751297D982b050c93985627`
-9. DOGE-BSC: `0xbA2aE424d960c26247Dd6c32edC70B295c744C43` — Chainlink DOGE/USD: `0x3AB0A0d137D4F946fBB19eecc6e92E64660231C8`
-10. MATIC-BSC: `0xCC42724C6683B7E57334c4E856f4c9965ED682bD` — Chainlink MATIC/USD: `0x7CA57b0cA6367191c94C8914d7Df09A57655905f`
-**Architecture note:** Task 28 Part D now requires TWO smart contracts instead of one:
-1. `OTIWhitelistVesting.sol` — handles OTI token distribution (unchanged design)
-2. `OTIDCSContribution.sol` — new contract that accepts the above tokens, uses Chainlink oracles to compute USD equivalent, records contributions, and emits events for backend to process
-**All DCS token/oracle addresses are stored as admin-configurable arrays in the contract** — Ahmad can add or remove accepted tokens via `setAcceptedToken(address token, address priceFeed, bool enabled)` owner-only function.
-**Important:** Builder must verify Chainlink feed addresses are live on BSC mainnet before using. Test each oracle in the testnet equivalent first.
+### D59 — Multi-Coin DCS Contribution: Top 10 Coins, Each on Their Own Native Chain
+**Status:** INTENTIONAL — CONFIRMED DESIGN (July 30, 2026, corrected July 30, 2026)
+**What this means:** The Ecosystem Whitelist DCS contribution system accepts top 10 coins. Each coin is accepted on its **own native chain** — not as BSC-wrapped/BEP-20 tokens. A BSC smart contract cannot accept native SOL, native TON, native XRP, native ETH, or native BTC. Each requires a separate receiving address on its own network.
+
+**Architecture: Two-layer system**
+
+**Layer 1 — BSC Smart Contract (`OTIDCSContribution.sol`):**
+Handles coins that are native to BSC or have primary stablecoin presence on BSC:
+- BNB (native BSC) — Chainlink BNB/USD on BSC mainnet: `0x0567F2323251f0Aab15c8dFb1967E4eaA47d42aEE` ← verified live
+- USDT (BEP-20 on BSC): `0x55d398326f99059fF775485246999027B3197955` — stablecoin, $1 = $1, no oracle
+- USDC (BEP-20 on BSC): `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d` — stablecoin, $1 = $1, no oracle
+- BUSD (BEP-20 on BSC): `0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56` — stablecoin, $1 = $1, no oracle
+
+Contract emits `Contribution(address indexed wallet, address token, uint256 amount, uint256 usdEquivalent)`. Backend listens for events and syncs to `whitelist_contributions` table.
+`setAcceptedToken(address token, address chainlinkFeed, bool isStable, bool enabled)` — owner-only. Stablecoins: pass `address(0)` as feed.
+
+**Layer 2 — Native Chain Receiving Addresses (per-chain wallets):**
+Each coin is accepted at a dedicated OTI receiving address on its native network. The backend (or Ahmad manually via admin panel for MVP) verifies inbound transactions, fetches the USD spot price at tx timestamp from CoinGecko API, calculates USD equivalent, and records in `whitelist_contributions`.
+
+| Coin | Chain | Backend Verification Source |
+|---|---|---|
+| ETH | Ethereum mainnet | Etherscan API (`/api?module=account&action=txlist`) |
+| BTC | Bitcoin mainnet | Blockstream API (`https://blockstream.info/api/address/{addr}/txs`) |
+| SOL | Solana mainnet | Helius RPC or public Solana RPC (`getSignaturesForAddress`) |
+| TON | TON mainnet | toncenter.com API (`/api/v2/getTransactions`) |
+| XRP | XRP Ledger | XRPL public API (`https://xrplcluster.com` — `account_tx`) |
+| MATIC/POL | Polygon mainnet | PolygonScan API (`/api?module=account&action=txlist`) |
+
+**Price source for Layer 2:** CoinGecko public API — `https://api.coingecko.com/api/v3/coins/{id}/history?date={DD-MM-YYYY}` — fetch at the date of the transaction. No Chainlink oracle used for Layer 2 (coins are not on BSC, BSC oracles are irrelevant).
+
+**Accepted coin list (final — Session 24):**
+1. BNB — BSC (Layer 1 contract)
+2. ETH — Ethereum (Layer 2 address)
+3. SOL — Solana (Layer 2 address)
+4. TON — TON (Layer 2 address)
+5. XRP — XRP Ledger (Layer 2 address)
+6. BTC — Bitcoin (Layer 2 address)
+7. MATIC/POL — Polygon (Layer 2 address)
+8. USDT — BSC via Layer 1 contract (primary); Layer 2 ETH/Solana addresses also valid
+9. USDC — BSC via Layer 1 contract (primary); Layer 2 ETH/Solana addresses also valid
+10. BUSD — BSC via Layer 1 contract
+
+**Removed from original proposal:** DOGE, ADA (not in top 10 as confirmed by Ahmad)
+
+**DB changes for Task 28 Part A:** `whitelist_contribution_addresses` table stores the receiving address per chain/coin. `whitelist_contributions` table records each verified contribution: wallet, chain, coin, amount, usd_equivalent, tx_hash, verified_at, verified_by (system or admin username).
+
+**MVP note:** Layer 2 verification is manual via admin panel for launch. Backend polling service (auto-verification) is a Phase 2 enhancement. Admin panel shows "Pending Layer 2 Contributions" queue; Ahmad pastes tx_hash, backend fetches price and records automatically.
+
+**Gas funding flow (CORRECTED):** Builder generates deployer wallet (offline, Step 1 of Part D) → sends DEPLOYER_ADDRESS to Manager → Manager relays to Ahmad → Ahmad sends BNB to that address → Builder proceeds with mainnet deploy. Builder never funds mainnet from their own wallet.
 **Confirmed by:** Ahmad, July 30, 2026.
 
 ---

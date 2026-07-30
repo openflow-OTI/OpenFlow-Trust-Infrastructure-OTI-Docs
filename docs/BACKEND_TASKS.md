@@ -391,16 +391,20 @@ See D42 in DECISIONS.md. Ahmad is not involved at any point during this part.
 
 **⚠️ UPDATED Session 24 — Two contracts required (D59):**
 
-**Contract 1 (NEW): `OTIDCSContribution.sol`**
-Accepts DCS contributions in multiple tokens. Build this first.
-- Accepted tokens: BNB (native), USDT-BSC, USDC-BSC, WETH-BSC, BTCB, BUSD, XRP-BSC, ADA-BSC, DOGE-BSC, MATIC-BSC
-- Full token + oracle addresses: see DECISIONS.md D59
-- `setAcceptedToken(address token, address chainlinkFeed, bool isStable, bool enabled)` — owner only. Stablecoins pass `address(0)` as feed and `isStable=true`.
-- `contribute(address token, uint256 amount) external payable` — BNB via `msg.value`; BEP-20 via `transferFrom` (user approves first)
-- Non-stables: use Chainlink `latestRoundData()` for USD conversion. Stables: 1:1.
-- Emit `Contribution(address indexed wallet, address token, uint256 amount, uint256 usdEquivalent)`
-- `withdraw(address token)` — owner only, sweeps to Ahmad's wallet
-- All oracle feeds must be verified live on BSC testnet before mainnet
+**Contract 1 (NEW): `OTIDCSContribution.sol` — BSC only, Layer 1**
+Handles BNB + BSC stablecoins only. Do NOT attempt to accept ETH, SOL, TON, XRP, BTC or any other native coin here — those live on separate chains and are handled via Layer 2 backend addresses (see D59).
+- Accepted tokens on BSC: BNB (native), USDT-BEP20, USDC-BEP20, BUSD-BEP20
+- BNB/USD Chainlink on BSC mainnet: `0x0567F2323251f0Aab15c8dFb1967E4eaA47d42aEE`
+- USDT, USDC, BUSD: stablecoins — no oracle, $1 = $1
+- `setAcceptedToken(address token, address chainlinkFeed, bool isStable, bool enabled)` — owner only. Pass `address(0)` for chainlinkFeed on stablecoins.
+- `contribute(address token, uint256 amount) external payable` — BNB via `msg.value` with `token = address(0)`; BEP-20 via `IERC20.transferFrom` (frontend must call approve first)
+- BNB pricing: call Chainlink `latestRoundData()` on BNB/USD feed
+- Emit `Contribution(address indexed wallet, address indexed token, uint256 amount, uint256 usdEquivalent)`
+- `withdraw(address token)` — owner only, sweeps collected tokens/BNB to Ahmad's wallet
+- Verify Chainlink feed address is live on BSC testnet before using on mainnet
+
+**Layer 2 (non-BSC coins) — backend + DB, not a contract:**
+ETH, BTC, SOL, TON, XRP, MATIC each have a dedicated OTI receiving address on their own chain. Part A adds `whitelist_contribution_addresses` (one row per coin/chain) and `whitelist_contributions` (each verified payment). Part C admin panel adds a "Pending Contributions" queue where Ahmad pastes a tx_hash → backend auto-fetches price from CoinGecko + verifies → records. See DECISIONS.md D59 for the full chain/API table.
 
 **Contract 2 (original): `OTIWhitelistVesting.sol`** — unchanged design (see steps below)
 
@@ -414,9 +418,9 @@ console.log("Private key:", wallet.privateKey);
 Save as Replit env vars: `DEPLOYER_ADDRESS`, `DEPLOYER_PRIVATE_KEY`. Never put keys in any file.
 
 **Step 2 — Fund the deployer wallet:**
-- Testnet: https://testnet.bnbchain.org/faucet-smart → paste DEPLOYER_ADDRESS (free)
-- Mainnet: fund from your own wallet (~0.01–0.05 BNB). Ahmad reimburses at handover.
-- Confirm balances on both networks before proceeding.
+- Testnet: https://testnet.bnbchain.org/faucet-smart → paste DEPLOYER_ADDRESS (free, no Ahmad needed)
+- Mainnet: **you cannot fund this yourself.** Send DEPLOYER_ADDRESS to the Manager immediately after Step 1. The Manager relays it to Ahmad. Ahmad sends BNB (~0.05 BNB). Do not proceed to mainnet deploy until the Manager confirms Ahmad has funded the address. Verify the balance on BscScan before continuing.
+- Do NOT proceed to mainnet with any contract until you see the BNB balance confirmed.
 
 **Step 3 — Deploy `MockOTI.sol` — testnet only:**
 - Standard ERC-20/BEP-20, `constructor(uint256 initialSupply)` mints to deployer
