@@ -399,36 +399,31 @@ When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account
 
 ---
 
-## SESSION 26 HANDOVER — July 30, 2026
+## SESSION 27 HANDOVER — July 30, 2026
 
 ### What happened this session
-- New Backend Builder account created by Ahmad (old Builder hit Replit free quota mid-task).
-- Task 28 Part A: **CONFIRMED COMPLETE** — all 14 whitelist tables live on Railway production, seeds verified via raw psql evidence.
-- Task 28 Part B: **NOT STARTED** — old Builder received the prompt but hit quota before building anything. New Builder is onboarded and answered all 5 orientation questions correctly (see below).
-- New Builder is holding, waiting for Ahmad to set TELEGRAM_BOT_TOKEN, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET in Railway before Part B is sent.
-- Task 25 (Frontend — Whitepaper Rewrite) is queued and can be assigned to the Frontend Builder in parallel right now.
-
-### New Backend Builder — Orientation Answers (confirmed correct)
-All 5 answers were correct. Builder understands:
-1. `max_whitelist_slots = '0'` = whitelist closed by default; Ahmad opens it by updating the value.
-2. ERP multiplier = wallet OTI trust score (builder flagged they need DECISIONS.md confirmation on exact formula — correct response).
-3. `POST /api/whitelist/task/daily-score` with `telegram_verified = false` → `403 { "error": "telegram_not_verified" }`.
-4. Two wallets same IP hitting `flag_ip_threshold`: registration SUCCEEDS, fingerprint row written with `flagged=true`, flag row written with `status='open'` for Ahmad's human review.
-5. D16: only real HTTP responses and raw psql output accepted as evidence. Code inspection is never evidence.
+- All 3 Railway secrets confirmed SET by Ahmad: `TELEGRAM_BOT_TOKEN` ✅, `TWITTER_CLIENT_ID` ✅, `TWITTER_CLIENT_SECRET` ✅
+- Twitter OAuth 2.0 app configured: type = Web App (Confidential client), callback = `https://workspaceapi-server-production-5c0c.up.railway.app/api/whitelist/connect-x/callback`, website = `https://otiscore.vercel.app`
+- Task 28 Part B prompt: **SENT to Backend Builder** — full endpoint set assigned (11 endpoints in `src/routes/whitelist.ts`)
+- Railway platform incident: builds/deploys temporarily paused at time of handover. Ahmad has 3 pending variable changes queued. **Ahmad must hit Deploy in Railway when the incident clears.**
+- Frontend Builder: **IDLE — confirmed by Ahmad that ALL backend whitelist tasks (Task 28 all parts) must be complete before any frontend work begins.** Do NOT assign Task 25 or any other frontend task until Task 28 is fully confirmed done.
 
 ### NEXT MANAGER: Do these steps in order
 
-**STEP 1 — Ahmad must set these 3 Railway variables FIRST:**
-- Railway → backend service → Variables tab → New Variable:
-  - `TELEGRAM_BOT_TOKEN` — get from @BotFather on Telegram (`/newbot`)
-  - `TWITTER_CLIENT_ID` — from developer.twitter.com → your app → OAuth 2.0
-  - `TWITTER_CLIENT_SECRET` — same place
+**STEP 1 — Chase Railway deploy.**
+Railway had a platform incident (builds paused). When Ahmad is back, ask if Railway has recovered and if he hit Deploy on the 3 pending variable changes. Backend Builder cannot test against Railway until the deploy goes through.
 
-**STEP 2 — Once Ahmad confirms those 3 secrets are set, send Part B prompt to Backend Builder.**
-Part B prompt is fully written in TASKS.md under Task 28 Part B. Paste it verbatim.
+**STEP 2 — Wait for Backend Builder Part B evidence.**
+Builder was sent the full Part B prompt. Apply D16 to every endpoint — no "verified" without raw curl output + psql confirmation. Required evidence list is in BACKEND_TASKS.md under Task 28 Part B.
 
-**STEP 3 — Assign Task 25 to Frontend Builder in parallel (no dependency on backend).**
-Task 25 = Whitepaper Rewrite. Prompt is in FRONTEND_TASKS.md. Assign now, don't wait.
+**STEP 3 — Once Part B is confirmed live, send Part C prompt.**
+Part C = Admin Dashboard Whitelist tab (4 sub-views: Code Management, Whitepaper Questions Manager, Flagged Accounts Panel, Protocol Config Override). Prompt is in BACKEND_TASKS.md.
+
+**STEP 4 — Once Part C is confirmed live, send Part D prompt.**
+Part D = Smart contracts (OTIDCSContribution.sol + OTIWhitelistVesting.sol on BNB testnet → mainnet). Read D59 in DECISIONS.md before sending. Builder must send DEPLOYER_ADDRESS to Manager before mainnet deploy — Ahmad funds it with BNB.
+
+**STEP 5 — Only after Task 28 ALL parts are confirmed done: assign frontend tasks in order.**
+Frontend queue: Task 25 → Task 26 → Task 27 → Task 23 → Task 24. One at a time.
 
 **STEP 4 — GitHub check.**
 Ahmad must confirm he pushed the old Builder's 14 Drizzle schema files to GitHub so the new Backend Builder can clone them. Ask Ahmad if this was done before sending Part B.
