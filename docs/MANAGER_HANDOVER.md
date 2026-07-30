@@ -399,6 +399,47 @@ When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account
 
 ---
 
+## SESSION 26 HANDOVER — July 30, 2026
+
+### What happened this session
+- New Backend Builder account created by Ahmad (old Builder hit Replit free quota mid-task).
+- Task 28 Part A: **CONFIRMED COMPLETE** — all 14 whitelist tables live on Railway production, seeds verified via raw psql evidence.
+- Task 28 Part B: **NOT STARTED** — old Builder received the prompt but hit quota before building anything. New Builder is onboarded and answered all 5 orientation questions correctly (see below).
+- New Builder is holding, waiting for Ahmad to set TELEGRAM_BOT_TOKEN, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET in Railway before Part B is sent.
+- Task 25 (Frontend — Whitepaper Rewrite) is queued and can be assigned to the Frontend Builder in parallel right now.
+
+### New Backend Builder — Orientation Answers (confirmed correct)
+All 5 answers were correct. Builder understands:
+1. `max_whitelist_slots = '0'` = whitelist closed by default; Ahmad opens it by updating the value.
+2. ERP multiplier = wallet OTI trust score (builder flagged they need DECISIONS.md confirmation on exact formula — correct response).
+3. `POST /api/whitelist/task/daily-score` with `telegram_verified = false` → `403 { "error": "telegram_not_verified" }`.
+4. Two wallets same IP hitting `flag_ip_threshold`: registration SUCCEEDS, fingerprint row written with `flagged=true`, flag row written with `status='open'` for Ahmad's human review.
+5. D16: only real HTTP responses and raw psql output accepted as evidence. Code inspection is never evidence.
+
+### NEXT MANAGER: Do these steps in order
+
+**STEP 1 — Ahmad must set these 3 Railway variables FIRST:**
+- Railway → backend service → Variables tab → New Variable:
+  - `TELEGRAM_BOT_TOKEN` — get from @BotFather on Telegram (`/newbot`)
+  - `TWITTER_CLIENT_ID` — from developer.twitter.com → your app → OAuth 2.0
+  - `TWITTER_CLIENT_SECRET` — same place
+
+**STEP 2 — Once Ahmad confirms those 3 secrets are set, send Part B prompt to Backend Builder.**
+Part B prompt is fully written in TASKS.md under Task 28 Part B. Paste it verbatim.
+
+**STEP 3 — Assign Task 25 to Frontend Builder in parallel (no dependency on backend).**
+Task 25 = Whitepaper Rewrite. Prompt is in FRONTEND_TASKS.md. Assign now, don't wait.
+
+**STEP 4 — GitHub check.**
+Ahmad must confirm he pushed the old Builder's 14 Drizzle schema files to GitHub so the new Backend Builder can clone them. Ask Ahmad if this was done before sending Part B.
+
+### Builder status at handover
+- **Backend Builder:** Onboarded, waiting for Part B prompt. Secrets not yet set.
+- **Frontend Builder:** Available. Assign Task 25 immediately.
+- **BF41:** Still open — Sui scoring broken. Leave it, lower priority.
+
+---
+
 ## Critical Context That Must Never Be Lost
 
 1. **OTI Economics is confirmed and documented.** 35M supply, full allocation, dual bonding curve (DCS + ERP) — all in TOKENOMICS.md. Phase 0 task prompts (Tasks 23–28) are written in TASKS.md and ready to assign.
