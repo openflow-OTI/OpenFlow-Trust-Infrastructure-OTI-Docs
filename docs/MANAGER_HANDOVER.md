@@ -404,6 +404,26 @@ When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account
 
 ---
 
+## SESSION 29 HANDOVER — July 31, 2026
+
+### What happened this session
+- Part C evidence confirmed live on Railway: code generation ✅, code ban ✅, question add/patch ✅, 114 seeded questions ✅, config PUT endpoint live ✅. Flag trigger skipped — Ahmad accepted, will verify visually when frontend is built.
+- New Backend Builder onboarding prompt rewritten and saved to BACKEND_BUILDER_ONBOARDING_PROMPT.md — updated to reflect A/B/C complete, Part D as the only active task, 5 orientation questions focused on smart contracts.
+- OTI BEP-20 token creation clarified: deferred until after whitelist launches. Builder deploys it as a future task; Ahmad adds liquidity on PancakeSwap himself. Task 27 (Frontend /whitelist page) handles all public-facing token info display.
+
+### Builder status right now
+- Backend Builder: new account needed — old account hit Replit monthly quota limit. Onboard with updated BACKEND_BUILDER_ONBOARDING_PROMPT.md, confirm 5 answers, then send Part D brief from BACKEND_TASKS.md.
+- Frontend Builder: still idle — all Task 28 parts must be confirmed done first.
+
+### Immediate next actions
+1. Open new Backend Builder Replit account
+2. Paste BACKEND_BUILDER_ONBOARDING_PROMPT.md verbatim
+3. Wait for all 5 answers — confirm correct before sending Part D brief
+4. Builder generates deployer wallet → sends DEPLOYER_ADDRESS to Manager → Manager relays to Ahmad → Ahmad sends ~0.05 BNB → Manager confirms → Builder proceeds to mainnet
+5. Receive final handover package (all contract addresses + private key) → relay to Ahmad → Ahmad saves and deletes Builder workspace
+
+---
+
 ## SESSION 28 HANDOVER — July 30, 2026
 
 ### What happened this session

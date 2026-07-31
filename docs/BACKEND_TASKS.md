@@ -1,5 +1,5 @@
 # OTI — Backend Builder Task List
-> Last updated: July 30, 2026 (session 24 — Task 28 Part D updated: two contracts now required — OTIDCSContribution.sol (multi-coin, D59) + OTIWhitelistVesting.sol. Urgency note added: Railway subscription due today.)\n> (session 22 — Phase 0 Ecosystem Whitelist Infrastructure task added: Task 28. OTI Economics confirmed: 35M supply, dual bonding curve DCS + ERP parameters confirmed.) | Maintained by: Development Manager
+> Last updated: July 31, 2026 (session 29 — Parts A, B, C all confirmed complete and live on Railway. Part D is the only remaining work. New Builder account needed — previous Builder hit Replit quota limit.) | Maintained by: Development Manager
 > **This file contains your tasks only. Read BUILDER_ONBOARDING.md, ARCHITECTURE.md, DECISIONS.md, and TOKENOMICS.md before starting anything here.**
 > **`DECISIONS.md` is especially important before touching any scoring, data-fetching, or chain-handling code — it explains why certain behaviors exist and which ones must not be changed without Ahmad's approval. You never update DECISIONS.md yourself.**
 > Build in the exact order listed. Do not skip ahead.
@@ -10,7 +10,7 @@
 
 ## Your Active Item Right Now
 
-**⚠️ URGENT — As of July 30, 2026:** Task 28 (Whitelist System) is your active task. Railway subscription is due today at midnight UTC — Parts A, B, and C must be built and tested today. Part D (smart contracts) follows once A–B–C are deployed and confirmed. Read DECISIONS.md D59 for the updated multi-coin DCS contribution contract requirement before starting Part D.
+**As of July 31, 2026:** Task 28 Parts A, B, and C are complete and live on Railway. Your only remaining task is Part D — two BNB Chain smart contracts. Begin with Step 1: generate the deployer wallet and send DEPLOYER_ADDRESS to the Manager before doing anything else.
 
 ---
 
