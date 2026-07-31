@@ -404,6 +404,55 @@ When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account
 
 ---
 
+## SESSION 30 HANDOVER — July 31, 2026
+
+### What happened this session
+- Part C evidence confirmed live on Railway (6/9 items) — Ahmad accepted, flag trigger deferred to visual check when frontend is built.
+- Backend Builder (previous account) onboarded for Part D. Answered all 5 orientation questions correctly.
+- Builder hit Replit daily quota mid-work on Part D. Work stopped just before running the full Hardhat test.
+- Builder completed before stopping:
+  - All 3 contracts compiled: MockOTI.sol, OTIDCSContribution.sol, OTIWhitelistVesting.sol
+  - MockChainlinkAggregator.sol created (BSC RPC blocked from Replit — mock aggregator is standard practice, gas figures identical)
+  - hardhat.config.ts updated with local network + BSC fork settings
+  - package.json updated with `test:fork` script
+  - 10 changes staged but NOT yet committed or pushed
+- Ahmad is pushing the 10 changes to GitHub via commit before opening a new Builder account.
+- Deployer wallet already generated: DEPLOYER_ADDRESS = 0x334515DbF3Fb428Fd37847EC1fD23b2C605e37dD (PRIVATE KEY and MNEMONIC are with Ahmad only — never in any doc)
+- This Manager account is also running low on credits. New Manager account needed.
+
+### Builder status right now
+- **Backend Builder:** New account needed. Previous Builder's work is committed to GitHub. New Builder pulls, runs `cd contracts && npm run test:fork`, screenshots gas output, sends DEPLOYER_ADDRESS + screenshot. Ahmad sends BNB. Builder deploys to mainnet.
+- **Frontend Builder:** Still idle — Task 28 all parts must be done first.
+
+### Commit message for Ahmad to use right now
+`Add Hardhat local fork config, MockChainlinkAggregator, and compiled contract artifacts for Part D testing`
+
+### Immediate next actions for new Manager
+1. Open new Backend Builder Replit account
+2. Paste BACKEND_BUILDER_ONBOARDING_PROMPT.md verbatim — it is fully updated for this handoff
+3. Wait for Builder's 4 understanding answers — confirm correct before they start
+4. Builder pulls from GitHub, runs `npm run test:fork` in contracts/, screenshots gas output
+5. Builder posts in chat: DEPLOYER_ADDRESS + gas screenshot
+6. Ahmad sends BNB to DEPLOYER_ADDRESS (gas cost is tiny — ~$0.15 based on 0.05 Gwei gas price)
+7. Manager confirms BNB received (Builder checks BscScan balance)
+8. Builder deploys both contracts to BSC mainnet, verifies on BscScan
+9. Builder posts in chat: DEPLOYER_PRIVATE_KEY, DEPLOYER_MNEMONIC, all contract addresses, BscScan links
+10. Ahmad saves everything, deletes Builder workspace
+11. Task 28 Part D = DONE → assign Frontend Builder Task 25
+
+### Key things the new Manager must know
+- DECISIONS.md is Manager-only. Never send to Builders. All relevant knowledge is inline in prompts.
+- Every new Builder must receive the full onboarding prompt and answer all orientation questions correctly first.
+- One task per Builder at a time. Hard rule.
+- Railway does NOT auto-run migrations. Ahmad manually runs drizzle-kit push after every schema change.
+- The deployer wallet PRIVATE KEY and MNEMONIC are with Ahmad only. Never ask Builder to re-generate — they already exist.
+- DEPLOYER_ADDRESS = 0x334515DbF3Fb428Fd37847EC1fD23b2C605e37dD — public, safe to include in Builder instructions.
+- After Task 28 Part D: assign Frontend Builder in this order: Task 25 → 26 → 27 → 23 → 24. One at a time.
+- OTI BEP-20 token contract creation is deferred — Ahmad adds liquidity on PancakeSwap himself when the time comes. Not a current task.
+- Next task number: Task 29. Next BF: BF42. Next FF: FF28.
+
+---
+
 ## SESSION 29 HANDOVER — July 31, 2026
 
 ### What happened this session

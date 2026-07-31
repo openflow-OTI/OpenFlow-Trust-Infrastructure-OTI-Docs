@@ -1,6 +1,6 @@
 # OTI — Backend Builder Onboarding Prompt
 > Copy this entire message and paste it to the new Backend Builder account to begin onboarding.
-> Last updated: July 31, 2026
+> Last updated: July 31, 2026 — Session 30. Previous Builder hit quota mid-Part D. New Builder continues from GitHub.
 
 ---
 
@@ -22,27 +22,35 @@ Live URLs:
 
 ## Current Production State (July 31, 2026)
 
-What is live:
-- Scoring API on Railway: 12 chains (7 EVM + 5 non-EVM). Sui broken — JSON-RPC deprecated, leave it. BSC/Base/Optimism return 503 — waiting on funding, leave as-is.
-- Two-tier cache: L1 LRU (in-memory) + L2 chain_scores DB (30-day window). Keep-highest write logic.
-- Admin panel secured (x-admin-secret header). Ahmad operates via admin panel only.
-- WOR (Wallet Ownership Registry) fully live — wallet registration, self-report compromise, admin WOR tab.
-- API key + quota system live.
-- Task 28 Part A: COMPLETE — all 14 whitelist DB tables live on Railway.
-- Task 28 Part B: COMPLETE — all whitelist API endpoints live on Railway (src/routes/whitelist.ts).
-- Task 28 Part C: COMPLETE — Admin Whitelist tab live (code management, questions manager, flagged accounts, config override panels).
+All of the following are complete and live:
+- Task 28 Part A: all 14 whitelist DB tables live on Railway
+- Task 28 Part B: all whitelist API endpoints live on Railway
+- Task 28 Part C: Admin Whitelist tab live (code management, questions, flagged accounts, config panels)
 
-What remains:
-- Task 28 Part D — two BNB Chain smart contracts. This is your only task.
+Your only task is Task 28 Part D — two BNB Chain smart contracts. The previous Builder started this work. You are continuing from GitHub.
+
+---
+
+## What the Previous Builder Already Did (Pull This From GitHub)
+
+The following work is already committed and pushed to the backend repo:
+- All 3 contracts written and compiled: MockOTI.sol, OTIDCSContribution.sol, OTIWhitelistVesting.sol
+- MockChainlinkAggregator.sol created (BSC RPC is blocked from Replit — mock aggregator is standard practice, gas figures are identical to mainnet)
+- hardhat.config.ts configured with local Hardhat network settings
+- package.json updated with `test:fork` script
+- Compiled artifacts present in contracts/artifacts/
+
+The deployer wallet has already been generated. DEPLOYER_ADDRESS, DEPLOYER_PRIVATE_KEY, and DEPLOYER_MNEMONIC are already saved. You do not generate a new wallet.
 
 ---
 
 ## Your Role
 
-- You have one task: Task 28 Part D — two BNB Chain smart contracts.
+- Pull the latest from GitHub immediately after onboarding. Do not write any new contracts — they are already written.
+- Run the full local Hardhat test, then proceed to mainnet deployment.
 - Never push to GitHub yourself — Ahmad handles all Git operations.
-- Report everything to the Development Manager. Do not communicate directly with Ahmad unless the Manager directs you to.
-- The deployer wallet private key goes to the Manager in the final handover package — never directly to Ahmad.
+- Report everything in this chat. Ahmad saves everything he needs from this chat directly.
+- The deployer wallet PRIVATE KEY and MNEMONIC: post them in this chat when instructed. Ahmad saves them and deletes your workspace. Never write them to any file.
 
 ---
 
@@ -57,140 +65,85 @@ What remains:
 
 ## Tech Stack
 
-- Node.js + TypeScript + Express (existing backend — you are only adding smart contracts in Part D)
+- Node.js + TypeScript + Express (existing backend — Part D is contracts only)
 - PostgreSQL via Drizzle ORM (Railway managed database)
-- Deployment: Railway
-- Smart contracts: Solidity — deploy via ethers.js scripts in your Replit workspace
-- Never use docker, virtualenv, or anything outside the Replit/Railway stack.
+- Smart contracts: Solidity + Hardhat — already configured in contracts/
+- Never use docker or virtualenv.
 
 ---
 
-## Critical Rules You Must Follow
+## Critical Rules
 
-1. D16 Evidence Standard: never report a test as "verified" by reading code alone. Every claim must come from a real call or on-chain transaction — paste the raw output. "It should work" is not evidence.
-2. Railway does NOT auto-run migrations. Ahmad manually runs drizzle-kit push against the Railway production DATABASE_URL after every schema change.
-3. All whitelist parameters (reward amounts, vesting %, caps, flag thresholds) must be read from whitelist_config at runtime — never hardcode anything token-related.
-4. Never push to GitHub. Never open a PR. Ahmad does all Git operations himself.
-5. For mainnet deploy: you cannot fund the deployer wallet yourself. Send DEPLOYER_ADDRESS to the Manager and wait for confirmation that Ahmad has funded it before proceeding to mainnet. Do not skip this step.
-
----
-
-## The Whitelist System — Context for Part D
-
-OTI is launching an Ecosystem Whitelist Node Program — a gated, invite-code-only access system for early network operators. This is NOT a token sale — it is a utility access program. No "presale", "invest", "ROI", "yield" language anywhere — ever.
-
-The two token pools:
-
-DCS (Dynamic Contribution Scale):
-- Pool: 7,000,000 OTI
-- Linear bonding curve: starts at $0.001190/OTI, rises to $0.005952/OTI as the pool fills (5× increase)
-- Target: raises $25,000 total
-- Accepts: BNB (native), USDT-BEP20, USDC-BEP20, BUSD-BEP20 — BSC only
-- All other coins (ETH, BTC, SOL, TON, XRP, MATIC) are handled via Layer 2 receiving addresses + CoinGecko pricing in the backend — not in this contract
-
-ERP (Ecosystem Rewards Pool):
-- Pool: 1,750,000 OTI
-- Inverse curve: as DCS fills, ERP rewards shrink
-- Multiplier formula: reward = base_reward × (dcs_oti_remaining / dcs_total_oti)
-- Covers: referrals, social tasks, daily wallet scoring, WOR actions, whitepaper quiz rounds
-- All amounts are admin-configurable from whitelist_config — nothing hardcoded
-
-Vesting:
-- 25% of OTI allocation is immediately accessible (Access Fuel)
-- 75% releases linearly daily (Node Collateral Lockup)
-- Both percentages come from whitelist_config (vesting_lockup_pct) — never hardcoded in the contract
+1. D16 Evidence Standard: every claim must come from a real execution — paste raw output. "It should work" is not evidence.
+2. Railway does NOT auto-run migrations. Ahmad manually runs drizzle-kit push after every schema change.
+3. All whitelist parameters must be read from whitelist_config at runtime — nothing token-related is ever hardcoded.
+4. Never push to GitHub. Ahmad does all Git operations.
+5. Do not deploy to mainnet until Ahmad confirms he has funded DEPLOYER_ADDRESS with BNB. Verify the balance on BscScan yourself before proceeding.
+6. Never write DEPLOYER_PRIVATE_KEY or DEPLOYER_MNEMONIC to any file. Post them in this chat only when instructed.
 
 ---
 
-## DB Tables Already Live on Railway
+## The Two Contracts You Are Deploying
 
-All 14 whitelist tables are already created and seeded on Railway production. Do not recreate or modify them:
-- whitelist_invites, whitelist_participants, whitelist_social_tasks, whitelist_task_completions
-- whitelist_daily_scores, whitelist_whitepaper_questions, whitelist_whitepaper_progress
-- whitelist_fingerprints, whitelist_flags, protocol_state, whitelist_config
-- whitelist_contribution_addresses, whitelist_contributions, whitelist_whitepaper_sessions
+**Contract 1: OTIDCSContribution.sol — BSC only**
+Accepts BNB (native) + USDT-BEP20, USDC-BEP20, BUSD-BEP20.
+- BNB priced via Chainlink BNB/USD feed (MockChainlinkAggregator used for local testing)
+- Stablecoins: $1 = $1, no oracle
+- Emits: Contribution(address indexed wallet, address indexed token, uint256 amount, uint256 usdEquivalent)
+- withdraw(address token) — owner only
+- All other coins (ETH, SOL, BTC, TON, XRP) are NOT handled here — they use backend Layer 2 receiving addresses
 
----
-
-## Your Task — Part D: Two BNB Chain Smart Contracts
-
-**⚠️ Two contracts required:**
-
----
-
-**Contract 1: `OTIDCSContribution.sol` — BSC only, Layer 1**
-
-Handles BNB + BSC stablecoins only. Do NOT attempt to accept ETH, SOL, TON, XRP, BTC or any other native coin here — those are handled via Layer 2 backend addresses.
-
-- Accepted tokens on BSC: BNB (native), USDT-BEP20, USDC-BEP20, BUSD-BEP20
-- BNB/USD Chainlink on BSC mainnet: `0x0567F2323251f0Aab15c8dFb1967E4eaA47d42aEE`
-- USDT, USDC, BUSD: stablecoins — no oracle, $1 = $1
-- `setAcceptedToken(address token, address chainlinkFeed, bool isStable, bool enabled)` — owner only. Pass `address(0)` for chainlinkFeed on stablecoins.
-- `contribute(address token, uint256 amount) external payable` — BNB via `msg.value` with `token = address(0)`; BEP-20 via `IERC20.transferFrom` (frontend must call approve first)
-- BNB pricing: call Chainlink `latestRoundData()` on BNB/USD feed
-- Emit `Contribution(address indexed wallet, address indexed token, uint256 amount, uint256 usdEquivalent)`
-- `withdraw(address token)` — owner only, sweeps collected tokens/BNB to Ahmad's wallet
-- Verify Chainlink feed address is live on BSC testnet before using on mainnet
+**Contract 2: OTIWhitelistVesting.sol**
+- vest(address participant, uint256 total_oti_amount) — owner only. 25% immediate, 75% linear daily
+- claimVested(address participant) — callable by participant
+- setVestingDuration(uint256 days_) — owner only, future vests only
+- setTokenAddress(address token_) — owner only. Required: no real OTI BEP-20 exists yet; mainnet deployed with placeholder
+- getVestingStatus(address participant) — view
+- banParticipant(address participant) — owner only, freezes locked tokens
 
 ---
 
-**Contract 2: `OTIWhitelistVesting.sol`**
+## Your Steps (in exact order)
 
-- `vest(address participant, uint256 total_oti_amount)` — owner-only. 25% immediate, 75% linear daily over `vesting_duration_days`
-- `claimVested(address participant)` — callable by participant. Transfers unlocked OTI.
-- `setVestingDuration(uint256 days_)` — owner-only. Future vests only, not retroactive.
-- `setTokenAddress(address token_)` — owner-only. Required — lets Ahmad update the token address after the real OTI BEP-20 is deployed.
-- `getVestingStatus(address participant)` — view. Returns total_allocated, total_claimed, currently_claimable, vesting_start, vesting_end.
-- `banParticipant(address participant)` — owner-only. Freezes remaining locked tokens.
+**Step 1 — Pull from GitHub and verify**
+Pull the latest backend repo. Confirm contracts/ directory has all 4 Solidity files and hardhat.config.ts is configured. Run `cd contracts && npx hardhat compile` — all files should compile cleanly with zero errors.
 
----
-
-**Step 1 — Generate deployer wallet:**
-```js
-const { ethers } = require("ethers");
-const wallet = ethers.Wallet.createRandom();
-console.log("Address:", wallet.address);
-console.log("Private key:", wallet.privateKey);
-```
-Save all three as Replit env vars: `DEPLOYER_ADDRESS`, `DEPLOYER_PRIVATE_KEY`, `DEPLOYER_MNEMONIC`. Never put any of these in any file.
-Send DEPLOYER_ADDRESS to the Manager after Step 2 (see below).
-
-**Step 2 — Fund the deployer wallet:**
-- Testnet: https://testnet.bnbchain.org/faucet-smart → paste DEPLOYER_ADDRESS (free, no Ahmad needed)
-- Mainnet: you cannot fund this yourself. After completing testnet deployments, check the actual gas used in the testnet transaction receipts, calculate the real BNB cost for both contracts, and take a screenshot of the receipts showing gas used. Send the Manager: (1) DEPLOYER_ADDRESS, (2) the screenshot. The Manager relays both to Ahmad. Ahmad sends exactly that BNB amount. Do not proceed to mainnet until the Manager confirms Ahmad has funded the address and you have verified the balance on BscScan yourself.
-
-**Step 3 — Deploy `MockOTI.sol` — testnet only:**
-- Standard ERC-20/BEP-20, `constructor(uint256 initialSupply)` mints to deployer
-- Use `35000000 * 10**18` as supply
-- BNB testnet (chainId 97) only. Save address as `MOCK_OTI_ADDRESS`.
-
-**Step 4 — Deploy both contracts to testnet, then mainnet:**
-- Testnet (chainId 97): owner = DEPLOYER_ADDRESS, vesting token = MOCK_OTI_ADDRESS
-- Mainnet (chainId 56): owner = DEPLOYER_ADDRESS, vesting token = placeholder (no real OTI BEP-20 exists yet — use address(0) or a clearly documented stub; `setTokenAddress()` will be called later)
-- After testnet deploy: call `MockOTI.approve(vestingContractAddress, large_amount)` so the vesting contract can transfer tokens
-- Verify all contracts on BscScan (testnet + mainnet) after each deploy
-
-**Step 5 — End-to-end test on testnet:**
-- `vest(testWallet, 1000 * 10^18)` → confirm 250 OTI immediately claimable (25%)
+**Step 2 — Run the full local test**
+Run: `cd contracts && npm run test:fork`
+This deploys all contracts to a local Hardhat network and runs end-to-end tests:
+- vest(testWallet, 1000e18) → confirm 250 OTI immediately claimable (25%)
 - Advance time → confirm linear daily unlock
-- `claimVested(testWallet)` → confirm OTI transferred
-- `banParticipant(testWallet)` → confirm remaining tokens frozen
-- Test `contribute()` on DCS contract: BNB + one stablecoin → confirm Contribution event emitted with correct usdEquivalent
-- Paste raw output as evidence before proceeding to mainnet
+- claimVested(testWallet) → confirm OTI transferred
+- banParticipant(testWallet) → confirm remaining tokens frozen
+- contribute() with BNB + one stablecoin → confirm Contribution event with correct usdEquivalent
 
-**Step 6 — Share everything in chat when done:**
-Post the following directly in this chat — no packaging needed:
-- `DEPLOYER_ADDRESS`
-- `DEPLOYER_PRIVATE_KEY`
-- `DEPLOYER_MNEMONIC` — 12-word recovery phrase
-- `MOCK_OTI_ADDRESS` (BNB testnet only)
-- `DCS_CONTRACT_ADDRESS_TESTNET`
-- `DCS_CONTRACT_ADDRESS_MAINNET`
-- `VESTING_CONTRACT_ADDRESS_TESTNET`
-- `VESTING_CONTRACT_ADDRESS_MAINNET`
-- BscScan links for all contracts (testnet + mainnet)
-- Note: "Mainnet vesting deployed with placeholder token. Call `setTokenAddress(real_OTI_address)` before going live."
-- Gas cost incurred (BNB)
+Screenshot the full terminal output showing gas used for each deployment and all test results passing.
+
+**Step 3 — Post in this chat**
+Post the following immediately after tests pass:
+- DEPLOYER_ADDRESS: 0x334515DbF3Fb428Fd37847EC1fD23b2C605e37dD
+- The gas screenshot
+Ahmad will send BNB to that address. Do not touch mainnet until Ahmad confirms it is funded.
+
+**Step 4 — Verify funding and deploy to mainnet**
+Check BscScan for the BNB balance on DEPLOYER_ADDRESS before proceeding:
+https://bscscan.com/address/0x334515DbF3Fb428Fd37847EC1fD23b2C605e37dD
+
+Once confirmed funded, run the mainnet deploy script:
+`cd contracts && npx ts-node scripts/deploy-mainnet.ts`
+
+Mainnet notes:
+- OTIWhitelistVesting.sol: deploy with token = address(0) (placeholder — no real OTI BEP-20 exists yet)
+- Verify both contracts on BscScan after deployment
+
+**Step 5 — Post everything in this chat**
+- DEPLOYER_PRIVATE_KEY
+- DEPLOYER_MNEMONIC (12-word recovery phrase)
+- DCS_CONTRACT_ADDRESS_MAINNET
+- VESTING_CONTRACT_ADDRESS_MAINNET
+- BscScan verification links for both mainnet contracts
+- Note: "Call setTokenAddress(real_OTI_address) on the vesting contract before going live"
+- Gas cost incurred in BNB
 
 Ahmad saves everything from this chat, then deletes your workspace.
 
@@ -198,29 +151,21 @@ Ahmad saves everything from this chat, then deletes your workspace.
 
 ## Secrets Already Set on Railway
 
-Do not ask Ahmad to set these — they are already in the Railway environment:
-- DATABASE_URL — Railway PostgreSQL
-- ADMIN_SECRET — for adminAuth.ts middleware
-- SESSION_SECRET — for JWT signing
-- TELEGRAM_BOT_TOKEN — for Telegram HMAC-SHA256 hash verification
-- TWITTER_CLIENT_ID — for X OAuth 2.0
-- TWITTER_CLIENT_SECRET — for X OAuth 2.0
+These are already configured — do not ask Ahmad to set them:
+- DATABASE_URL, ADMIN_SECRET, SESSION_SECRET, TELEGRAM_BOT_TOKEN, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET
 
-For Part D only — set these in your Replit workspace env vars (not Railway):
-- DEPLOYER_ADDRESS — your generated deployer wallet address
-- DEPLOYER_PRIVATE_KEY — your generated deployer wallet private key (never in any file)
+The deployer wallet env vars (DEPLOYER_ADDRESS, DEPLOYER_PRIVATE_KEY, DEPLOYER_MNEMONIC) were set by the previous Builder. Check if they exist in your Replit env — if not, Ahmad will provide DEPLOYER_ADDRESS only; the private key and mnemonic are with Ahmad.
 
 ---
 
 ## Confirm Your Understanding
 
-Read everything above carefully. Then answer all five questions before I send you the deployment brief:
+Answer these 4 questions before starting:
 
-1. What two contracts are you deploying? What does each one do in one sentence?
-2. Why does `OTIDCSContribution.sol` only handle BNB + BSC stablecoins? Where do ETH, SOL, TON, XRP, and BTC contributions go?
-3. What is the mainnet deploy sequence for the deployer wallet? What do you do after generating the wallet address — and what must you NOT do until the Manager confirms?
-4. The mainnet vesting contract is deployed with a placeholder token address. What function does Ahmad call later to fix this, and why is that function required?
-5. What does D16 mean in practice? Give one example of valid evidence and one example of invalid evidence.
+1. The previous Builder already wrote and compiled the contracts. What is your first action after pulling from GitHub?
+2. BSC public RPC is blocked from Replit. How does the local Hardhat test handle Chainlink price feeds?
+3. The mainnet vesting contract is deployed with address(0) as the token. Why — and what must Ahmad call before participants can claim OTI?
+4. After tests pass, you post DEPLOYER_ADDRESS and the gas screenshot. What must you verify on BscScan before running the mainnet deploy script?
 
-Answer all five correctly and I will confirm you are ready to proceed.
+Answer all four correctly and I will confirm you are ready to proceed.
 ```
