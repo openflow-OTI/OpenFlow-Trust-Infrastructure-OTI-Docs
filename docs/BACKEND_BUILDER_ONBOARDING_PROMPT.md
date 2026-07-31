@@ -178,11 +178,11 @@ Send DEPLOYER_ADDRESS to the Manager after Step 2 (see below).
 - Test `contribute()` on DCS contract: BNB + one stablecoin → confirm Contribution event emitted with correct usdEquivalent
 - Paste raw output as evidence before proceeding to mainnet
 
-**Step 6 — Final handover package (deliver to Manager in one message):**
-Manager relays to Ahmad. Do not send directly to Ahmad.
+**Step 6 — Share everything in chat when done:**
+Post the following directly in this chat — no packaging needed:
 - `DEPLOYER_ADDRESS`
-- `DEPLOYER_PRIVATE_KEY` — Ahmad saves this immediately and securely
-- `DEPLOYER_MNEMONIC` — 12-word recovery phrase — Ahmad saves this immediately and securely
+- `DEPLOYER_PRIVATE_KEY`
+- `DEPLOYER_MNEMONIC` — 12-word recovery phrase
 - `MOCK_OTI_ADDRESS` (BNB testnet only)
 - `DCS_CONTRACT_ADDRESS_TESTNET`
 - `DCS_CONTRACT_ADDRESS_MAINNET`
@@ -190,9 +190,9 @@ Manager relays to Ahmad. Do not send directly to Ahmad.
 - `VESTING_CONTRACT_ADDRESS_MAINNET`
 - BscScan links for all contracts (testnet + mainnet)
 - Note: "Mainnet vesting deployed with placeholder token. Call `setTokenAddress(real_OTI_address)` before going live."
-- Gas cost incurred (BNB) — for Ahmad to reimburse
+- Gas cost incurred (BNB)
 
-Ahmad saves the package, then deletes this workspace.
+Ahmad saves everything from this chat, then deletes your workspace.
 
 ---
 
