@@ -152,12 +152,12 @@ const wallet = ethers.Wallet.createRandom();
 console.log("Address:", wallet.address);
 console.log("Private key:", wallet.privateKey);
 ```
-Save as Replit env vars: `DEPLOYER_ADDRESS`, `DEPLOYER_PRIVATE_KEY`. Never put keys in any file.
-Send DEPLOYER_ADDRESS to the Manager immediately after this step.
+Save all three as Replit env vars: `DEPLOYER_ADDRESS`, `DEPLOYER_PRIVATE_KEY`, `DEPLOYER_MNEMONIC`. Never put any of these in any file.
+Send DEPLOYER_ADDRESS to the Manager after Step 2 (see below).
 
 **Step 2 — Fund the deployer wallet:**
 - Testnet: https://testnet.bnbchain.org/faucet-smart → paste DEPLOYER_ADDRESS (free, no Ahmad needed)
-- Mainnet: you cannot fund this yourself. When you send DEPLOYER_ADDRESS to the Manager, also include your estimated gas cost in BNB for deploying both contracts on mainnet (run a gas estimate — do not guess). The Manager relays both to Ahmad. Ahmad sends exactly that amount. Do not proceed to mainnet until the Manager confirms Ahmad has funded the address. Verify the balance on BscScan before continuing.
+- Mainnet: you cannot fund this yourself. After completing testnet deployments, check the actual gas used in the testnet transaction receipts, calculate the real BNB cost for both contracts, and take a screenshot of the receipts showing gas used. Send the Manager: (1) DEPLOYER_ADDRESS, (2) the screenshot. The Manager relays both to Ahmad. Ahmad sends exactly that BNB amount. Do not proceed to mainnet until the Manager confirms Ahmad has funded the address and you have verified the balance on BscScan yourself.
 
 **Step 3 — Deploy `MockOTI.sol` — testnet only:**
 - Standard ERC-20/BEP-20, `constructor(uint256 initialSupply)` mints to deployer
@@ -182,6 +182,7 @@ Send DEPLOYER_ADDRESS to the Manager immediately after this step.
 Manager relays to Ahmad. Do not send directly to Ahmad.
 - `DEPLOYER_ADDRESS`
 - `DEPLOYER_PRIVATE_KEY` — Ahmad saves this immediately and securely
+- `DEPLOYER_MNEMONIC` — 12-word recovery phrase — Ahmad saves this immediately and securely
 - `MOCK_OTI_ADDRESS` (BNB testnet only)
 - `DCS_CONTRACT_ADDRESS_TESTNET`
 - `DCS_CONTRACT_ADDRESS_MAINNET`
