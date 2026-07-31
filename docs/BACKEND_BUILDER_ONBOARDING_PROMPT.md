@@ -157,7 +157,7 @@ Send DEPLOYER_ADDRESS to the Manager immediately after this step.
 
 **Step 2 — Fund the deployer wallet:**
 - Testnet: https://testnet.bnbchain.org/faucet-smart → paste DEPLOYER_ADDRESS (free, no Ahmad needed)
-- Mainnet: you cannot fund this yourself. Send DEPLOYER_ADDRESS to the Manager. The Manager relays to Ahmad. Ahmad sends BNB (~0.05 BNB). Do not proceed to mainnet until the Manager confirms Ahmad has funded the address. Verify the balance on BscScan before continuing.
+- Mainnet: you cannot fund this yourself. When you send DEPLOYER_ADDRESS to the Manager, also include your estimated gas cost in BNB for deploying both contracts on mainnet (run a gas estimate — do not guess). The Manager relays both to Ahmad. Ahmad sends exactly that amount. Do not proceed to mainnet until the Manager confirms Ahmad has funded the address. Verify the balance on BscScan before continuing.
 
 **Step 3 — Deploy `MockOTI.sol` — testnet only:**
 - Standard ERC-20/BEP-20, `constructor(uint256 initialSupply)` mints to deployer
