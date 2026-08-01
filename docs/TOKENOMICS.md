@@ -194,7 +194,9 @@ The auto-buyback engine monitors the DEX price hourly. When the DEX price falls 
 
 The OTI purchased via buybacks is held by the contract — it is not destroyed. It can be recycled into the Rewards Pool or future liquidity operations by admin decision.
 
-**Circuit breaker:** If the Buyback Reserve drops below 5% of total Committed Funds, the auto-buyback engine pauses automatically and OpenFlow Labs receives an admin alert. The DEX price finds its natural level until the reserve is replenished by new whitelist contributions. This prevents the system from depleting the operational reserve trying to defend a price the market cannot currently support.
+**Circuit breaker:** If the Buyback Reserve drops below the circuit breaker threshold, the auto-buyback engine pauses automatically and OpenFlow Labs receives an admin alert. The DEX price finds its natural level until the reserve is replenished by new whitelist contributions. This prevents the system from depleting the operational reserve trying to defend a price the market cannot currently support.
+
+The circuit breaker threshold is admin-configurable (default: 5% of total Committed Funds). OpenFlow Labs can raise or lower this threshold at any time via the admin dashboard — for example, setting it higher during slow periods for more conservative protection, or lower during strong whitelist growth when reserve risk is minimal.
 
 ### Admin Dashboard — DEX & Liquidity Stats
 
