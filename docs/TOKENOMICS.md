@@ -1,5 +1,5 @@
 # OTI Economics
-> **Document version:** July 29, 2026 — Full redesign following advisor session. Previous TOKENOMICS.md content is superseded entirely.
+> **Document version:** August 1, 2026 — Updated following strategic design session. Supersedes July 29, 2026 version.
 > **Regulatory framing:** OTI is a utility access token. All language in this document and in any public content derived from it must reflect utility-first framing. No investment language, no return expectations, no yield framing. See DECISIONS.md for the vocabulary enforcement rule.
 
 ---
@@ -33,7 +33,7 @@ Genesis Mode characteristics:
 - One staking system (Founder + internal allocation lockup only)
 - No governance layer
 - Fixed token supply in force
-- All internal allocations locked
+- All internal allocations locked in smart contracts
 - Public access fuel distribution occurs **only** through the Ecosystem Whitelist Allocation
 
 Genesis Mode continues until OpenFlow Labs determines the network has reached the operational maturity required for expanded governance and liquidity phases.
@@ -42,41 +42,74 @@ Genesis Mode continues until OpenFlow Labs determines the network has reached th
 
 ## Token Allocation
 
-| Allocation | % | OTI | Status During Genesis |
-|---|---|---|---|
-| Ecosystem Whitelist | 25% | 8,750,000 | Active — distributed via whitelist program |
-| Network Reserve | 20% | 7,000,000 | Locked |
-| Founders | 15% | 5,250,000 | Locked — 5-year linear vesting |
-| Strategic Partnerships | 10% | 3,500,000 | Locked — released as needed |
-| Liquidity | 10% | 3,500,000 | Locked — released for liquidity operations only |
-| Rewards Pool | 10% | 3,500,000 | Active — funded by revenue buybacks |
-| Future Strategic Investment | 5% | 1,750,000 | Reserved |
-| Operations Reserve | 5% | 1,750,000 | Locked |
-| **Total** | **100%** | **35,000,000** | |
+| Allocation | % | OTI | Contract | Status During Genesis |
+|---|---|---|---|---|
+| Ecosystem Whitelist | 25% | 8,750,000 | Whitelist Contract | Active — distributed via whitelist program |
+| Network Reserve | 20% | 7,000,000 | Allocation Manager | Locked — unassigned until needed |
+| Founders | 15% | 5,250,000 | Team Contract | Locked — 5-year linear daily vesting |
+| Liquidity | 10% | 3,500,000 | Allocation Manager | Locked — deployed to DEX pool operations |
+| Rewards Pool | 10% | 3,500,000 | Allocation Manager | Active — funded by revenue buybacks |
+| Strategic Partnerships | 5% | 1,750,000 | Allocation Manager | Locked — released per agreement |
+| Marketing & Growth | 5% | 1,750,000 | Allocation Manager | Locked — released per agreement |
+| Future Strategic Investment | 5% | 1,750,000 | Allocation Manager | Reserved — unassigned |
+| Operations Reserve | 5% | 1,750,000 | Allocation Manager | Locked — released for operational needs |
+| **Total** | **100%** | **35,000,000** | | |
 
 ---
 
-### Ecosystem Whitelist Allocation — 8,750,000 OTI (25%)
+## Genesis Contract Architecture
 
-The Ecosystem Whitelist Allocation is the **only** allocation intended for public distribution during Genesis.
+At genesis, all 35,000,000 OTI are minted and immediately distributed across three smart contracts. Zero tokens are held in any personal wallet at launch. All locked supply is verifiable on-chain.
 
-It covers the entire scope of the Ecosystem Whitelist Node Program:
-- Invite-only onboarding (access fuel claims by whitelisted operators)
-- Referral reward programs
-- Community contributor recognition
-- Early ecosystem participant rewards
-- Social media and awareness campaign rewards
-- Network testing participant rewards
+### Contract 1 — Whitelist Contract (8,750,000 OTI)
 
-All distribution from this allocation is subject to the 75% Node Collateral Lockup. When a whitelisted operator claims access fuel, 25% is immediately accessible and 75% enters a linear daily vesting schedule. The vesting parameters are configured by OpenFlow Labs via the admin dashboard and may be adjusted operationally.
+Holds the entire Ecosystem Whitelist Allocation. Manages the DCS bonding curve, ERP reward issuance, and all whitelist participant vesting. Admin-configurable vesting parameters. See Whitelist Program Economics for full detail.
 
-No tokens from any other allocation may be distributed publicly during Genesis.
+### Contract 2 — Team Contract (5,250,000 OTI)
+
+Holds the Founders allocation exclusively. Fixed 5-year linear daily vesting from genesis date. No early unlock mechanism. No admin override. Founders claim daily unlocked portions via the private `/team` portal by connecting their wallet.
+
+The five-year lockup is non-negotiable and cannot be changed by admin after deployment. This is a permanent on-chain commitment signal.
+
+### Contract 3 — Allocation Manager (21,000,000 OTI)
+
+Holds all remaining allocations: Network Reserve, Liquidity, Rewards Pool, Strategic Partnerships, Marketing & Growth, Future Strategic Investment, and Operations Reserve.
+
+**Key design principles:**
+
+- All tokens in the Allocation Manager are **not in circulating supply** until assigned. They exist on-chain but are held by the contract, not any external wallet. Circulating supply trackers (CoinMarketCap, CoinGecko, DexScreener) reflect only tokens held in externally-owned wallets — unassigned tokens in this contract are excluded.
+- OpenFlow Labs (admin wallet, secured by multi-sig) is the only authority that can create assignments.
+- Every assignment is a public on-chain transaction. OpenFlow Labs publishes the corresponding agreement document alongside the transaction hash for full transparency.
+- Unassigned tokens remain permanently locked in the contract until OpenFlow Labs creates an assignment. They do not vest, do not move, and cannot be accessed by anyone.
+
+**Per-assignment configuration (admin sets per deal):**
+
+| Parameter | Options |
+|---|---|
+| Recipient wallet address | Any valid BEP-20 address |
+| Total OTI amount | Any amount within unassigned balance |
+| Immediate release % | 0% to 100% |
+| Vesting duration | 0 days to any number of days |
+| Start date | Assignment date (default) or future date |
+
+Setting 0% immediate + 0 days vesting is equivalent to a direct send. Setting 100% immediate is equivalent to an instant grant. All combinations in between are valid. Recipients claim their daily vested portion via the private `/marketing` or `/partners` portal.
+
+**Admin dashboard for each assignment shows:**
+- Recipient wallet
+- Total OTI assigned
+- Agreement reference name
+- On-chain transaction hash (links to BscScan)
+- Amount claimed so far / amount remaining
+- Daily claim rate
+- Printable PDF receipt (includes all above fields + assignment terms)
 
 ---
+
+## Allocation Manager — Allocation Details
 
 ### Network Reserve — 7,000,000 OTI (20%)
 
-Held by OpenFlow Labs to fund long-term network sustainability.
+Held for long-term network sustainability. Released by OpenFlow Labs decision only when a specific requirement arises.
 
 Covers:
 - Infrastructure expansion (new chain integrations, scoring expansions)
@@ -84,73 +117,220 @@ Covers:
 - Strategic technical partnerships
 - Long-term operational continuity
 
-Locked during Genesis. Released by OpenFlow Labs decision as specific requirements arise.
+### Liquidity Allocation — 3,500,000 OTI (10%)
 
----
+Reserved exclusively for DEX and CEX liquidity operations.
 
-### Founders — 5,250,000 OTI (15%)
+Primary use: seeding the OTI/USDT (or OTI/BNB) liquidity pool on PancakeSwap. When OpenFlow Labs creates the initial DEX pool, Liquidity allocation tokens are assigned from the Allocation Manager to the pool creation transaction. LP tokens from the initial seed are locked permanently (burned to a dead address) — the liquidity cannot be removed.
 
-Commitment allocation for OpenFlow Labs founders.
+Ongoing use: additional liquidity depth additions as the network grows.
 
-- 100% locked at genesis.
-- Five-year linear vesting.
-- No cliff period.
-- No early unlock mechanism.
+### Rewards Pool — 3,500,000 OTI (10%)
 
-The five-year lockup structure aligns founder incentives with long-term network health. Founders cannot exit ahead of the network they are building.
+Funds staking and ecosystem incentive programs. Replenished through revenue-backed open-market purchases — 15% of platform revenue is used to buy OTI on the open market and transfer it into the Rewards Pool. No new tokens are minted. Total supply cap is never breached.
 
----
+### Strategic Partnerships — 1,750,000 OTI (5%)
 
-### Strategic Partnerships — 3,500,000 OTI (10%)
-
-Reserved for infrastructure-level partnerships that require token-based alignment:
+Reserved for infrastructure-level partnerships requiring token-based alignment:
 - Exchange and DEX partnerships
 - Wallet provider integrations
 - Enterprise platform integrations
 - Infrastructure and tooling partnerships
 
-Released only when a specific partnership requires it. Locked otherwise.
+Released only when a specific partnership agreement is executed. Each release is configured via the Allocation Manager with custom vesting terms per deal.
 
----
+### Marketing & Growth — 1,750,000 OTI (5%)
 
-### Liquidity Allocation — 3,500,000 OTI (10%)
+Reserved for marketing partners, influencers, ambassadors, and growth programs.
 
-Reserved exclusively for liquidity operations:
-- DEX liquidity pool seeding
-- CEX listing requirements
-- Market operations to support utility swap access
+Released only when a specific marketing agreement is executed. Recipients access their allocation via the private `/marketing` portal. All Marketing & Growth assignments use 3-year vesting (1,095 days) starting from the assignment date, with daily linear claiming. The immediate release % per deal is set by OpenFlow Labs — can be 0% for pure vesting or a small % for upfront confirmation of the agreement.
 
-Not used for any purpose other than establishing and maintaining liquidity. Locked until liquidity operations begin.
-
----
-
-### Rewards Pool — 3,500,000 OTI (10%)
-
-Funds staking and ecosystem incentive programs.
-
-The Rewards Pool is replenished through revenue-backed open-market purchases. OpenFlow Labs allocates a portion of platform revenue (see Revenue Distribution) to purchase OTI on the open market. Purchased tokens are transferred into the Rewards Pool.
-
-This means staking rewards and incentive programs are funded by real platform revenue — not by inflation and not by minting new tokens. The total supply cap is never breached.
-
----
+If any portion of this allocation is unused over the long term, it remains locked in the Allocation Manager. OpenFlow Labs may reassign unused amounts to the Network Reserve by admin decision, with a public on-chain record.
 
 ### Future Strategic Investment — 1,750,000 OTI (5%)
 
-Reserved for future fundraising rounds with strategic investors.
-
-Not distributed during Genesis. Reserved only.
-
----
+Reserved for future fundraising rounds with strategic investors. Not assigned during Genesis. Reserved only.
 
 ### Operations Reserve — 1,750,000 OTI (5%)
 
-Operational contingency reserve.
+Operational contingency reserve for infrastructure emergencies, unplanned operational costs, and business continuity requirements. Released by OpenFlow Labs decision only for defined operational needs.
 
-- Infrastructure emergencies
-- Unplanned operational costs
-- Business continuity requirements
+---
 
-Locked. Released only under OpenFlow Labs decision for defined operational needs.
+## DEX Liquidity Engine
+
+The DEX Liquidity Engine is the automated system that maintains OTI utility swap access and price stability on the DEX. It operates from the first whitelist contribution and runs continuously.
+
+### Liquidity Auto-Seeding (30% rule)
+
+When a whitelist participant contributes funds, the contribution is automatically split:
+
+- **30% → DEX liquidity pool** (adds depth to the OTI/USDT pool on PancakeSwap automatically)
+- **70% → Committed Funds Reserve** (held in the whitelist contract for operations and buybacks)
+
+This means the DEX pool deepens with every single whitelist contribution from day one. No phase triggers. No manual action by OpenFlow Labs required.
+
+The initial DEX pool is created by OpenFlow Labs at or before the first whitelist buy, using a small seed of Liquidity allocation tokens paired with minimal BNB/USDT to establish the starting price reference. This is a one-time manual action. All subsequent depth comes automatically from the 30% rule.
+
+### DEX Target Multiplier (DCS-TM)
+
+**Default: 1.5×**
+
+The DCS-TM defines the target relationship between the DEX spot price and the current DCS contribution rate:
+
+```
+Target DEX Price = Current DCS Rate × DCS-TM
+```
+
+Example: if the DCS rate has reached $0.002, the system targets a DEX price of $0.003.
+
+The DCS-TM is admin-configurable. OpenFlow Labs can raise or lower it at any time based on market conditions.
+
+### Auto-Buyback Engine
+
+The auto-buyback engine monitors the DEX price hourly. When the DEX price falls below the target (DCS Rate × DCS-TM), it automatically uses funds from the Buyback Reserve to buy OTI on the DEX, pushing the price back toward the target.
+
+**Buyback Reserve:** OpenFlow Labs sets the buyback reserve percentage in the admin dashboard — this is the portion of Committed Funds that can be used for buybacks. Example: 20% reserve means if $10,000 has been committed, up to $2,000 is available for buybacks.
+
+The OTI purchased via buybacks is held by the contract — it is not destroyed. It can be recycled into the Rewards Pool or future liquidity operations by admin decision.
+
+**Circuit breaker:** If the Buyback Reserve drops below 5% of total Committed Funds, the auto-buyback engine pauses automatically and OpenFlow Labs receives an admin alert. The DEX price finds its natural level until the reserve is replenished by new whitelist contributions. This prevents the system from depleting the operational reserve trying to defend a price the market cannot currently support.
+
+### Admin Dashboard — DEX & Liquidity Stats
+
+The admin dashboard whitelist section displays:
+
+| Metric | Description |
+|---|---|
+| Total committed (USDT/BNB) | All funds received from whitelist contributions |
+| DEX pool depth | Current total value locked in the OTI liquidity pool |
+| Current DCS rate | Live position on the bonding curve |
+| Current DEX spot price | Live price from PancakeSwap |
+| DCS-TM gap | DEX price vs target (green = above target, red = below) |
+| Buyback reserve balance | Funds available for auto-buyback |
+| Buyback history | Table: timestamp, amount spent, OTI bought, price before/after |
+| Auto-buyback status | Active / Paused (circuit breaker state) |
+
+---
+
+## Whitelist Program Economics
+
+The Ecosystem Whitelist Allocation (8,750,000 OTI, 25%) is split into two sub-pools that operate simultaneously:
+
+| Sub-Pool | OTI | Mechanism |
+|---|---|---|
+| Dynamic Contribution Scale (DCS) | 7,000,000 | Bonding curve — paid claims. Raises $25,000 total. |
+| Ecosystem Rewards Pool (ERP) | 1,750,000 | Variable rewards — referrals, social tasks. Rate tied to DCS progress. |
+| **Total** | **8,750,000** | |
+
+---
+
+### Sub-Pool 1 — Dynamic Contribution Scale (7,000,000 OTI)
+
+A linear bonding curve. The Contribution Rate starts low and increases continuously as tokens are claimed. Early operators contribute less per unit of Access Fuel — rewarding early network participation.
+
+**Confirmed parameters (July 29, 2026):**
+- Total target raise: **$25,000**
+- Total tokens through DCS: **7,000,000 OTI**
+- Starting Contribution Rate: **$0.001190 per OTI** (founding operator tier)
+- Ending Contribution Rate: **$0.005952 per OTI** (final tier)
+- Multiplier: **5× from start to end**
+- Formula: `Rate(x) = P₀ + (P₁ - P₀) × (x ÷ 7,000,000)` where x = tokens claimed so far
+
+The /whitelist page displays the current rate live, updating in real time as claims are processed. No static price is shown — only the current position on the scale.
+
+**Dynamic Unlock Formula:**
+
+The immediate unlock percentage is not fixed — it scales inversely with DCS progress. Early operators (joining when DCS is empty) receive the maximum immediate unlock. Late operators (joining when DCS is nearly full) receive the minimum.
+
+```
+Immediate_Unlock% = max(5%, 25% - (DCS_Progress% × 20%))
+```
+
+| DCS Progress | Immediate Unlock | Locked (vesting) |
+|---|---|---|
+| 0% claimed | 25% | 75% |
+| 25% claimed | 20% | 80% |
+| 50% claimed | 15% | 85% |
+| 75% claimed | 10% | 90% |
+| 100% claimed | 5% | 95% |
+
+**Why this works for participants:** Although late buyers receive less immediately, their locked portion is larger — meaning their daily vesting earnings are higher. For the same total OTI received:
+- Early buyer (10,000 OTI, 90-day vesting): 2,500 immediate + 7,500 ÷ 90 = **83.3 OTI/day**
+- Late buyer (10,000 OTI, 90-day vesting): 500 immediate + 9,500 ÷ 90 = **105.6 OTI/day**
+
+Early adopters are rewarded with the larger upfront amount. Late adopters are rewarded with higher daily income.
+
+**Vesting duration:** Admin-configurable in days via the OpenFlow Labs dashboard. Duration is set per period — when OpenFlow Labs changes the vesting duration, it applies to all future buyers from that point forward. Existing buyers' vesting duration locks in at the time of their claim and is never retroactively changed.
+
+---
+
+### Sub-Pool 2 — Ecosystem Rewards Pool (1,750,000 OTI)
+
+Reward amounts for referrals and social tasks are **not fixed** — they scale inversely with DCS progress. As the DCS fills, reward amounts decrease. This creates the same early-action urgency on the engagement side as the rising contribution rate creates on the claims side.
+
+**Formula:**
+```
+Reward Multiplier = DCS Remaining ÷ 7,000,000
+Current Reward = Base Reward × Reward Multiplier
+```
+
+**Base reward amounts (admin-configurable):**
+| Action | Base OTI (at 0% DCS claimed) |
+|---|---|
+| Successful referral (per confirmed whitelist claim) | 3,000 OTI |
+| Public post + tag OTI | 1,000 OTI |
+| Share whitelist link publicly | 500 OTI |
+| Follow OTI on Twitter/X | 500 OTI |
+| Follow OTI on Telegram | 500 OTI |
+
+**Example decay:**
+
+| DCS Progress | Referral Bonus | Post/Tag | Follow |
+|---|---|---|---|
+| 0% claimed | 3,000 OTI | 1,000 OTI | 500 OTI |
+| 25% claimed | 2,250 OTI | 750 OTI | 375 OTI |
+| 50% claimed | 1,500 OTI | 500 OTI | 250 OTI |
+| 75% claimed | 750 OTI | 250 OTI | 125 OTI |
+| 90% claimed | 300 OTI | 100 OTI | 50 OTI |
+
+**ERP Reward Vesting:** All ERP reward OTI is locked for **3 years (1,095 days)** from the date the reward is granted. Linear daily vesting — recipients claim each day's unlocked portion. No immediate unlock for ERP rewards. The 3-year clock starts from the grant date, not from the date of the action that earned it.
+
+**Social task verification:** Users submit their post URL or username on /whitelist. OpenFlow Labs reviews and approves via admin dashboard. Approval triggers the OTI issuance and starts the 3-year vesting clock.
+
+**Referral tracking:** Off-chain in the `whitelist_invites` DB table. The referrer's wallet is linked to each invite code used. Reward issued automatically on claim confirmation.
+
+---
+
+### The Dual-Curve Display (on /whitelist page)
+
+The /whitelist page shows two live counters moving simultaneously:
+- **Contribution Rate** (DCS): current rate in $/OTI → going UP as claims fill
+- **Referral Bonus** (ERP): current OTI per referral → going DOWN as claims fill
+
+Both driven by a single variable: DCS tokens remaining. No static numbers. Every visitor sees live urgency without any speculative language.
+
+---
+
+### What Happens After the Whitelist Closes
+
+When the DCS reaches 7,000,000 OTI claimed, the whitelist stops accepting new participants. The /whitelist page updates to reflect this. However:
+
+- **Existing participants continue claiming normally.** The vesting contract keeps running indefinitely. Anyone with locked OTI continues visiting the platform and claiming their daily unlock for as long as their vesting runs.
+- **ERP vesting continues.** All social reward lockups continue their 3-year vesting regardless of whitelist status.
+- **The DEX liquidity engine continues.** Auto-buyback and liquidity operations continue from the Committed Funds Reserve.
+
+The whitelist close is an entry gate closing — not a shutdown. All existing obligations (vesting, claiming, DEX support) run to completion.
+
+---
+
+### Access Controls
+
+- Access gated by single-use invite codes (format: OTI-XXXX-XXXX, admin-generated in batches)
+- 10,000 maximum whitelisted operator slots over 12 months
+- Geographic restrictions enforced (US, China, sanctioned jurisdictions blocked)
+- Ban system: admin can freeze any code or wallet address immediately
+- All parameters (base rewards, vesting duration in days, unlock %, DCS-TM, buyback reserve %) configurable via OpenFlow Labs admin dashboard
 
 ---
 
@@ -160,7 +340,7 @@ Genesis uses one staking system.
 
 **What is staked:** Founder allocation and internal locked allocations are subject to the staking lockup schedule described above.
 
-**What public participants receive:** Whitelisted operators receive access fuel according to the 25%/75% vesting structure configured by the platform. The 75% Node Collateral Lockup is a network stability mechanism, not an investment product. It protects circulating supply from systemic dumping during early network phases.
+**What public participants receive:** Whitelisted operators receive access fuel according to the dynamic unlock formula configured by the platform. The Node Collateral Lockup is a network stability mechanism, not an investment product. It protects circulating supply from systemic dumping during early network phases.
 
 **Governance staking:** Not available during Genesis. No governance exists during Genesis.
 
@@ -173,8 +353,8 @@ Genesis includes no governance layer.
 OTI is managed operationally by OpenFlow Labs during the Genesis phase. OpenFlow Labs makes all decisions regarding:
 - Vesting parameter configuration
 - Reserve allocation decisions
-- Liquidity timing
-- Partnership token releases
+- Liquidity and buyback operations
+- Partnership and marketing token releases
 - Revenue distribution ratios
 
 Governance mechanisms are a future-phase consideration, not a Genesis feature.
@@ -236,112 +416,33 @@ OTI has no utility outside the OTI network and its integrations. It is not a gen
 
 ---
 
+## Circulating Supply At Key Moments
+
+| Moment | Circulating OTI | % of Total |
+|---|---|---|
+| Genesis day | ~0 OTI | ~0% |
+| First whitelist buy | Immediate unlock of first claim only | <0.1% |
+| Whitelist 50% filled | DCS immediate unlocks only (~avg 17.5%) | ~0.5% |
+| Whitelist closes (full) | All DCS immediate unlocks (~avg 15%) | ~3% |
+| 1 year after close | DCS vesting + ERP partial unlock | ~8-12% |
+| 3 years after close | Most DCS vested, ERP fully vested | ~30-35% |
+| 5 years after genesis | Founders fully vested, DCS/ERP complete | ~40-45% |
+
+The remainder (55-60% at 5 years) is still locked in Allocation Manager assignments not yet vested or not yet assigned.
+
+---
+
 ## Core Principles
 
 1. **Fixed supply.** 35,000,000 OTI. No exceptions.
 2. **No inflation.** Rewards are funded by revenue buybacks, not new minting.
 3. **No governance during Genesis.** OpenFlow Labs operates the network directly.
-4. **One staking system.** Founder lockup + internal allocation lockup only. No public speculation layer.
+4. **On-chain lock verification.** All allocations locked in smart contracts from genesis. Zero tokens in personal wallets at launch.
 5. **Revenue-backed ecosystem.** Rewards Pool is funded by real revenue, not by printing tokens.
 6. **Utility-driven demand.** OTI demand grows as network usage grows — attestations, API calls, subscriptions.
 7. **Infrastructure-first.** Economic model designed for long-term sustainability, not short-term speculation.
-8. **Long-term alignment.** Founders locked five years. Internal allocations locked during Genesis. All incentives point toward building.
-
----
-
-## Whitelist Program Economics
-
-The Ecosystem Whitelist Allocation (8,750,000 OTI, 25%) is split into two sub-pools that operate simultaneously:
-
-| Sub-Pool | OTI | Mechanism |
-|---|---|---|
-| Dynamic Contribution Scale (DCS) | 7,000,000 | Bonding curve — paid claims. Raises $25,000 total. |
-| Ecosystem Rewards Pool (ERP) | 1,750,000 | Variable rewards — referrals, social tasks. Rate tied to DCS progress. |
-| **Total** | **8,750,000** | |
-
----
-
-### Sub-Pool 1 — Dynamic Contribution Scale (7,000,000 OTI)
-
-A linear bonding curve. The Contribution Rate starts low and increases continuously as tokens are claimed. Early operators contribute less per unit of Access Fuel — rewarding early network participation.
-
-**Confirmed parameters (July 29, 2026):**
-- Total target raise: **$25,000**
-- Total tokens through DCS: **7,000,000 OTI**
-- Starting Contribution Rate: **$0.001190 per OTI** (founding operator tier)
-- Ending Contribution Rate: **$0.005952 per OTI** (final tier)
-- Multiplier: **5× from start to end**
-- Formula: `Rate(x) = P₀ + (P₁ - P₀) × (x ÷ 7,000,000)` where x = tokens claimed so far
-
-The /whitelist page displays the current rate live, updating in real time as claims are processed. No static price is shown — only the current position on the scale.
-
-**Vesting:** 25% of claimed OTI is immediately accessible as Access Fuel. 75% enters Node Collateral Lockup — linear daily vesting schedule. All vesting parameters are admin-configurable via the OpenFlow Labs dashboard. Nothing is hardcoded.
-
----
-
-### Sub-Pool 2 — Ecosystem Rewards Pool (1,750,000 OTI)
-
-Reward amounts for referrals and social tasks are **not fixed** — they scale inversely with DCS progress. As the DCS fills, reward amounts decrease. This creates the same early-action urgency on the engagement side as the rising contribution rate creates on the claims side.
-
-**Formula:**
-```
-Reward Multiplier = DCS Remaining ÷ 7,000,000
-Current Reward = Base Reward × Reward Multiplier
-```
-
-**Base reward amounts (admin-configurable):**
-| Action | Base OTI (at 0% DCS claimed) |
-|---|---|
-| Successful referral (per confirmed whitelist claim) | 3,000 OTI |
-| Public post + tag OTI | 1,000 OTI |
-| Share whitelist link publicly | 500 OTI |
-| Follow OTI on Twitter/X | 500 OTI |
-| Follow OTI on Telegram | 500 OTI |
-
-**Example decay:**
-
-| DCS Progress | Referral Bonus | Post/Tag | Follow |
-|---|---|---|---|
-| 0% claimed | 3,000 OTI | 1,000 OTI | 500 OTI |
-| 25% claimed | 2,250 OTI | 750 OTI | 375 OTI |
-| 50% claimed | 1,500 OTI | 500 OTI | 250 OTI |
-| 75% claimed | 750 OTI | 250 OTI | 125 OTI |
-| 90% claimed | 300 OTI | 100 OTI | 50 OTI |
-
-**Reward vesting:** All reward OTI is subject to the same 75% Node Collateral Lockup as direct claims. 25% immediately accessible, 75% vests daily on the same schedule.
-
-**Social task verification:** Users submit their post URL or username on /whitelist. OpenFlow Labs reviews and approves via admin dashboard. Approval triggers the OTI issuance. No third-party social API integration required.
-
-**Referral tracking:** Off-chain in the `whitelist_invites` DB table. The referrer's wallet is linked to each invite code used. Reward issued automatically on claim confirmation.
-
----
-
-### The Dual-Curve Display (on /whitelist page)
-
-The /whitelist page shows two live counters moving simultaneously:
-- **Contribution Rate** (DCS): current rate in $/OTI → going UP as claims fill
-- **Referral Bonus** (ERP): current OTI per referral → going DOWN as claims fill
-
-Both driven by a single variable: DCS tokens remaining. No static numbers. Every visitor sees live urgency without any speculative language.
-
----
-
-### Milestone Triggers
-
-These are operational commitments. They describe infrastructure OpenFlow Labs deploys as the ecosystem commits allocation — not investment return promises.
-
-- **Milestone 2 — Phase 1 Liquidity Seeding:** At $5,000 committed allocation → Public Utility Liquidity Layer deployed on decentralized protocols. OTI becomes redeemable via utility swap.
-- **Milestone 3 — Deep Liquidity Scaling:** At $15,000 committed allocation → Secondary AMM pool funded. Utility swap rates stabilised for B2B clients.
-
----
-
-### Access Controls
-
-- Access gated by single-use invite codes (format: OTI-XXXX-XXXX, admin-generated in batches)
-- 10,000 maximum whitelisted operator slots over 12 months
-- Geographic restrictions enforced (US, China, sanctioned jurisdictions blocked)
-- Ban system: admin can freeze any code or wallet address immediately
-- All parameters (base rewards, vesting %, milestones) configurable via OpenFlow Labs admin dashboard
+8. **Long-term alignment.** Founders locked five years. Marketing partners locked three years. All incentives point toward building.
+9. **Transparent by design.** Every allocation assignment is a public on-chain transaction with a published agreement record.
 
 ---
 
