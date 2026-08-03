@@ -1,7 +1,7 @@
 # OTI — Manager Handover Document
-> Last updated: July 30, 2026 (session 25 — Backend Builder new account onboarded: answered all 8 orientation questions correctly, confirmed understanding of DCS/ERP mechanics, evidence standard, migration flow, and silent flagging. Task 28 Part A prompt sent. Builder has not yet confirmed schema is ready — follow up on Part A first. D59 correction applied: BSC contract handles BNB + BSC stablecoins only; ETH/BTC/SOL/TON/XRP/MATIC use Layer 2 receiving addresses + CoinGecko pricing + admin manual verification — no BSC Chainlink oracle for non-BSC coins. 14 new whitelist tables total confirmed.)
-> (session 24 — Task order updated: Task 28 backend first/urgent today, Tasks 23+24 deferred to last after all building done, D59 multi-coin DCS contribution contract added, D60 T&C/Privacy dual-set confirmed. Backend Builder new account onboarding prompt written.)
-> (session 23 — Whitelist system fully redesigned: expanded ERP task system (9 reward types including daily scoring, WOR actions, dev API, whitepaper rounds), wallet-first UX flow, Telegram + X identity gates, session fingerprinting + multi-account detection, all manual admin review replaced by auto-verification. D43–D58 logged. Tasks 27 and 28 fully rewritten in TASKS.md and BACKEND_TASKS.md.)
+> Last updated: August 2, 2026 (session 31 — Workspace cleanup: extracted_docs/ deleted, docs.zip deleted, docs/ confirmed as sole documentation folder. CRITICAL BLOCKER IDENTIFIED: TOKENOMICS.md Aug 1 version describes 3-contract genesis (Whitelist + Team + Allocation Manager) + DEX Liquidity Engine + auto-buyback, but Backend Builder is working from outdated July 30 spec with only 2 contracts and fixed 25/75 unlock. Builder MUST NOT deploy to mainnet until Ahmad confirms expanded Part D scope. Awaiting Ahmad's decision on 3 scope questions — see SESSION 31 HANDOVER below.)
+> (session 30 — Part C evidence confirmed live on Railway 6/9 items. Backend Builder hit Replit daily quota mid-Part D. All 3 contracts compiled, 10 changes staged and committed by Ahmad. New Builder account needed.)
+> (session 29 — Part C evidence confirmed live. New Backend Builder onboarding prompt rewritten. OTI BEP-20 creation deferred. Frontend Builder still idle.)
 > **If you are a new Manager reading this: start here. Then read ARCHITECTURE.md, ROADMAP.md, DECISIONS.md, TASKS.md, and TOKENOMICS.md in that order.**
 > **D16 (evidence rule): no signal value or test result may be estimated or guessed — only real on-chain data. A Builder's "verified" claim is NOT evidence. Ask: which wallet, which raw API response, which psql output.**
 
@@ -401,6 +401,76 @@ When credits exhaust, Ahmad pushes to GitHub via Replit Git, opens a new account
 - `FRONTEND_BUILDER_ONBOARDING_PROMPT.md` — **paste verbatim to every new Frontend Builder before any task.** Covers: OTI overview, color system, sacred files, whitelist vocabulary enforcement, DCS/ERP mechanics, 6 orientation questions. Only send the task after all 6 answers are correct.
 - `BACKEND_TASKS.md` — Backend Builder task queue (Task 28 active)
 - `FRONTEND_TASKS.md` — Frontend Builder task queue (Tasks 25→26→27→23→24 queued in that order)
+
+---
+
+## SESSION 31 HANDOVER — August 2, 2026
+
+### What happened this session
+- New Manager account opened. Workspace imported from GitHub docs repo.
+- Cleanup performed: `extracted_docs/` deleted (outdated session 22 snapshot), `docs.zip` deleted (import artifact).
+- `docs/` confirmed as sole documentation folder.
+- Outgoing Manager identified a critical mismatch between TOKENOMICS.md (August 1, 2026) and the current Backend Builder's working scope.
+
+### CRITICAL BLOCKER — Part D scope gap
+
+TOKENOMICS.md (August 1 version) now describes a **3-contract genesis architecture**:
+1. **Whitelist Contract** (8,750,000 OTI) — DCS bonding curve + dynamic unlock formula + ERP vesting
+2. **Team Contract** (5,250,000 OTI) — founders, 5-year linear daily vesting, no admin override
+3. **Allocation Manager** (21,000,000 OTI) — all other allocations, per-assignment config
+
+Plus a **DEX Liquidity Engine**:
+- 30% auto-liquidity split on every contribution → PancakeSwap OTI/USDT pool
+- Auto-buyback engine: monitors DEX price hourly, buys OTI when price < (DCS Rate × DCS-TM)
+- DCS-TM default: 1.5× (admin-configurable)
+- Circuit breaker: pauses buyback if reserve < threshold (default 5%)
+
+Plus a **dynamic unlock formula** (replaces fixed 25%/75%):
+`Immediate_Unlock% = max(5%, 25% - (DCS_Progress% × 20%))`
+
+**The Backend Builder currently has only 2 contracts** (OTIDCSContribution.sol + OTIWhitelistVesting.sol) written from the July 30 spec. Fixed 25/75 unlock. No Allocation Manager, no Team Contract, no DEX engine.
+
+**DO NOT let the Builder deploy to mainnet until Ahmad answers the 3 scope questions below.**
+
+### Questions for Ahmad (send verbatim)
+
+```
+Ahmad — before the Backend Builder touches mainnet, I need you to confirm 3 things about Part D scope:
+
+The TOKENOMICS.md (August 1) now describes a 3-contract genesis:
+Whitelist Contract, Team Contract, and Allocation Manager. It also includes
+a 30% auto-liquidity split on every contribution and an auto-buyback engine
+that monitors the DEX price hourly.
+
+The Backend Builder currently has only 2 contracts (DCS + Vesting) from the July 30 spec.
+
+1. Does Part D expand to include the Team Contract and Allocation Manager?
+2. Does the DCS contribution contract need the 30% auto-liquidity and auto-buyback logic?
+3. Does the vesting contract use the dynamic unlock formula (max(5%, 25% - DCS_Progress% × 20%)) instead of the fixed 25/75?
+
+The Builder must not touch mainnet until you confirm the scope.
+```
+
+### Builder status
+- **Backend Builder:** New account, onboarded July 31. Pulled contracts from GitHub. Running local Hardhat tests on old 2-contract scope. **HOLD — do not proceed to mainnet.**
+- **Frontend Builder:** Idle. Task queue: Task 25 → 26 → 27 → 23 → 24 (after ALL Task 28 parts confirmed).
+
+### Deployer wallet
+- DEPLOYER_ADDRESS: `0x334515DbF3Fb428Fd37847EC1fD23b2C605e37dD`
+- PRIVATE KEY + MNEMONIC: with Ahmad only — never in any file
+
+### Immediate next actions
+1. Send Ahmad the 3 scope questions above
+2. After Ahmad answers, update BACKEND_TASKS.md Part D with the confirmed scope
+3. Update BACKEND_BUILDER_ONBOARDING_PROMPT.md to match confirmed contracts
+4. Only then instruct the Builder to proceed
+
+### Docs that still need updating (after Ahmad confirms scope)
+- BACKEND_TASKS.md Task 28 Part D — still describes only 2 contracts
+- BACKEND_BUILDER_ONBOARDING_PROMPT.md — still references old 2-contract scope + fixed 25/75
+- DECISIONS.md D42 — references "two contracts"
+- ROADMAP.md — audit for remaining presale vocabulary
+- BUSINESS_MODEL.md — audit for remaining presale vocabulary
 
 ---
 
